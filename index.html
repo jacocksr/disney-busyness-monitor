@@ -1,333 +1,541 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Disney World Busyness Monitor</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    :root {
-      --bg: #0b132b;
-      --card-bg: #1c2541;
-      --card-border: #3a506b;
-      --accent: #48cae4;
-      --accent-alt: #00b4d8;
-      --text: #f8f9fa;
-      --text-muted: #94a3b8;
-      --green: #10b981;
-      --yellow: #f59e0b;
-      --red: #ef4444;
-      --purple: #8b5cf6;
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Disney World Busyness Monitor | Plan Your Magical Day</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-1: #1a1147;
+    --bg-2: #2d1b69;
+    --bg-3: #4a2b8c;
+    --card-bg: rgba(255,255,255,0.06);
+    --card-bg-solid: #2b1c5e;
+    --card-border: rgba(255,255,255,0.12);
+    --gold: #ffd166;
+    --gold-deep: #f4a300;
+    --pink: #ff6fb5;
+    --teal: #4cd6c0;
+    --purple: #a78bfa;
+    --text: #fdf9ff;
+    --text-muted: #c7bfe8;
+    --green: #35d08a;
+    --yellow: #ffc857;
+    --red: #ff5d7a;
+  }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background-color: var(--bg); color: var(--text); padding: 1.5rem; line-height: 1.5; }
-    .container { max-width: 1200px; margin: 0 auto; }
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
 
-    /* Header */
-    header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 2rem; border-bottom: 1px solid var(--card-border); padding-bottom: 1rem; }
-    .title-area h1 { font-size: 1.8rem; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 0.5rem; }
-    .title-area p { color: var(--text-muted); font-size: 0.9rem; }
-    .last-updated { background: var(--card-bg); padding: 0.4rem 0.8rem; border-radius: 6px; font-size: 0.85rem; border: 1px solid var(--card-border); }
+  body {
+    background:
+      radial-gradient(ellipse 80% 50% at 20% -10%, rgba(255,209,102,0.15), transparent),
+      radial-gradient(ellipse 80% 50% at 100% 0%, rgba(76,214,192,0.12), transparent),
+      linear-gradient(160deg, var(--bg-1) 0%, var(--bg-2) 45%, var(--bg-3) 100%);
+    background-attachment: fixed;
+    color: var(--text);
+    padding: 1.5rem;
+    line-height: 1.5;
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+  }
 
-    /* Park Cards Grid */
-    .park-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.25rem; margin-bottom: 2rem; }
-    .park-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 1.25rem; cursor: pointer; transition: transform 0.2s, border-color 0.2s; position: relative; }
-    .park-card:hover { transform: translateY(-3px); border-color: var(--accent); }
-    .park-card.active { border-color: var(--accent); box-shadow: 0 0 12px rgba(72, 202, 228, 0.25); }
-    
-    .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem; }
-    .card-header h3 { font-size: 1.15rem; font-weight: 600; color: #fff; }
-    
-    .score-badge { font-weight: 800; font-size: 1.1rem; padding: 0.25rem 0.6rem; border-radius: 8px; color: #fff; text-align: center; }
-    .score-low { background: var(--green); }
-    .score-mod { background: var(--yellow); color: #000; }
-    .score-high { background: var(--red); }
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(2px 2px at 10% 20%, rgba(255,255,255,0.6), transparent),
+      radial-gradient(2px 2px at 80% 10%, rgba(255,255,255,0.5), transparent),
+      radial-gradient(1.5px 1.5px at 60% 60%, rgba(255,255,255,0.4), transparent),
+      radial-gradient(2px 2px at 30% 80%, rgba(255,255,255,0.5), transparent),
+      radial-gradient(1.5px 1.5px at 90% 70%, rgba(255,255,255,0.35), transparent),
+      radial-gradient(1.5px 1.5px at 45% 35%, rgba(255,255,255,0.3), transparent);
+    background-size: 100% 100%;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.8;
+  }
 
-    .card-metrics { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-muted); border-top: 1px solid rgba(255,255,255,0.08); padding-top: 0.75rem; }
-    .metric-value { font-weight: 700; color: #fff; font-size: 1rem; }
+  .container { max-width: 1240px; margin: 0 auto; position: relative; z-index: 1; }
 
-    /* Main Content Layout */
-    .content-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 1.5rem; margin-bottom: 2rem; }
-    @media (max-width: 900px) { .content-grid { grid-template-columns: 1fr; } }
+  /* Hero Header */
+  .hero {
+    text-align: center;
+    padding: 2.5rem 1.5rem 2rem;
+    margin-bottom: 1.75rem;
+    position: relative;
+  }
 
-    .panel { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 1.25rem; }
-    .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
-    .panel-header h2 { font-size: 1.2rem; font-weight: 600; }
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: rgba(255,209,102,0.15);
+    border: 1px solid rgba(255,209,102,0.4);
+    color: var(--gold);
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 0.35rem 0.9rem;
+    border-radius: 999px;
+    margin-bottom: 1rem;
+    letter-spacing: 0.03em;
+  }
 
-    /* Attraction Table */
-    .table-container { max-height: 480px; overflow-y: auto; }
-    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.88rem; }
-    th { background: rgba(0,0,0,0.25); padding: 0.6rem 0.75rem; position: sticky; top: 0; color: var(--text-muted); font-weight: 600; }
-    td { padding: 0.6rem 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.05); }
-    tr:hover { background: rgba(255,255,255,0.03); }
-    .wait-pill { display: inline-block; padding: 0.2rem 0.5rem; border-radius: 4px; font-weight: 700; }
-    .status-down { color: var(--red); font-weight: 600; }
-    .land-tag { font-size: 0.75rem; color: var(--text-muted); display: block; }
+  .hero h1 {
+    font-family: 'Baloo 2', 'Poppins', sans-serif;
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 800;
+    background: linear-gradient(90deg, #ffd166, #ff6fb5 45%, #4cd6c0 90%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin-bottom: 0.6rem;
+    letter-spacing: 0.01em;
+  }
 
-    /* Historical Advice Section */
-    .insights-panel { margin-top: 1rem; font-size: 0.88rem; color: var(--text-muted); line-height: 1.6; }
-    .insight-item { margin-bottom: 0.75rem; padding-left: 1rem; border-left: 2px solid var(--accent); }
-    .insight-item strong { color: #fff; }
-  </style>
+  .hero p.tagline {
+    color: var(--text-muted);
+    font-size: 1.05rem;
+    max-width: 560px;
+    margin: 0 auto;
+  }
+
+  .last-updated {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--card-bg);
+    backdrop-filter: blur(8px);
+    padding: 0.5rem 1rem;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    border: 1px solid var(--card-border);
+    margin-top: 1.25rem;
+    color: var(--text-muted);
+  }
+
+  .last-updated .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 8px var(--green);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* Section headers */
+  .section-label {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin: 0 0 1.1rem 0.2rem;
+    color: var(--text);
+    font-family: 'Baloo 2', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+  }
+  .section-label .emoji { font-size: 1.4rem; }
+
+  /* Park Cards Grid */
+  .park-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 1.25rem; margin-bottom: 2.5rem; }
+
+  .park-card {
+    background: var(--card-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--card-border);
+    border-radius: 18px;
+    padding: 1.4rem;
+    cursor: pointer;
+    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .park-card::after {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: var(--park-color, linear-gradient(90deg, var(--gold), var(--pink)));
+    opacity: 0.9;
+  }
+
+  .park-card:hover { transform: translateY(-6px) scale(1.01); box-shadow: 0 14px 30px rgba(0,0,0,0.35); }
+  .park-card.active { border-color: var(--gold); box-shadow: 0 0 0 2px rgba(255,209,102,0.3), 0 14px 30px rgba(0,0,0,0.4); }
+
+  .card-icon { font-size: 1.6rem; margin-bottom: 0.4rem; display: block; }
+
+  .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.9rem; gap: 0.5rem; }
+  .card-header h3 { font-family: 'Baloo 2', sans-serif; font-size: 1.2rem; font-weight: 700; color: #fff; }
+
+  .score-badge { font-weight: 800; font-size: 1.05rem; padding: 0.3rem 0.7rem; border-radius: 10px; color: #12122a; text-align: center; white-space: nowrap; }
+  .score-low { background: var(--green); }
+  .score-mod { background: var(--yellow); }
+  .score-high { background: var(--red); color: #fff; }
+
+  .card-metrics { display: flex; justify-content: space-between; font-size: 0.83rem; color: var(--text-muted); border-top: 1px solid rgba(255,255,255,0.1); padding-top: 0.85rem; }
+  .metric-value { font-weight: 700; color: #fff; font-size: 1.02rem; display: block; }
+  .metric-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em; opacity: 0.8; }
+
+  /* Best-time-to-go strip */
+  .best-time-strip {
+    margin-top: 0.9rem;
+    font-size: 0.78rem;
+    color: var(--teal);
+    background: rgba(76,214,192,0.12);
+    border: 1px solid rgba(76,214,192,0.25);
+    padding: 0.4rem 0.6rem;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-weight: 600;
+  }
+
+  /* Main Content Layout */
+  .content-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 1.5rem; margin-bottom: 2rem; }
+  @media (max-width: 900px) { .content-grid { grid-template-columns: 1fr; } }
+
+  .panel {
+    background: var(--card-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--card-border);
+    border-radius: 18px;
+    padding: 1.5rem;
+  }
+  .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.1rem; flex-wrap: wrap; gap: 0.6rem; }
+  .panel-header h2 { font-family: 'Baloo 2', sans-serif; font-size: 1.25rem; font-weight: 700; color: #fff; }
+
+  #rideSearch {
+    padding: 0.55rem 1rem;
+    border-radius: 999px;
+    border: 1px solid var(--card-border);
+    background: rgba(0,0,0,0.25);
+    color: #fff;
+    font-size: 0.85rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  #rideSearch:focus { border-color: var(--gold); }
+  #rideSearch::placeholder { color: var(--text-muted); }
+
+  /* Attraction Table */
+  .table-container { max-height: 480px; overflow-y: auto; border-radius: 12px; }
+  .table-container::-webkit-scrollbar { width: 8px; }
+  .table-container::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 8px; }
+
+  table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.88rem; }
+  th { background: rgba(0,0,0,0.3); padding: 0.7rem 0.85rem; position: sticky; top: 0; color: var(--gold); font-weight: 700; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; }
+  th:first-child { border-radius: 10px 0 0 0; }
+  th:last-child { border-radius: 0 10px 0 0; }
+  td { padding: 0.75rem 0.85rem; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  tr:hover { background: rgba(255,255,255,0.05); }
+  .wait-pill { display: inline-block; padding: 0.3rem 0.65rem; border-radius: 999px; font-weight: 700; font-size: 0.82rem; }
+  .status-down { color: var(--red); font-weight: 600; font-size: 0.82rem; }
+  .land-tag { font-size: 0.76rem; color: var(--text-muted); display: block; }
+
+  /* Historical Advice Section */
+  .insights-panel { margin-top: 1.1rem; font-size: 0.88rem; color: var(--text-muted); line-height: 1.6; }
+  .insight-item {
+    margin-bottom: 0.8rem;
+    padding: 0.7rem 0.9rem;
+    border-left: 3px solid var(--gold);
+    background: rgba(255,209,102,0.06);
+    border-radius: 0 10px 10px 0;
+  }
+  .insight-item strong { color: var(--gold); }
+
+  /* Footer */
+  footer {
+    text-align: center;
+    padding: 2rem 1rem 0.5rem;
+    color: var(--text-muted);
+    font-size: 0.82rem;
+  }
+  footer .heart { color: var(--pink); }
+
+  @media (max-width: 600px) {
+    body { padding: 1rem; }
+    .hero { padding: 1.75rem 0.5rem 1.5rem; }
+  }
+</style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <div class="title-area">
-        <h1>🏰 Disney World Busyness Monitor</h1>
-        <p>Live attraction queues and historical crowd trends for WDW</p>
+<div class="container">
+  <div class="hero">
+    <div class="hero-badge">✨ Live Crowd Intelligence</div>
+    <h1>🏰 Disney World Busyness Monitor</h1>
+    <p class="tagline">Real-time wait times and historical crowd trends across all four Walt Disney World parks — plan your perfect day before you go.</p>
+    <div class="last-updated" id="lastUpdated"><span class="dot"></span> Updated: Syncing...</div>
+  </div>
+
+  <div class="section-label"><span class="emoji">🎢</span> Choose Your Park</div>
+  <div class="park-grid" id="parkGrid"></div>
+
+  <div class="content-grid">
+    <div class="panel">
+      <div class="panel-header">
+        <h2 id="selectedParkTitle">Attraction Wait Times</h2>
+        <input type="text" id="rideSearch" placeholder="🔍 Filter rides or lands..." />
       </div>
-      <div class="last-updated" id="lastUpdated">Updated: Syncing...</div>
-    </header>
-
-    <!-- Park Overview Cards -->
-    <div class="park-grid" id="parkGrid"></div>
-
-    <!-- Details View: Hourly Curves + Live Ride Wait Table -->
-    <div class="content-grid">
-      <!-- Live Table -->
-      <div class="panel">
-        <div class="panel-header">
-          <h2 id="selectedParkTitle">Attraction Wait Times</h2>
-          <input type="text" id="rideSearch" placeholder="Filter rides..." style="padding: 0.4rem 0.75rem; border-radius: 6px; border: 1px solid var(--card-border); background: var(--bg); color: #fff; font-size: 0.85rem;" />
-        </div>
-        <div class="table-container">
-          <table id="ridesTable">
-            <thead>
-              <tr>
-                <th>Attraction</th>
-                <th>Land</th>
-                <th style="text-align: right;">Standby Wait</th>
-              </tr>
-            </thead>
-            <tbody id="ridesBody"></tbody>
-          </table>
-        </div>
+      <div class="table-container">
+        <table id="ridesTable">
+          <thead>
+            <tr>
+              <th>Attraction</th>
+              <th>Land</th>
+              <th style="text-align: right;">Standby Wait</th>
+            </tr>
+          </thead>
+          <tbody id="ridesBody"></tbody>
+        </table>
       </div>
+    </div>
 
-      <!-- Trend Chart & Historical Guidance -->
-      <div class="panel">
-        <div class="panel-header">
-          <h2>Busyness Curve vs. Average</h2>
+    <div class="panel">
+      <div class="panel-header">
+        <h2>📈 Busyness Curve vs. Average</h2>
+      </div>
+      <canvas id="trendChart" height="200"></canvas>
+      <div class="insights-panel" id="insightsPanel">
+        <div class="insight-item">
+          <strong>Optimal Strategy:</strong> Rope-drop high-demand headliners during the first 60 minutes after opening or during evening fireworks.
         </div>
-        <canvas id="trendChart" height="200"></canvas>
-        <div class="insights-panel" id="insightsPanel">
-          <div class="insight-item">
-            <strong>Optimal Strategy:</strong> Rope-drop high-demand headliners during the first 60 minutes after opening or during evening fireworks.
-          </div>
-          <div class="insight-item">
-            <strong>Crowd Index:</strong> Standardized 1-10 index measuring current park-wide queue load against historical baselines.
-          </div>
+        <div class="insight-item">
+          <strong>Crowd Index:</strong> Standardized 1-10 index measuring current park-wide queue load against historical baselines.
         </div>
       </div>
     </div>
   </div>
 
-  <script>
-    // Mock snapshot for standalone prototype view (swapped automatically with real json if hosted)
-    const fallbackData = {
-      updated_at: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      parks: {
-        magic_kingdom: {
-          name: "Magic Kingdom",
-          crowd_score: 6.8,
-          avg_wait: 42,
-          open_attractions: 28,
-          down_attractions: 2,
-          hourly_today: [20, 28, 45, 52, 50, 48, 55, 60, 48, 38, 25],
-          hourly_hist: [18, 25, 40, 48, 46, 45, 48, 52, 45, 35, 20],
-          rides: [
-            { name: "Space Mountain", land: "Tomorrowland", wait_time: 65, is_open: true },
-            { name: "Seven Dwarfs Mine Train", land: "Fantasyland", wait_time: 85, is_open: true },
-            { name: "Big Thunder Mountain Railroad", land: "Frontierland", wait_time: 45, is_open: true },
-            { name: "Haunted Mansion", land: "Liberty Square", wait_time: 40, is_open: true },
-            { name: "Pirates of the Caribbean", land: "Adventureland", wait_time: 35, is_open: true },
-            { name: "TRON Lightcycle / Run", land: "Tomorrowland", wait_time: 0, is_open: false }
-          ]
-        },
-        epcot: {
-          name: "EPCOT",
-          crowd_score: 4.5,
-          avg_wait: 30,
-          open_attractions: 15,
-          down_attractions: 1,
-          hourly_today: [15, 20, 32, 38, 36, 35, 34, 30, 28, 25, 15],
-          hourly_hist: [15, 22, 35, 40, 38, 36, 35, 32, 30, 25, 15],
-          rides: [
-            { name: "Guardians of the Galaxy: Cosmic Rewind", land: "World Discovery", wait_time: 75, is_open: true },
-            { name: "Remy's Ratatouille Adventure", land: "World Showcase", wait_time: 60, is_open: true },
-            { name: "Frozen Ever After", land: "World Showcase", wait_time: 55, is_open: true },
-            { name: "Soarin' Around the World", land: "World Nature", wait_time: 25, is_open: true },
-            { name: "Spaceship Earth", land: "World Celebration", wait_time: 10, is_open: true }
-          ]
-        },
-        hollywood_studios: {
-          name: "Hollywood Studios",
-          crowd_score: 8.2,
-          avg_wait: 56,
-          open_attractions: 16,
-          down_attractions: 1,
-          hourly_today: [30, 45, 65, 70, 68, 62, 65, 68, 58, 45, 30],
-          hourly_hist: [25, 40, 58, 62, 60, 58, 60, 62, 52, 40, 25],
-          rides: [
-            { name: "Star Wars: Rise of the Resistance", land: "Galaxy's Edge", wait_time: 95, is_open: true },
-            { name: "Slinky Dog Dash", land: "Toy Story Land", wait_time: 80, is_open: true },
-            { name: "Tower of Terror", land: "Sunset Boulevard", wait_time: 60, is_open: true },
-            { name: "Millennium Falcon: Smugglers Run", land: "Galaxy's Edge", wait_time: 50, is_open: true },
-            { name: "Mickey & Minnie's Runaway Railway", land: "Hollywood Boulevard", wait_time: 45, is_open: true }
-          ]
-        },
-        animal_kingdom: {
-          name: "Animal Kingdom",
-          crowd_score: 3.8,
-          avg_wait: 24,
-          open_attractions: 14,
-          down_attractions: 0,
-          hourly_today: [20, 35, 40, 38, 30, 25, 20, 15, 10, 0, 0],
-          hourly_hist: [18, 30, 36, 35, 28, 22, 18, 12, 10, 0, 0],
-          rides: [
-            { name: "Avatar Flight of Passage", land: "Pandora", wait_time: 70, is_open: true },
-            { name: "Na'vi River Journey", land: "Pandora", wait_time: 35, is_open: true },
-            { name: "Expedition Everest", land: "Asia", wait_time: 20, is_open: true },
-            { name: "Kilimanjaro Safaris", land: "Africa", wait_time: 25, is_open: true },
-            { name: "DINOSAUR", land: "DinoLand U.S.A.", wait_time: 15, is_open: true }
-          ]
-        }
-      }
-    };
+  <footer>Made with <span class="heart">♥</span> for Disney World planners &mdash; data refreshes automatically.</footer>
+</div>
 
-    let activeParkKey = "magic_kingdom";
-    let parkData = fallbackData;
-    let chartInstance = null;
-
-    // Load actual static JSON if deployed via GitHub Pages
-    async function loadData() {
-      try {
-        const res = await fetch("data/live_wait_times.json");
-        if (res.ok) {
-          parkData = await res.json();
-        }
-      } catch (e) {
-        console.log("Using prototype fallback snapshot.");
-      }
-      document.getElementById("lastUpdated").textContent = `Updated: ${parkData.updated_at || 'Just now'}`;
-      renderCards();
-      renderDetails();
-    }
-
-    function getScoreBadge(score) {
-      if (score < 4.0) return `<span class="score-badge score-low">${score} / 10</span>`;
-      if (score < 7.0) return `<span class="score-badge score-mod">${score} / 10</span>`;
-      return `<span class="score-badge score-high">${score} / 10</span>`;
-    }
-
-    function renderCards() {
-      const grid = document.getElementById("parkGrid");
-      grid.innerHTML = "";
-      for (const [key, p] of Object.entries(parkData.parks)) {
-        const card = document.createElement("div");
-        card.className = `park-card ${key === activeParkKey ? 'active' : ''}`;
-        card.onclick = () => {
-          activeParkKey = key;
-          renderCards();
-          renderDetails();
-        };
-        card.innerHTML = `
-          <div class="card-header">
-            <h3>${p.name}</h3>
-            ${getScoreBadge(p.crowd_score)}
-          </div>
-          <div class="card-metrics">
-            <div>Avg Wait: <span class="metric-value">${p.avg_wait}m</span></div>
-            <div>Open: <span class="metric-value">${p.open_attractions}</span></div>
-            <div>Down: <span class="metric-value" style="color:${p.down_attractions > 0 ? 'var(--red)' : '#fff'}">${p.down_attractions}</span></div>
-          </div>
-        `;
-        grid.appendChild(card);
+<script>
+  const fallbackData = {
+    updated_at: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    parks: {
+      magic_kingdom: {
+        name: "Magic Kingdom", icon: "🏰", color: "linear-gradient(90deg, #ffd166, #ff6fb5)",
+        crowd_score: 6.8, avg_wait: 42, open_attractions: 28, down_attractions: 2,
+        hourly_today: [20, 28, 45, 52, 50, 48, 55, 60, 48, 38, 25],
+        hourly_hist: [18, 25, 40, 48, 46, 45, 48, 52, 45, 35, 20],
+        rides: [
+          { name: "Space Mountain", land: "Tomorrowland", wait_time: 65, is_open: true },
+          { name: "Seven Dwarfs Mine Train", land: "Fantasyland", wait_time: 85, is_open: true },
+          { name: "Big Thunder Mountain Railroad", land: "Frontierland", wait_time: 45, is_open: true },
+          { name: "Haunted Mansion", land: "Liberty Square", wait_time: 40, is_open: true },
+          { name: "Pirates of the Caribbean", land: "Adventureland", wait_time: 35, is_open: true },
+          { name: "TRON Lightcycle / Run", land: "Tomorrowland", wait_time: 0, is_open: false }
+        ]
+      },
+      epcot: {
+        name: "EPCOT", icon: "🌐", color: "linear-gradient(90deg, #4cd6c0, #48cae4)",
+        crowd_score: 4.5, avg_wait: 30, open_attractions: 15, down_attractions: 1,
+        hourly_today: [15, 20, 32, 38, 36, 35, 34, 30, 28, 25, 15],
+        hourly_hist: [15, 22, 35, 40, 38, 36, 35, 32, 30, 25, 15],
+        rides: [
+          { name: "Guardians of the Galaxy: Cosmic Rewind", land: "World Discovery", wait_time: 75, is_open: true },
+          { name: "Remy's Ratatouille Adventure", land: "World Showcase", wait_time: 60, is_open: true },
+          { name: "Frozen Ever After", land: "World Showcase", wait_time: 55, is_open: true },
+          { name: "Soarin' Around the World", land: "World Nature", wait_time: 25, is_open: true },
+          { name: "Spaceship Earth", land: "World Celebration", wait_time: 10, is_open: true }
+        ]
+      },
+      hollywood_studios: {
+        name: "Hollywood Studios", icon: "🎬", color: "linear-gradient(90deg, #a78bfa, #ff6fb5)",
+        crowd_score: 8.2, avg_wait: 56, open_attractions: 16, down_attractions: 1,
+        hourly_today: [30, 45, 65, 70, 68, 62, 65, 68, 58, 45, 30],
+        hourly_hist: [25, 40, 58, 62, 60, 58, 60, 62, 52, 40, 25],
+        rides: [
+          { name: "Star Wars: Rise of the Resistance", land: "Galaxy's Edge", wait_time: 95, is_open: true },
+          { name: "Slinky Dog Dash", land: "Toy Story Land", wait_time: 80, is_open: true },
+          { name: "Tower of Terror", land: "Sunset Boulevard", wait_time: 60, is_open: true },
+          { name: "Millennium Falcon: Smugglers Run", land: "Galaxy's Edge", wait_time: 50, is_open: true },
+          { name: "Mickey & Minnie's Runaway Railway", land: "Hollywood Boulevard", wait_time: 45, is_open: true }
+        ]
+      },
+      animal_kingdom: {
+        name: "Animal Kingdom", icon: "🌴", color: "linear-gradient(90deg, #35d08a, #4cd6c0)",
+        crowd_score: 3.8, avg_wait: 24, open_attractions: 14, down_attractions: 0,
+        hourly_today: [20, 35, 40, 38, 30, 25, 20, 15, 10, 0, 0],
+        hourly_hist: [18, 30, 36, 35, 28, 22, 18, 12, 10, 0, 0],
+        rides: [
+          { name: "Avatar Flight of Passage", land: "Pandora", wait_time: 70, is_open: true },
+          { name: "Na'vi River Journey", land: "Pandora", wait_time: 35, is_open: true },
+          { name: "Expedition Everest", land: "Asia", wait_time: 20, is_open: true },
+          { name: "Kilimanjaro Safaris", land: "Africa", wait_time: 25, is_open: true },
+          { name: "DINOSAUR", land: "DinoLand U.S.A.", wait_time: 15, is_open: true }
+        ]
       }
     }
+  };
 
-    function renderDetails() {
-      const park = parkData.parks[activeParkKey];
-      document.getElementById("selectedParkTitle").textContent = `${park.name} Standby Queue`;
+  let activeParkKey = "magic_kingdom";
+  let parkData = fallbackData;
+  let chartInstance = null;
 
-      // Filter & Table
-      const searchVal = document.getElementById("rideSearch").value.toLowerCase();
-      const body = document.getElementById("ridesBody");
-      body.innerHTML = "";
-
-      const filtered = (park.rides || []).filter(r => r.name.toLowerCase().includes(searchVal) || r.land.toLowerCase().includes(searchVal));
-
-      filtered.forEach(r => {
-        const row = document.createElement("tr");
-        let waitDisplay = r.is_open 
-          ? `<span class="wait-pill" style="background:${r.wait_time > 50 ? 'rgba(239,68,68,0.2)' : 'rgba(16,185,129,0.2)'}; color:${r.wait_time > 50 ? 'var(--red)' : 'var(--green)'}">${r.wait_time} min</span>`
-          : `<span class="status-down">Temporary Closure</span>`;
-
-        row.innerHTML = `
-          <td><strong>${r.name}</strong></td>
-          <td><span class="land-tag">${r.land}</span></td>
-          <td style="text-align: right;">${waitDisplay}</td>
-        `;
-        body.appendChild(row);
-      });
-
-      renderChart(park);
+  async function loadData() {
+    try {
+      const res = await fetch("data/live_wait_times.json");
+      if (res.ok) {
+        parkData = await res.json();
+      }
+    } catch (e) {
+      console.log("Using prototype fallback snapshot.");
     }
+    document.getElementById("lastUpdated").innerHTML = `<span class="dot"></span> Updated: ${parkData.updated_at || 'Just now'}`;
+    renderCards();
+    renderDetails();
+  }
 
-    function renderChart(park) {
-      const ctx = document.getElementById('trendChart').getContext('2d');
-      const hours = ['9a', '10a', '11a', '12p', '1p', '2p', '3p', '4p', '5p', '6p', '7p'];
-      const todayData = park.hourly_today || [20, 30, 45, 50, 48, 45, 50, 55, 45, 35, 20];
-      const histData = park.hourly_hist || [18, 25, 40, 45, 44, 42, 45, 48, 42, 30, 18];
+  function getScoreBadge(score) {
+    if (score < 4.0) return `<span class="score-badge score-low">${score} / 10</span>`;
+    if (score < 7.0) return `<span class="score-badge score-mod">${score} / 10</span>`;
+    return `<span class="score-badge score-high">${score} / 10</span>`;
+  }
 
-      if (chartInstance) chartInstance.destroy();
+  function getBestTimeTip(score) {
+    if (score < 4.0) return "Great time to visit — short waits all around!";
+    if (score < 7.0) return "Moderate crowds — arrive early for headliners.";
+    return "Peak crowds — rope-drop or use Lightning Lane.";
+  }
 
-      chartInstance = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: hours,
-          datasets: [
-            {
-              label: 'Today (Observed)',
-              data: todayData,
-              borderColor: '#48cae4',
-              backgroundColor: 'rgba(72, 202, 228, 0.15)',
-              tension: 0.35,
-              fill: true
-            },
-            {
-              label: 'Historical Avg for Today',
-              data: histData,
-              borderColor: '#94a3b8',
-              borderDash: [5, 5],
-              tension: 0.35,
-              fill: false
-            }
-          ]
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: { labels: { color: '#94a3b8' } }
+  function renderCards() {
+    const grid = document.getElementById("parkGrid");
+    grid.innerHTML = "";
+    for (const [key, p] of Object.entries(parkData.parks)) {
+      const card = document.createElement("div");
+      card.className = `park-card ${key === activeParkKey ? 'active' : ''}`;
+      card.style.setProperty('--park-color', p.color || 'linear-gradient(90deg, #ffd166, #ff6fb5)');
+      card.onclick = () => {
+        activeParkKey = key;
+        renderCards();
+        renderDetails();
+      };
+      card.innerHTML = `
+        <span class="card-icon">${p.icon || '🎡'}</span>
+        <div class="card-header">
+          <h3>${p.name}</h3>
+          ${getScoreBadge(p.crowd_score)}
+        </div>
+        <div class="card-metrics">
+          <div><span class="metric-label">Avg Wait</span><span class="metric-value">${p.avg_wait}m</span></div>
+          <div><span class="metric-label">Open</span><span class="metric-value">${p.open_attractions}</span></div>
+          <div><span class="metric-label">Down</span><span class="metric-value" style="color:${p.down_attractions > 0 ? 'var(--red)' : '#fff'}">${p.down_attractions}</span></div>
+        </div>
+        <div class="best-time-strip">💡 ${getBestTimeTip(p.crowd_score)}</div>
+      `;
+      grid.appendChild(card);
+    }
+  }
+
+  function renderDetails() {
+    const park = parkData.parks[activeParkKey];
+    document.getElementById("selectedParkTitle").textContent = `${park.icon || ''} ${park.name} Standby Queue`;
+
+    const searchVal = document.getElementById("rideSearch").value.toLowerCase();
+    const body = document.getElementById("ridesBody");
+    body.innerHTML = "";
+
+    const filtered = (park.rides || []).filter(r => r.name.toLowerCase().includes(searchVal) || r.land.toLowerCase().includes(searchVal));
+
+    filtered.forEach(r => {
+      const row = document.createElement("tr");
+      let waitDisplay = r.is_open
+        ? `<span class="wait-pill" style="background:${r.wait_time > 50 ? 'rgba(255,93,122,0.18)' : 'rgba(53,208,138,0.18)'}; color:${r.wait_time > 50 ? 'var(--red)' : 'var(--green)'}">${r.wait_time} min</span>`
+        : `<span class="status-down">⛔ Temporary Closure</span>`;
+
+      row.innerHTML = `
+        <td><strong>${r.name}</strong></td>
+        <td><span class="land-tag">${r.land}</span></td>
+        <td style="text-align: right;">${waitDisplay}</td>
+      `;
+      body.appendChild(row);
+    });
+
+    renderChart(park);
+  }
+
+  function renderChart(park) {
+    const ctx = document.getElementById('trendChart').getContext('2d');
+    const hours = ['9a', '10a', '11a', '12p', '1p', '2p', '3p', '4p', '5p', '6p', '7p'];
+    const todayData = park.hourly_today || [20, 30, 45, 50, 48, 45, 50, 55, 45, 35, 20];
+    const histData = park.hourly_hist || [18, 25, 40, 45, 44, 42, 45, 48, 42, 30, 18];
+
+    if (chartInstance) chartInstance.destroy();
+
+    const gradient = ctx.createLinearGradient(0, 0, 0, 240);
+    gradient.addColorStop(0, 'rgba(255, 209, 102, 0.35)');
+    gradient.addColorStop(1, 'rgba(255, 209, 102, 0.02)');
+
+    chartInstance = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: hours,
+        datasets: [
+          {
+            label: 'Today (Observed)',
+            data: todayData,
+            borderColor: '#ffd166',
+            backgroundColor: gradient,
+            pointBackgroundColor: '#ffd166',
+            pointBorderColor: '#1a1147',
+            pointRadius: 4,
+            pointHoverRadius: 6,
+            borderWidth: 3,
+            tension: 0.35,
+            fill: true
           },
-          scales: {
-            y: {
-              grid: { color: 'rgba(255,255,255,0.06)' },
-              ticks: { color: '#94a3b8', callback: v => v + 'm' }
-            },
-            x: {
-              grid: { color: 'transparent' },
-              ticks: { color: '#94a3b8' }
-            }
+          {
+            label: 'Historical Avg for Today',
+            data: histData,
+            borderColor: '#a78bfa',
+            borderDash: [6, 5],
+            borderWidth: 2,
+            pointRadius: 0,
+            tension: 0.35,
+            fill: false
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { labels: { color: '#c7bfe8', usePointStyle: true, padding: 16 } },
+          tooltip: {
+            backgroundColor: '#2b1c5e',
+            titleColor: '#ffd166',
+            bodyColor: '#fdf9ff',
+            borderColor: 'rgba(255,255,255,0.15)',
+            borderWidth: 1,
+            padding: 10,
+            cornerRadius: 8
+          }
+        },
+        scales: {
+          y: {
+            grid: { color: 'rgba(255,255,255,0.06)' },
+            ticks: { color: '#c7bfe8', callback: v => v + 'm' }
+          },
+          x: {
+            grid: { color: 'transparent' },
+            ticks: { color: '#c7bfe8' }
           }
         }
-      });
-    }
+      }
+    });
+  }
 
-    document.getElementById("rideSearch").addEventListener("input", renderDetails);
-    window.addEventListener("DOMContentLoaded", loadData);
-  </script>
+  document.getElementById("rideSearch").addEventListener("input", renderDetails);
+  window.addEventListener("DOMContentLoaded", loadData);
+</script>
 </body>
 </html>

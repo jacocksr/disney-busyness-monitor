@@ -2,7 +2,7 @@ name: Update Disney Wait Times
 
 on:
   schedule:
-    - cron: '*/10 * * * *'
+    - cron: '3,13,23,33,43,53 * * * *'
   workflow_dispatch: {}
 
 permissions:
@@ -14,6 +14,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Log trigger info
+        run: echo "Schedule fired: ${{ github.event.schedule }} at $(date -u)"
 
       - name: Set up Python
         uses: actions/setup-python@v5

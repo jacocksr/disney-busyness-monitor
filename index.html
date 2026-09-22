@@ -94,11 +94,13 @@
     cursor: pointer; transition: border-color 0.2s;
   }
   .last-updated:hover { border-color: var(--gold); }
+  .last-updated.is-stale { border-color: rgba(255,200,87,0.4); color: var(--yellow); }
 
   .last-updated .dot {
     width: 8px; height: 8px; border-radius: 50%;
     background: var(--green); box-shadow: 0 0 8px var(--green); animation: pulse 2s infinite;
   }
+  .last-updated.is-stale .dot { background: var(--yellow); box-shadow: 0 0 8px var(--yellow); }
 
   .last-updated .tz-caret { font-size: 0.7rem; opacity: 0.7; }
 
@@ -114,6 +116,26 @@
   .tz-option { padding: 0.55rem 0.7rem; border-radius: 8px; font-size: 0.85rem; cursor: pointer; display: flex; justify-content: space-between; align-items: center; color: var(--text); }
   .tz-option:hover { background: rgba(255,255,255,0.07); }
   .tz-option.selected { background: rgba(255,209,102,0.14); color: var(--gold); font-weight: 600; }
+
+  /* Stale data banner */
+  .stale-banner {
+    display: none;
+    max-width: 780px;
+    margin: 1.1rem auto 0;
+    background: rgba(255,200,87,0.1);
+    border: 1px solid rgba(255,200,87,0.35);
+    color: var(--yellow);
+    padding: 0.75rem 1.1rem;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    line-height: 1.55;
+    text-align: left;
+    align-items: flex-start;
+    gap: 0.6rem;
+  }
+  .stale-banner.visible { display: flex; }
+  .stale-banner .stale-icon { font-size: 1.1rem; flex-shrink: 0; line-height: 1.4; }
+  .stale-banner strong { color: #ffe4a3; }
 
   .section-label { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; margin: 0 0 1.1rem 0.2rem; color: var(--text); font-family: 'Baloo 2', sans-serif; font-size: 1.3rem; font-weight: 700; flex-wrap: wrap; }
   .section-label-left { display: flex; align-items: center; gap: 0.6rem; }
@@ -247,6 +269,10 @@
         <div id="tzOptionsList"></div>
       </div>
     </div>
+    <div class="stale-banner" id="staleBanner">
+      <span class="stale-icon">⏳</span>
+      <span id="staleBannerText"></span>
+    </div>
   </div>
 
   <div class="section-label">
@@ -371,6 +397,9 @@
     animal_kingdom:      { earlyEntry: "07:30", open: "08:00", close: "18:00" }
   };
 
+  // Data is expected to refresh every ~10 minutes. Flag as stale if older than this.
+  const STALE_THRESHOLD_MINUTES = 20;
+
   let activeParkKey = "magic_kingdom";
   let parkData = fallbackData;
   let chartInstance = null;
@@ -428,9 +457,33 @@
     document.getElementById("crowdInfoPopover").classList.remove("open");
   });
 
+  function getDataAgeMinutes() {
+    const ts = new Date(parkData.updated_at);
+    if (isNaN(ts.getTime())) return 0;
+    return Math.floor((Date.now() - ts.getTime()) / 60000);
+  }
+
   function updateTimestamp() {
     const text = formatUpdatedTime(parkData.updated_at);
     document.getElementById("lastUpdatedText").textContent = `Updated: ${text}`;
+
+    const ageMinutes = getDataAgeMinutes();
+    const isStale = ageMinutes > STALE_THRESHOLD_MINUTES;
+    const badge = document.getElementById("lastUpdated");
+    const banner = document.getElementById("staleBanner");
+    const bannerText = document.getElementById("staleBannerText");
+
+    badge.classList.toggle("is-stale", isStale);
+
+    if (isStale) {
+      const hours = Math.floor(ageMinutes / 60);
+      const mins = ageMinutes % 60;
+      const ageLabel = hours > 0 ? `${hours}h ${mins}m` : `${mins} min`;
+      bannerText.innerHTML = `<strong>Data may be out of date</strong> &mdash; last refreshed ${ageLabel} ago. Wait times shown below could differ from the park right now. We refresh roughly every 10 minutes; this page will update automatically once new data arrives.`;
+      banner.classList.add("visible");
+    } else {
+      banner.classList.remove("visible");
+    }
   }
 
   function getParkPhase(parkKey, park) {

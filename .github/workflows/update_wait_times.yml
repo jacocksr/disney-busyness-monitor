@@ -16,7 +16,9 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Log trigger info
-        run: echo "Schedule fired: ${{ github.event.schedule }} at $(date -u)"
+        run: |
+          echo "Schedule fired: ${{ github.event.schedule }}"
+          date -u
 
       - name: Set up Python
         uses: actions/setup-python@v5

@@ -225,8 +225,7 @@
   }
   .best-time-strip.muted { color: var(--text-muted); background: rgba(255,255,255,0.05); border-color: var(--card-border); }
 
-  /* Heatmap card - full width */
-  .heatmap-panel { grid-column: 1 / -1; margin-bottom: 2rem; }
+  .heatmap-panel { margin-top: 2rem; margin-bottom: 2rem; }
   .heatmap-tabs { display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
   .heatmap-tab {
     background: rgba(255,255,255,0.06); border: 1px solid var(--card-border); color: var(--text-muted);
@@ -306,7 +305,6 @@
   .insight-item { margin-bottom: 0.8rem; padding: 0.7rem 0.9rem; border-left: 3px solid var(--gold); background: rgba(255,209,102,0.05); border-radius: 0 10px 10px 0; }
   .insight-item strong { color: var(--gold); }
 
-  /* Ride detail modal */
   .modal-overlay {
     display: none; position: fixed; inset: 0; background: rgba(10,20,40,0.75); backdrop-filter: blur(3px);
     z-index: 200; align-items: center; justify-content: center; padding: 1.5rem;
@@ -372,49 +370,22 @@
   </div>
 
   <div class="section-label">
-    <div class="section-label-left"><span class="emoji">🎢</span> Choose Your Park</div>
-    <div class="info-btn-wrap">
-      <div class="info-btn" id="crowdInfoBtn" onclick="toggleInfoPopover(event)">?</div>
-      <div class="info-popover" id="crowdInfoPopover">
-        <strong>What is the Crowd Index?</strong>
-        A 1&ndash;10 score comparing right-now wait times across the park to typical levels for this time of day. Lower means shorter lines than usual; higher means busier than usual.
-        <div class="legend-row"><span class="legend-dot" style="background:var(--green)"></span> 1&ndash;3.9: Low crowds</div>
-        <div class="legend-row"><span class="legend-dot" style="background:var(--yellow)"></span> 4&ndash;6.9: Moderate crowds</div>
-        <div class="legend-row"><span class="legend-dot" style="background:var(--red)"></span> 7&ndash;10: High crowds</div>
-        <div class="legend-row"><span class="legend-dot" style="background:var(--gray)"></span> Park not yet open: score not shown</div>
+    <div class="section-label-left">
+      <span class="emoji">🎢</span> Choose Your Park
+      <div class="info-btn-wrap">
+        <div class="info-btn" id="crowdInfoBtn" onclick="toggleInfoPopover(event)">?</div>
+        <div class="info-popover" id="crowdInfoPopover">
+          <strong>What is the Crowd Index?</strong>
+          A 1&ndash;10 score comparing right-now wait times across the park to typical levels for this time of day. Lower means shorter lines than usual; higher means busier than usual.
+          <div class="legend-row"><span class="legend-dot" style="background:var(--green)"></span> 1&ndash;3.9: Low crowds</div>
+          <div class="legend-row"><span class="legend-dot" style="background:var(--yellow)"></span> 4&ndash;6.9: Moderate crowds</div>
+          <div class="legend-row"><span class="legend-dot" style="background:var(--red)"></span> 7&ndash;10: High crowds</div>
+          <div class="legend-row"><span class="legend-dot" style="background:var(--gray)"></span> Park not yet open: score not shown</div>
+        </div>
       </div>
     </div>
   </div>
   <div class="park-grid" id="parkGrid"></div>
-
-  <!-- Ride Wait Heatmap -->
-  <div class="panel heatmap-panel">
-    <div class="panel-header">
-      <h2 id="heatmapTitle">🔥 Ride Wait Heatmap</h2>
-      <div class="heatmap-tabs">
-        <div class="heatmap-tab active" data-mode="hour" onclick="setHeatmapMode('hour', this)">By Hour Today</div>
-        <div class="heatmap-tab" data-mode="weekday" onclick="setHeatmapMode('weekday', this)">By Day of Week</div>
-      </div>
-    </div>
-    <div class="heatmap-caveat" id="heatmapCaveat"></div>
-    <div class="heatmap-scroll">
-      <table class="heatmap-table" id="heatmapTable">
-        <thead id="heatmapHead"></thead>
-        <tbody id="heatmapBody"></tbody>
-      </table>
-    </div>
-    <div class="heatmap-legend">
-      <span>Shorter waits</span>
-      <div class="heatmap-legend-gradient">
-        <span style="background:#35d08a"></span>
-        <span style="background:#8fd08a"></span>
-        <span style="background:#ffc857"></span>
-        <span style="background:#ff9a5c"></span>
-        <span style="background:#ff5d7a"></span>
-      </div>
-      <span>Longer waits</span>
-    </div>
-  </div>
 
   <div class="content-grid">
     <div class="panel">
@@ -452,10 +423,37 @@
     </div>
   </div>
 
+  <div class="panel heatmap-panel">
+    <div class="panel-header">
+      <h2 id="heatmapTitle">🔥 Ride Wait Heatmap</h2>
+      <div class="heatmap-tabs">
+        <div class="heatmap-tab active" data-mode="hour" onclick="setHeatmapMode('hour', this)">By Hour Today</div>
+        <div class="heatmap-tab" data-mode="weekday" onclick="setHeatmapMode('weekday', this)">By Day of Week</div>
+      </div>
+    </div>
+    <div class="heatmap-caveat" id="heatmapCaveat"></div>
+    <div class="heatmap-scroll">
+      <table class="heatmap-table" id="heatmapTable">
+        <thead id="heatmapHead"></thead>
+        <tbody id="heatmapBody"></tbody>
+      </table>
+    </div>
+    <div class="heatmap-legend">
+      <span>Shorter waits</span>
+      <div class="heatmap-legend-gradient">
+        <span style="background:#35d08a"></span>
+        <span style="background:#8fd08a"></span>
+        <span style="background:#ffc857"></span>
+        <span style="background:#ff9a5c"></span>
+        <span style="background:#ff5d7a"></span>
+      </div>
+      <span>Longer waits</span>
+    </div>
+  </div>
+
   <footer>Made with <span class="heart">♥</span> for Disney World planners &mdash; data refreshes automatically.</footer>
 </div>
 
-<!-- Ride Detail Modal -->
 <div class="modal-overlay" id="rideModalOverlay" onclick="if(event.target===this) closeRideModal()">
   <div class="ride-modal">
     <div class="ride-modal-header">
@@ -925,8 +923,6 @@
     });
   }
 
-  /* ---------------- Ride Detail Modal ---------------- */
-
   function openRideModal(ride, parkName) {
     document.getElementById("rideModalLand").textContent = `${parkName} · ${ride.land}`;
     document.getElementById("rideModalName").textContent = ride.name;
@@ -1006,8 +1002,6 @@
       }
     });
   }
-
-  /* ---------------- Heatmap ---------------- */
 
   function setHeatmapMode(mode, el) {
     heatmapMode = mode;
@@ -1114,7 +1108,6 @@
       const entry = historicalSummary.rides[String(ride.id)];
       const cells = weekdayKeys.map(wd => {
         if (!entry) return null;
-        // Average across all operating hours for that weekday
         const matching = Object.entries(entry.buckets || {}).filter(([k]) => k.startsWith(wd + "_"));
         if (matching.length === 0) return null;
         const totalSamples = matching.reduce((s, [, b]) => s + b.samples, 0);

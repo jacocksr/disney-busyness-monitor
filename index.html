@@ -119,7 +119,6 @@
   .section-label-left { display: flex; align-items: center; gap: 0.6rem; }
   .section-label .emoji { font-size: 1.4rem; }
 
-  /* Crowd Index legend / info button */
   .info-btn-wrap { position: relative; display: inline-flex; }
   .info-btn {
     width: 22px; height: 22px; border-radius: 50%;
@@ -177,11 +176,12 @@
   }
   .park-status-banner.pre-open { background: rgba(255,200,87,0.15); color: var(--yellow); border: 1px solid rgba(255,200,87,0.3); }
   .park-status-banner.early-entry { background: rgba(76,214,192,0.15); color: var(--teal); border: 1px solid rgba(76,214,192,0.3); }
-  .park-status-banner.open-now { background: rgba(53,208,138,0.15); color: var(--green); border: 1px solid rgba(53,208,138,0.3); }
 
-  .card-metrics { display: flex; justify-content: space-between; font-size: 0.83rem; color: var(--text-muted); border-top: 1px solid rgba(255,255,255,0.1); padding-top: 0.85rem; }
-  .metric-value { font-weight: 700; color: #fff; font-size: 1.02rem; display: block; }
+  .card-metrics { display: flex; justify-content: space-between; font-size: 0.83rem; color: var(--text-muted); border-top: 1px solid rgba(255,255,255,0.1); padding-top: 0.85rem; gap: 0.5rem; }
+  .card-metrics > div { min-width: 0; }
+  .metric-value { font-weight: 700; color: #fff; font-size: 1.02rem; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .metric-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em; opacity: 0.8; }
+  .metric-longest-name { font-size: 0.72rem; font-weight: 400; color: var(--text-muted); display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px; }
 
   .best-time-strip {
     margin-top: 0.9rem; font-size: 0.78rem; color: var(--teal);
@@ -364,7 +364,6 @@
     }
   };
 
-  // Default WDW hours (Eastern Time). Override per-park via parkData.parks[key].hours if the scraper supplies real daily hours.
   const DEFAULT_HOURS = {
     magic_kingdom:      { earlyEntry: "08:30", open: "09:00", close: "22:00" },
     epcot:               { earlyEntry: "08:30", open: "09:00", close: "21:00" },
@@ -434,7 +433,6 @@
     document.getElementById("lastUpdatedText").textContent = `Updated: ${text}`;
   }
 
-  // Determine park phase (pre-open / early-entry / open) based on Eastern Time, since WDW hours are always ET regardless of viewer's chosen display timezone.
   function getParkPhase(parkKey, park) {
     const hours = (park && park.hours) || DEFAULT_HOURS[parkKey];
     if (!hours) return { phase: "open" };
@@ -460,6 +458,14 @@
     const period = h >= 12 ? "PM" : "AM";
     let h12 = h % 12; if (h12 === 0) h12 = 12;
     return `${h12}:${String(m).padStart(2, "0")} ${period} ET`;
+  }
+
+  function computeLiveStats(park) {
+    const openRides = (park.rides || []).filter(r => r.is_open);
+    if (openRides.length === 0) return { avgWait: null, longest: null };
+    const avgWait = Math.round(openRides.reduce((sum, r) => sum + (r.wait_time || 0), 0) / openRides.length);
+    const longest = openRides.reduce((max, r) => (r.wait_time > (max ? max.wait_time : -1) ? r : max), null);
+    return { avgWait, longest };
   }
 
   async function loadData() {
@@ -489,17 +495,17 @@
       return `<div class="park-status-banner pre-open">🌙 Not open yet &mdash; Early Entry starts ${formatHourLabel(phaseInfo.opensAt)}</div>`;
     }
     if (phaseInfo.phase === "early-entry") {
-      return `<div class="park-status-banner early-entry">🔑 Early Entry only (resort guests) &mdash; opens to all guests ${formatHourLabel(phaseInfo.generalAt)}</div>`;
+      return `<div class="park-status-banner early-entry">🔑 Early Entry only (resort guests)</div>`;
     }
     if (phaseInfo.phase === "closed-for-day") {
       return `<div class="park-status-banner pre-open">🌙 Closed for the day</div>`;
     }
-    return `<div class="park-status-banner open-now">✅ Open now</div>`;
+    return "";
   }
 
   function getBestTimeTip(score, phaseInfo) {
     if (phaseInfo.phase === "pre-open") return "Check back once Early Entry begins for live crowd data.";
-    if (phaseInfo.phase === "early-entry") return "Only resort guests are inside right now &mdash; scores resume at general open.";
+    if (phaseInfo.phase === "early-entry") return "Resort guests only right now &mdash; full crowd score resumes at general open.";
     if (phaseInfo.phase === "closed-for-day") return "Park is closed. See you tomorrow!";
     if (score < 4.0) return "Great time to visit — short waits all around!";
     if (score < 7.0) return "Moderate crowds — arrive early for headliners.";
@@ -512,6 +518,15 @@
     for (const [key, p] of Object.entries(parkData.parks)) {
       const phaseInfo = getParkPhase(key, p);
       const isClosed = phaseInfo.phase === "pre-open" || phaseInfo.phase === "closed-for-day";
+      const stats = computeLiveStats(p);
+      const avgWaitDisplay = (phaseInfo.phase === "pre-open" || phaseInfo.phase === "closed-for-day" || stats.avgWait === null)
+        ? "&ndash;"
+        : `${stats.avgWait}m`;
+      const longestDisplay = (phaseInfo.phase === "pre-open" || phaseInfo.phase === "closed-for-day" || !stats.longest)
+        ? "&ndash;"
+        : `${stats.longest.wait_time}m`;
+      const longestName = (!isClosed && stats.longest) ? stats.longest.name : "";
+
       const card = document.createElement("div");
       card.className = `park-card ${key === activeParkKey ? 'active' : ''} ${isClosed ? 'closed' : ''}`;
       card.style.setProperty('--park-color', p.color || 'linear-gradient(90deg, #ffd166, #ff6fb5)');
@@ -528,8 +543,8 @@
         </div>
         ${getStatusBanner(phaseInfo)}
         <div class="card-metrics">
-          <div><span class="metric-label">Avg Wait</span><span class="metric-value">${phaseInfo.phase === 'open' ? p.avg_wait + 'm' : '&ndash;'}</span></div>
-          <div><span class="metric-label">Open</span><span class="metric-value">${p.open_attractions}</span></div>
+          <div><span class="metric-label">Avg Wait</span><span class="metric-value">${avgWaitDisplay}</span></div>
+          <div><span class="metric-label">Longest Wait</span><span class="metric-value">${longestDisplay}</span>${longestName ? `<span class="metric-longest-name" title="${longestName}">${longestName}</span>` : ''}</div>
           <div><span class="metric-label">Down</span><span class="metric-value" style="color:${p.down_attractions > 0 ? 'var(--red)' : '#fff'}">${p.down_attractions}</span></div>
         </div>
         <div class="best-time-strip ${isClosed ? 'muted' : ''}">💡 ${getBestTimeTip(p.crowd_score, phaseInfo)}</div>

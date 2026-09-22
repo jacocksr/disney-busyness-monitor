@@ -37,10 +37,10 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/live_wait_times.json
+          git add data/live_wait_times.json data/history_24h.json data/history_7d.json data/historical_summary.json
           if git diff --cached --quiet; then
             echo "No changes to commit."
           else
-            git commit -m "Auto-update wait times [skip ci]"
+            git commit -m "Auto-update wait times and history [skip ci]"
             git push
           fi

@@ -14,6 +14,7 @@
     --bg-3: #1c4a72;
     --card-bg: rgba(255,255,255,0.055);
     --card-bg-solid: #17324f;
+    --header-bg-solid: #0f2545;
     --card-border: rgba(255,255,255,0.12);
     --gold: #ffd166;
     --gold-deep: #f4a300;
@@ -273,11 +274,11 @@
   .table-container::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 8px; }
 
   table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.88rem; }
-  th { background: rgba(0,0,0,0.25); padding: 0.7rem 0.85rem; position: sticky; top: 0; color: var(--gold); font-weight: 700; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; }
+  th { background: var(--header-bg-solid); padding: 0.7rem 0.85rem; position: sticky; top: 0; color: var(--gold); font-weight: 700; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; box-shadow: 0 1px 0 rgba(255,255,255,0.12); z-index: 2; }
   th:first-child { border-radius: 10px 0 0 0; }
   th:last-child { border-radius: 0 10px 0 0; }
-  td { padding: 0.75rem 0.85rem; border-bottom: 1px solid rgba(255,255,255,0.06); }
-  tr:hover { background: rgba(255,255,255,0.05); }
+  td { padding: 0.75rem 0.85rem; border-bottom: 1px solid rgba(255,255,255,0.06); background: var(--card-bg-solid); }
+  tr:hover td { background: #1c3f61; }
   .wait-pill { display: inline-block; padding: 0.3rem 0.65rem; border-radius: 999px; font-weight: 700; font-size: 0.82rem; }
   .status-down { color: var(--red); font-weight: 600; font-size: 0.82rem; }
   .land-tag { font-size: 0.76rem; color: var(--text-muted); display: block; }
@@ -369,7 +370,7 @@
 
 <script>
   const fallbackData = {
-    updated_at_iso: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
     parks: {
       magic_kingdom: {
         name: "Magic Kingdom", icon: "🏰", color: "linear-gradient(90deg, #ffd166, #ff6fb5)",
@@ -440,20 +441,12 @@
   ];
   let selectedTz = localStorage.getItem("wdw_tz_pref") || "America/New_York";
 
-  function formatUpdatedTime(isoOrFallback) {
-    let d;
-    if (isoOrFallback) {
-      d = new Date(isoOrFallback);
-      if (isNaN(d.getTime())) d = new Date();
-    } else {
-      d = new Date();
-    }
-    const opts = { hour: '2-digit', minute: '2-digit' };
+  function formatUpdatedTime(isoString) {
+    let d = isoString ? new Date(isoString) : new Date();
+    if (isNaN(d.getTime())) d = new Date();
+    const opts = { hour: '2-digit', minute: '2-digit', timeZoneName: 'short' };
     if (selectedTz !== "local") {
       opts.timeZone = selectedTz;
-      opts.timeZoneName = 'short';
-    } else {
-      opts.timeZoneName = 'short';
     }
     return d.toLocaleTimeString([], opts);
   }
@@ -487,7 +480,7 @@
   });
 
   function updateTimestamp() {
-    const text = formatUpdatedTime(parkData.updated_at_iso);
+    const text = formatUpdatedTime(parkData.updated_at);
     document.getElementById("lastUpdatedText").textContent = `Updated: ${text}`;
   }
 

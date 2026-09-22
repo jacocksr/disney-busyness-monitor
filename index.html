@@ -117,7 +117,6 @@
   .tz-option:hover { background: rgba(255,255,255,0.07); }
   .tz-option.selected { background: rgba(255,209,102,0.14); color: var(--gold); font-weight: 600; }
 
-  /* Stale data banner */
   .stale-banner {
     display: none;
     max-width: 780px;
@@ -199,11 +198,26 @@
   .park-status-banner.pre-open { background: rgba(255,200,87,0.15); color: var(--yellow); border: 1px solid rgba(255,200,87,0.3); }
   .park-status-banner.early-entry { background: rgba(76,214,192,0.15); color: var(--teal); border: 1px solid rgba(76,214,192,0.3); }
 
-  .card-metrics { display: flex; justify-content: space-between; font-size: 0.83rem; color: var(--text-muted); border-top: 1px solid rgba(255,255,255,0.1); padding-top: 0.85rem; gap: 0.5rem; }
-  .card-metrics > div { min-width: 0; }
+  /* Metrics: top row = Avg Wait / Down (2-col), second row = Longest Wait (full width) */
+  .card-metrics-top {
+    display: flex; justify-content: space-between; font-size: 0.83rem; color: var(--text-muted);
+    border-top: 1px solid rgba(255,255,255,0.1); padding-top: 0.85rem; gap: 0.5rem;
+  }
+  .card-metrics-top > div { min-width: 0; }
   .metric-value { font-weight: 700; color: #fff; font-size: 1.02rem; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .metric-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em; opacity: 0.8; }
-  .metric-longest-name { font-size: 0.72rem; font-weight: 400; color: var(--text-muted); display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px; }
+
+  .card-metrics-longest {
+    display: flex; justify-content: space-between; align-items: baseline; gap: 0.6rem;
+    font-size: 0.83rem; color: var(--text-muted);
+    border-top: 1px solid rgba(255,255,255,0.08); margin-top: 0.7rem; padding-top: 0.7rem;
+  }
+  .card-metrics-longest .metric-longest-left { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+  .card-metrics-longest .metric-longest-name {
+    font-size: 0.76rem; font-weight: 500; color: var(--text); white-space: nowrap;
+    overflow: hidden; text-overflow: ellipsis; max-width: 100%;
+  }
+  .card-metrics-longest .metric-value { font-size: 1.05rem; flex-shrink: 0; }
 
   .best-time-strip {
     margin-top: 0.9rem; font-size: 0.78rem; color: var(--teal);
@@ -397,7 +411,6 @@
     animal_kingdom:      { earlyEntry: "07:30", open: "08:00", close: "18:00" }
   };
 
-  // Data is expected to refresh every ~10 minutes. Flag as stale if older than this.
   const STALE_THRESHOLD_MINUTES = 20;
 
   let activeParkKey = "magic_kingdom";
@@ -595,10 +608,16 @@
           ${getScoreBadge(p.crowd_score, phaseInfo)}
         </div>
         ${getStatusBanner(phaseInfo)}
-        <div class="card-metrics">
+        <div class="card-metrics-top">
           <div><span class="metric-label">Avg Wait</span><span class="metric-value">${avgWaitDisplay}</span></div>
-          <div><span class="metric-label">Longest Wait</span><span class="metric-value">${longestDisplay}</span>${longestName ? `<span class="metric-longest-name" title="${longestName}">${longestName}</span>` : ''}</div>
           <div><span class="metric-label">Down</span><span class="metric-value" style="color:${p.down_attractions > 0 ? 'var(--red)' : '#fff'}">${p.down_attractions}</span></div>
+        </div>
+        <div class="card-metrics-longest">
+          <div class="metric-longest-left">
+            <span class="metric-label">Longest Wait</span>
+            ${longestName ? `<span class="metric-longest-name" title="${longestName}">${longestName}</span>` : ''}
+          </div>
+          <span class="metric-value">${longestDisplay}</span>
         </div>
         <div class="best-time-strip ${isClosed ? 'muted' : ''}">💡 ${getBestTimeTip(p.crowd_score, phaseInfo)}</div>
       `;

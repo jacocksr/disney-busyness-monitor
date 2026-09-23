@@ -1,28 +1,52 @@
 {
-  "updated_at": "2026-09-23T20:40:03.013730+00:00",
+  "updated_at": "2026-09-23T23:12:30.167082+00:00",
   "parks": {
     "magic_kingdom": {
       "name": "Magic Kingdom",
-      "crowd_score": 4.0,
-      "avg_wait": 27.9,
-      "open_attractions": 38,
-      "down_attractions": 6,
+      "crowd_score": 4.5,
+      "avg_wait": 31.2,
+      "open_attractions": 31,
+      "down_attractions": 13,
       "rides": [
         {
           "id": 11527,
           "name": "TRON Lightcycle / Run",
           "land": "Tomorrowland",
           "is_open": true,
-          "wait_time": 80,
-          "last_updated": "2026-09-23T20:36:09.000Z"
+          "wait_time": 85,
+          "last_updated": "2026-09-23T23:10:28.000Z"
         },
         {
           "id": 129,
           "name": "Seven Dwarfs Mine Train",
           "land": "Fantasyland",
           "is_open": true,
-          "wait_time": 65,
-          "last_updated": "2026-09-23T20:36:09.000Z"
+          "wait_time": 60,
+          "last_updated": "2026-09-23T23:10:28.000Z"
+        },
+        {
+          "id": 130,
+          "name": "Big Thunder Mountain Railroad",
+          "land": "Frontierland",
+          "is_open": true,
+          "wait_time": 60,
+          "last_updated": "2026-09-23T23:10:28.000Z"
+        },
+        {
+          "id": 131,
+          "name": "Buzz Lightyear\u2019s Space Ranger Spin",
+          "land": "Tomorrowland",
+          "is_open": true,
+          "wait_time": 60,
+          "last_updated": "2026-09-23T23:10:28.000Z"
+        },
+        {
+          "id": 134,
+          "name": "Jungle Cruise",
+          "land": "Adventureland",
+          "is_open": true,
+          "wait_time": 55,
+          "last_updated": "2026-09-23T23:10:28.000Z"
         },
         {
           "id": 142,
@@ -30,71 +54,31 @@
           "land": "Fantasyland",
           "is_open": true,
           "wait_time": 55,
-          "last_updated": "2026-09-23T20:36:09.000Z"
+          "last_updated": "2026-09-23T23:10:28.000Z"
         },
         {
-          "id": 130,
-          "name": "Big Thunder Mountain Railroad",
-          "land": "Frontierland",
+          "id": 146,
+          "name": "Meet Mickey at Town Square Theater",
+          "land": "Main Street, U.S.A.",
           "is_open": true,
-          "wait_time": 50,
-          "last_updated": "2026-09-23T20:36:09.000Z"
+          "wait_time": 45,
+          "last_updated": "2026-09-23T23:10:28.000Z"
         },
         {
-          "id": 13630,
-          "name": "Tiana's Bayou Adventure",
-          "land": "Frontierland",
+          "id": 248,
+          "name": "Astro Orbiter",
+          "land": "Tomorrowland",
           "is_open": true,
-          "wait_time": 50,
-          "last_updated": "2026-09-23T20:36:09.000Z"
+          "wait_time": 45,
+          "last_updated": "2026-09-23T23:10:28.000Z"
         },
         {
           "id": 138,
           "name": "Space Mountain",
           "land": "Tomorrowland",
           "is_open": true,
-          "wait_time": 50,
-          "last_updated": "2026-09-23T20:36:09.000Z"
-        },
-        {
-          "id": 145,
-          "name": "Meet Dashing Disney Pals as Circus Stars at Pete's Silly Sideshow",
-          "land": "Fantasyland",
-          "is_open": true,
           "wait_time": 45,
-          "last_updated": "2026-09-23T20:36:09.000Z"
-        },
-        {
-          "id": 136,
-          "name": "Peter Pan's Flight",
-          "land": "Fantasyland",
-          "is_open": true,
-          "wait_time": 45,
-          "last_updated": "2026-09-23T20:36:09.000Z"
-        },
-        {
-          "id": 6700,
-          "name": "Meet Cinderella and a Visiting Princess at Princess Fairytale Hall",
-          "land": "Fantasyland",
-          "is_open": true,
-          "wait_time": 40,
-          "last_updated": "2026-09-23T20:36:09.000Z"
-        },
-        {
-          "id": 131,
-          "name": "Buzz Lightyear\u2019s Space Ranger Spin",
-          "land": "Tomorrowland",
-          "is_open": true,
-          "wait_time": 40,
-          "last_updated": "2026-09-23T20:36:09.000Z"
-        },
-        {
-          "id": 134,
-          "name": "Jungle Cruise",
-          "land": "Adventureland",
-          "is_open": true,
-          "wait_time": 35,
-          "last_updated": "2026-09-23T20:36:09.000Z"
+          "last_updated": "2026-09-23T23:10:28.000Z"
         },
         {
           "id": 137,
@@ -102,15 +86,15 @@
           "land": "Adventureland",
           "is_open": true,
           "wait_time": 35,
-          "last_updated": "2026-09-23T20:36:09.000Z"
+          "last_updated": "2026-09-23T23:10:28.000Z"
         },
         {
-          "id": 147,
-          "name": "Meet Ariel at Her Grotto",
+          "id": 132,
+          "name": "Dumbo the Flying Elephant",
           "land": "Fantasyland",
           "is_open": true,
           "wait_time": 35,
-          "last_updated": "2026-09-23T20:36:09.000Z"
+          "last_updated": "2026-09-23T23:10:28.000Z"
         },
         {
           "id": 6699,
@@ -118,55 +102,55 @@
           "land": "Fantasyland",
           "is_open": true,
           "wait_time": 35,
-          "last_updated": "2026-09-23T20:36:09.000Z"
+          "last_updated": "2026-09-23T23:10:28.000Z"
         },
         {
-          "id": 146,
-          "name": "Meet Mickey at Town Square Theater",
-          "land": "Main Street, U.S.A.",
+          "id": 140,
+          "name": "Haunted Mansion",
+          "land": "Liberty Square",
           "is_open": true,
-          "wait_time": 30,
-          "last_updated": "2026-09-23T20:36:09.000Z"
-        },
-        {
-          "id": 126,
-          "name": "The Barnstormer",
-          "land": "Fantasyland",
-          "is_open": true,
-          "wait_time": 25,
-          "last_updated": "2026-09-23T20:36:09.000Z"
+          "wait_time": 35,
+          "last_updated": "2026-09-23T23:10:28.000Z"
         },
         {
           "id": 128,
           "name": "Enchanted Tales with Belle",
           "land": "Fantasyland",
           "is_open": true,
-          "wait_time": 20,
-          "last_updated": "2026-09-23T20:36:09.000Z"
+          "wait_time": 30,
+          "last_updated": "2026-09-23T23:10:28.000Z"
         },
         {
-          "id": 144,
-          "name": "Meet Daring Disney Pals as Circus Stars at Pete's Silly Sideshow",
+          "id": 6700,
+          "name": "Meet Cinderella and a Visiting Princess at Princess Fairytale Hall",
+          "land": "Fantasyland",
+          "is_open": true,
+          "wait_time": 30,
+          "last_updated": "2026-09-23T23:10:28.000Z"
+        },
+        {
+          "id": 126,
+          "name": "The Barnstormer",
+          "land": "Fantasyland",
+          "is_open": true,
+          "wait_time": 30,
+          "last_updated": "2026-09-23T23:10:28.000Z"
+        },
+        {
+          "id": 141,
+          "name": "The Magic Carpets of Aladdin",
+          "land": "Adventureland",
+          "is_open": true,
+          "wait_time": 20,
+          "last_updated": "2026-09-23T23:10:28.000Z"
+        },
+        {
+          "id": 133,
+          "name": "\"it's a small world\"",
           "land": "Fantasyland",
           "is_open": true,
           "wait_time": 20,
-          "last_updated": "2026-09-23T20:36:09.000Z"
-        },
-        {
-          "id": 127,
-          "name": "Under the Sea - Journey of The Little Mermaid",
-          "land": "Fantasyland",
-          "is_open": true,
-          "wait_time": 20,
-          "last_updated": "2026-09-23T20:36:09.000Z"
-        },
-        {
-          "id": 143,
-          "name": "Tomorrowland Speedway",
-          "land": "Tomorrowland",
-          "is_open": true,
-          "wait_time": 20,
-          "last_updated": "2026-09-23T20:36:09.000Z"
+          "last_updated": "2026-09-23T23:10:28.000Z"
         },
         {
           "id": 1190,
@@ -174,23 +158,7 @@
           "land": "Tomorrowland",
           "is_open": true,
           "wait_time": 20,
-          "last_updated": "2026-09-23T20:36:09.000Z"
-        },
-        {
-          "id": 132,
-          "name": "Dumbo the Flying Elephant",
-          "land": "Fantasyland",
-          "is_open": true,
-          "wait_time": 15,
-          "last_updated": "2026-09-23T20:36:09.000Z"
-        },
-        {
-          "id": 135,
-          "name": "Mad Tea Party",
-          "land": "Fantasyland",
-          "is_open": true,
-          "wait_time": 15,
-          "last_updated": "2026-09-23T20:36:09.000Z"
+          "last_updated": "2026-09-23T23:10:28.000Z"
         },
         {
           "id": 171,
@@ -198,7 +166,15 @@
           "land": "Fantasyland",
           "is_open": true,
           "wait_time": 15,
-          "last_updated": "2026-09-23T20:36:09.000Z"
+          "last_updated": "2026-09-23T23:10:28.000Z"
+        },
+        {
+          "id": 161,
+          "name": "Prince Charming Regal Carrousel",
+          "land": "Fantasyland",
+          "is_open": true,
+          "wait_time": 15,
+          "last_updated": "2026-09-23T23:10:28.000Z"
         },
         {
           "id": 1181,
@@ -206,7 +182,7 @@
           "land": "Fantasyland",
           "is_open": true,
           "wait_time": 15,
-          "last_updated": "2026-09-23T20:36:09.000Z"
+          "last_updated": "2026-09-23T23:10:28.000Z"
         },
         {
           "id": 356,
@@ -214,7 +190,7 @@
           "land": "Liberty Square",
           "is_open": true,
           "wait_time": 15,
-          "last_updated": "2026-09-23T20:36:09.000Z"
+          "last_updated": "2026-09-23T23:10:28.000Z"
         },
         {
           "id": 1189,
@@ -222,15 +198,15 @@
           "land": "Main Street, U.S.A.",
           "is_open": true,
           "wait_time": 15,
-          "last_updated": "2026-09-23T20:36:09.000Z"
+          "last_updated": "2026-09-23T23:10:28.000Z"
         },
         {
-          "id": 141,
-          "name": "The Magic Carpets of Aladdin",
-          "land": "Adventureland",
+          "id": 143,
+          "name": "Tomorrowland Speedway",
+          "land": "Tomorrowland",
           "is_open": true,
-          "wait_time": 10,
-          "last_updated": "2026-09-23T20:36:09.000Z"
+          "wait_time": 15,
+          "last_updated": "2026-09-23T23:10:28.000Z"
         },
         {
           "id": 334,
@@ -238,15 +214,15 @@
           "land": "Adventureland",
           "is_open": true,
           "wait_time": 10,
-          "last_updated": "2026-09-23T20:36:09.000Z"
+          "last_updated": "2026-09-23T23:10:28.000Z"
         },
         {
-          "id": 133,
-          "name": "\"it's a small world\"",
+          "id": 135,
+          "name": "Mad Tea Party",
           "land": "Fantasyland",
           "is_open": true,
           "wait_time": 10,
-          "last_updated": "2026-09-23T20:36:09.000Z"
+          "last_updated": "2026-09-23T23:10:28.000Z"
         },
         {
           "id": 1214,
@@ -254,15 +230,7 @@
           "land": "Frontierland",
           "is_open": true,
           "wait_time": 10,
-          "last_updated": "2026-09-23T20:36:09.000Z"
-        },
-        {
-          "id": 248,
-          "name": "Astro Orbiter",
-          "land": "Tomorrowland",
-          "is_open": true,
-          "wait_time": 10,
-          "last_updated": "2026-09-23T20:36:09.000Z"
+          "last_updated": "2026-09-23T23:10:28.000Z"
         },
         {
           "id": 125,
@@ -270,7 +238,7 @@
           "land": "Tomorrowland",
           "is_open": true,
           "wait_time": 10,
-          "last_updated": "2026-09-23T20:36:09.000Z"
+          "last_updated": "2026-09-23T23:10:28.000Z"
         },
         {
           "id": 355,
@@ -278,31 +246,23 @@
           "land": "Adventureland",
           "is_open": true,
           "wait_time": 5,
-          "last_updated": "2026-09-23T20:36:09.000Z"
-        },
-        {
-          "id": 161,
-          "name": "Prince Charming Regal Carrousel",
-          "land": "Fantasyland",
-          "is_open": true,
-          "wait_time": 5,
-          "last_updated": "2026-09-23T20:36:09.000Z"
+          "last_updated": "2026-09-23T23:10:28.000Z"
         },
         {
           "id": 1184,
           "name": "A Pirate's Adventure ~ Treasures of the Seven Seas",
           "land": "Adventureland",
-          "is_open": true,
+          "is_open": false,
           "wait_time": 0,
-          "last_updated": "2026-09-23T20:36:09.000Z"
+          "last_updated": "2026-09-23T23:10:28.000Z"
         },
         {
           "id": 13764,
           "name": "Casey Jr. Splash 'N' Soak Station",
           "land": "Fantasyland",
-          "is_open": true,
+          "is_open": false,
           "wait_time": 0,
-          "last_updated": "2026-09-23T20:36:09.000Z"
+          "last_updated": "2026-09-23T23:10:28.000Z"
         },
         {
           "id": 13763,
@@ -310,15 +270,55 @@
           "land": "Fantasyland",
           "is_open": true,
           "wait_time": 0,
-          "last_updated": "2026-09-23T20:36:09.000Z"
+          "last_updated": "2026-09-23T23:10:28.000Z"
         },
         {
-          "id": 140,
-          "name": "Haunted Mansion",
-          "land": "Liberty Square",
+          "id": 147,
+          "name": "Meet Ariel at Her Grotto",
+          "land": "Fantasyland",
           "is_open": false,
           "wait_time": 0,
-          "last_updated": "2026-09-23T20:36:09.000Z"
+          "last_updated": "2026-09-23T23:10:28.000Z"
+        },
+        {
+          "id": 144,
+          "name": "Meet Daring Disney Pals as Circus Stars at Pete's Silly Sideshow",
+          "land": "Fantasyland",
+          "is_open": false,
+          "wait_time": 0,
+          "last_updated": "2026-09-23T23:10:28.000Z"
+        },
+        {
+          "id": 145,
+          "name": "Meet Dashing Disney Pals as Circus Stars at Pete's Silly Sideshow",
+          "land": "Fantasyland",
+          "is_open": false,
+          "wait_time": 0,
+          "last_updated": "2026-09-23T23:10:28.000Z"
+        },
+        {
+          "id": 136,
+          "name": "Peter Pan's Flight",
+          "land": "Fantasyland",
+          "is_open": false,
+          "wait_time": 0,
+          "last_updated": "2026-09-23T23:10:28.000Z"
+        },
+        {
+          "id": 127,
+          "name": "Under the Sea - Journey of The Little Mermaid",
+          "land": "Fantasyland",
+          "is_open": false,
+          "wait_time": 0,
+          "last_updated": "2026-09-23T23:10:28.000Z"
+        },
+        {
+          "id": 13630,
+          "name": "Tiana's Bayou Adventure",
+          "land": "Frontierland",
+          "is_open": false,
+          "wait_time": 0,
+          "last_updated": "2026-09-23T23:10:28.000Z"
         },
         {
           "id": 1188,
@@ -326,7 +326,7 @@
           "land": "Main Street, U.S.A.",
           "is_open": false,
           "wait_time": 0,
-          "last_updated": "2026-09-23T20:36:09.000Z"
+          "last_updated": "2026-09-23T23:10:28.000Z"
         },
         {
           "id": 457,
@@ -334,7 +334,7 @@
           "land": "Tomorrowland",
           "is_open": false,
           "wait_time": 0,
-          "last_updated": "2026-09-23T20:36:09.000Z"
+          "last_updated": "2026-09-23T23:10:28.000Z"
         },
         {
           "id": 17526,
@@ -342,7 +342,7 @@
           "land": "Other",
           "is_open": false,
           "wait_time": 0,
-          "last_updated": "2026-09-23T20:36:09.000Z"
+          "last_updated": "2026-09-23T23:10:28.000Z"
         },
         {
           "id": 14928,
@@ -350,7 +350,7 @@
           "land": "Other",
           "is_open": false,
           "wait_time": 0,
-          "last_updated": "2026-09-23T20:36:09.000Z"
+          "last_updated": "2026-09-23T23:10:28.000Z"
         },
         {
           "id": 14927,
@@ -358,72 +358,48 @@
           "land": "Other",
           "is_open": false,
           "wait_time": 0,
-          "last_updated": "2026-09-23T20:36:09.000Z"
+          "last_updated": "2026-09-23T23:10:28.000Z"
         }
       ]
     },
     "epcot": {
       "name": "EPCOT",
-      "crowd_score": 3.0,
-      "avg_wait": 20.7,
-      "open_attractions": 20,
-      "down_attractions": 0,
+      "crowd_score": 3.8,
+      "avg_wait": 26.4,
+      "open_attractions": 18,
+      "down_attractions": 2,
       "rides": [
         {
           "id": 10093,
           "name": "Guardians of the Galaxy: Cosmic Rewind",
           "land": "World Discovery",
           "is_open": true,
-          "wait_time": 50,
-          "last_updated": "2026-09-23T20:36:00.000Z"
-        },
-        {
-          "id": 2679,
-          "name": "Frozen Ever After",
-          "land": "World Showcase",
-          "is_open": true,
-          "wait_time": 45,
-          "last_updated": "2026-09-23T20:36:00.000Z"
+          "wait_time": 70,
+          "last_updated": "2026-09-23T23:10:28.000Z"
         },
         {
           "id": 160,
           "name": "Test Track",
           "land": "World Discovery",
           "is_open": true,
-          "wait_time": 40,
-          "last_updated": "2026-09-23T20:36:00.000Z"
+          "wait_time": 60,
+          "last_updated": "2026-09-23T23:10:28.000Z"
         },
         {
-          "id": 16467,
-          "name": "Soarin' Across America",
-          "land": "World Nature",
-          "is_open": true,
-          "wait_time": 25,
-          "last_updated": "2026-09-23T20:36:00.000Z"
-        },
-        {
-          "id": 6701,
-          "name": "Meet Anna and Elsa at Royal Sommerhus",
+          "id": 2679,
+          "name": "Frozen Ever After",
           "land": "World Showcase",
           "is_open": true,
-          "wait_time": 25,
-          "last_updated": "2026-09-23T20:36:00.000Z"
-        },
-        {
-          "id": 153,
-          "name": "The Seas with Nemo & Friends",
-          "land": "World Nature",
-          "is_open": true,
-          "wait_time": 20,
-          "last_updated": "2026-09-23T20:36:00.000Z"
+          "wait_time": 60,
+          "last_updated": "2026-09-23T23:10:28.000Z"
         },
         {
           "id": 13627,
           "name": "Meet Beloved Disney Pals at Mickey & Friends",
           "land": "World Celebration",
           "is_open": true,
-          "wait_time": 15,
-          "last_updated": "2026-09-23T20:36:00.000Z"
+          "wait_time": 30,
+          "last_updated": "2026-09-23T23:10:28.000Z"
         },
         {
           "id": 158,
@@ -431,7 +407,7 @@
           "land": "World Discovery",
           "is_open": true,
           "wait_time": 15,
-          "last_updated": "2026-09-23T20:36:00.000Z"
+          "last_updated": "2026-09-23T23:10:28.000Z"
         },
         {
           "id": 152,
@@ -439,7 +415,7 @@
           "land": "World Nature",
           "is_open": true,
           "wait_time": 15,
-          "last_updated": "2026-09-23T20:36:00.000Z"
+          "last_updated": "2026-09-23T23:10:28.000Z"
         },
         {
           "id": 829,
@@ -447,15 +423,15 @@
           "land": "World Showcase",
           "is_open": true,
           "wait_time": 15,
-          "last_updated": "2026-09-23T20:36:00.000Z"
+          "last_updated": "2026-09-23T23:10:28.000Z"
         },
         {
-          "id": 156,
-          "name": "Living with the Land",
+          "id": 16467,
+          "name": "Soarin' Across America",
           "land": "World Nature",
           "is_open": true,
           "wait_time": 10,
-          "last_updated": "2026-09-23T20:36:00.000Z"
+          "last_updated": "2026-09-23T23:10:28.000Z"
         },
         {
           "id": 155,
@@ -463,23 +439,23 @@
           "land": "World Celebration",
           "is_open": true,
           "wait_time": 5,
-          "last_updated": "2026-09-23T20:36:00.000Z"
+          "last_updated": "2026-09-23T23:10:28.000Z"
         },
         {
-          "id": 159,
-          "name": "Spaceship Earth",
-          "land": "World Celebration",
+          "id": 156,
+          "name": "Living with the Land",
+          "land": "World Nature",
           "is_open": true,
           "wait_time": 5,
-          "last_updated": "2026-09-23T20:36:00.000Z"
+          "last_updated": "2026-09-23T23:10:28.000Z"
         },
         {
-          "id": 466,
-          "name": "Gran Fiesta Tour Starring The Three Caballeros",
-          "land": "World Showcase",
+          "id": 153,
+          "name": "The Seas with Nemo & Friends",
+          "land": "World Nature",
           "is_open": true,
           "wait_time": 5,
-          "last_updated": "2026-09-23T20:36:00.000Z"
+          "last_updated": "2026-09-23T23:10:28.000Z"
         },
         {
           "id": 2495,
@@ -487,7 +463,15 @@
           "land": "World Celebration",
           "is_open": true,
           "wait_time": 0,
-          "last_updated": "2026-09-23T20:36:00.000Z"
+          "last_updated": "2026-09-23T23:10:28.000Z"
+        },
+        {
+          "id": 159,
+          "name": "Spaceship Earth",
+          "land": "World Celebration",
+          "is_open": false,
+          "wait_time": 0,
+          "last_updated": "2026-09-23T23:10:28.000Z"
         },
         {
           "id": 10900,
@@ -495,7 +479,7 @@
           "land": "World Discovery",
           "is_open": true,
           "wait_time": 0,
-          "last_updated": "2026-09-23T20:36:00.000Z"
+          "last_updated": "2026-09-23T23:10:28.000Z"
         },
         {
           "id": 7323,
@@ -503,7 +487,7 @@
           "land": "World Nature",
           "is_open": true,
           "wait_time": 0,
-          "last_updated": "2026-09-23T20:36:00.000Z"
+          "last_updated": "2026-09-23T23:10:28.000Z"
         },
         {
           "id": 12387,
@@ -511,7 +495,7 @@
           "land": "World Nature",
           "is_open": true,
           "wait_time": 0,
-          "last_updated": "2026-09-23T20:36:00.000Z"
+          "last_updated": "2026-09-23T23:10:28.000Z"
         },
         {
           "id": 13782,
@@ -519,7 +503,23 @@
           "land": "World Nature",
           "is_open": true,
           "wait_time": 0,
-          "last_updated": "2026-09-23T20:36:00.000Z"
+          "last_updated": "2026-09-23T23:10:28.000Z"
+        },
+        {
+          "id": 466,
+          "name": "Gran Fiesta Tour Starring The Three Caballeros",
+          "land": "World Showcase",
+          "is_open": true,
+          "wait_time": 0,
+          "last_updated": "2026-09-23T23:10:28.000Z"
+        },
+        {
+          "id": 6701,
+          "name": "Meet Anna and Elsa at Royal Sommerhus",
+          "land": "World Showcase",
+          "is_open": false,
+          "wait_time": 0,
+          "last_updated": "2026-09-23T23:10:28.000Z"
         },
         {
           "id": 10915,
@@ -527,40 +527,32 @@
           "land": "World Showcase",
           "is_open": true,
           "wait_time": 0,
-          "last_updated": "2026-09-23T20:36:00.000Z"
+          "last_updated": "2026-09-23T23:10:28.000Z"
         }
       ]
     },
     "hollywood_studios": {
       "name": "Disney's Hollywood Studios",
-      "crowd_score": 4.1,
-      "avg_wait": 28.6,
-      "open_attractions": 20,
-      "down_attractions": 3,
+      "crowd_score": 3.8,
+      "avg_wait": 26.9,
+      "open_attractions": 16,
+      "down_attractions": 7,
       "rides": [
         {
-          "id": 6369,
-          "name": "Star Wars: Rise of the Resistance",
-          "land": "Star Wars: Galaxy's Edge",
-          "is_open": true,
-          "wait_time": 65,
-          "last_updated": "2026-09-23T20:36:10.000Z"
-        },
-        {
-          "id": 5476,
-          "name": "Slinky Dog Dash",
-          "land": "Toy Story Land",
+          "id": 117,
+          "name": "Toy Story Mania!",
+          "land": "Pixar Plaza",
           "is_open": true,
           "wait_time": 45,
-          "last_updated": "2026-09-23T20:36:10.000Z"
+          "last_updated": "2026-09-23T23:10:29.000Z"
         },
         {
-          "id": 16342,
-          "name": "Rock \u2019n\u2019 Roller Coaster Starring The Muppets",
-          "land": "Sunset Boulevard",
+          "id": 6704,
+          "name": "Meet Disney Stars at Red Carpet Dreams",
+          "land": "Commissary Lane",
           "is_open": true,
           "wait_time": 40,
-          "last_updated": "2026-09-23T20:36:10.000Z"
+          "last_updated": "2026-09-23T23:10:29.000Z"
         },
         {
           "id": 6361,
@@ -568,39 +560,23 @@
           "land": "Hollywood Boulevard",
           "is_open": true,
           "wait_time": 35,
-          "last_updated": "2026-09-23T20:36:10.000Z"
+          "last_updated": "2026-09-23T23:10:29.000Z"
         },
         {
-          "id": 5477,
-          "name": "Alien Swirling Saucers",
-          "land": "Toy Story Land",
+          "id": 16342,
+          "name": "Rock \u2019n\u2019 Roller Coaster Starring The Muppets",
+          "land": "Sunset Boulevard",
           "is_open": true,
           "wait_time": 35,
-          "last_updated": "2026-09-23T20:36:10.000Z"
-        },
-        {
-          "id": 6704,
-          "name": "Meet Disney Stars at Red Carpet Dreams",
-          "land": "Commissary Lane",
-          "is_open": true,
-          "wait_time": 25,
-          "last_updated": "2026-09-23T20:36:10.000Z"
-        },
-        {
-          "id": 117,
-          "name": "Toy Story Mania!",
-          "land": "Pixar Plaza",
-          "is_open": true,
-          "wait_time": 25,
-          "last_updated": "2026-09-23T20:36:10.000Z"
+          "last_updated": "2026-09-23T23:10:29.000Z"
         },
         {
           "id": 123,
           "name": "The Twilight Zone\u2122 Tower of Terror",
           "land": "Sunset Boulevard",
           "is_open": true,
-          "wait_time": 20,
-          "last_updated": "2026-09-23T20:36:10.000Z"
+          "wait_time": 25,
+          "last_updated": "2026-09-23T23:10:29.000Z"
         },
         {
           "id": 6368,
@@ -608,15 +584,15 @@
           "land": "Star Wars: Galaxy's Edge",
           "is_open": true,
           "wait_time": 15,
-          "last_updated": "2026-09-23T20:36:10.000Z"
+          "last_updated": "2026-09-23T23:10:29.000Z"
         },
         {
-          "id": 6703,
-          "name": "Meet Olaf at Celebrity Spotlight",
-          "land": "Echo Lake",
+          "id": 5477,
+          "name": "Alien Swirling Saucers",
+          "land": "Toy Story Land",
           "is_open": true,
-          "wait_time": 5,
-          "last_updated": "2026-09-23T20:36:10.000Z"
+          "wait_time": 15,
+          "last_updated": "2026-09-23T23:10:29.000Z"
         },
         {
           "id": 120,
@@ -624,7 +600,7 @@
           "land": "Echo Lake",
           "is_open": true,
           "wait_time": 5,
-          "last_updated": "2026-09-23T20:36:10.000Z"
+          "last_updated": "2026-09-23T23:10:29.000Z"
         },
         {
           "id": 16641,
@@ -632,7 +608,7 @@
           "land": "Animation Courtyard",
           "is_open": true,
           "wait_time": 0,
-          "last_updated": "2026-09-23T20:36:10.000Z"
+          "last_updated": "2026-09-23T23:10:29.000Z"
         },
         {
           "id": 12430,
@@ -640,7 +616,7 @@
           "land": "Animation Courtyard",
           "is_open": false,
           "wait_time": 0,
-          "last_updated": "2026-09-23T20:36:10.000Z"
+          "last_updated": "2026-09-23T23:10:29.000Z"
         },
         {
           "id": 14859,
@@ -648,7 +624,7 @@
           "land": "Animation Courtyard",
           "is_open": true,
           "wait_time": 0,
-          "last_updated": "2026-09-23T20:36:10.000Z"
+          "last_updated": "2026-09-23T23:10:29.000Z"
         },
         {
           "id": 5145,
@@ -656,7 +632,7 @@
           "land": "Animation Courtyard",
           "is_open": true,
           "wait_time": 0,
-          "last_updated": "2026-09-23T20:36:10.000Z"
+          "last_updated": "2026-09-23T23:10:29.000Z"
         },
         {
           "id": 1174,
@@ -664,7 +640,7 @@
           "land": "Echo Lake",
           "is_open": true,
           "wait_time": 0,
-          "last_updated": "2026-09-23T20:36:10.000Z"
+          "last_updated": "2026-09-23T23:10:29.000Z"
         },
         {
           "id": 6702,
@@ -672,7 +648,15 @@
           "land": "Echo Lake",
           "is_open": true,
           "wait_time": 0,
-          "last_updated": "2026-09-23T20:36:10.000Z"
+          "last_updated": "2026-09-23T23:10:29.000Z"
+        },
+        {
+          "id": 6703,
+          "name": "Meet Olaf at Celebrity Spotlight",
+          "land": "Echo Lake",
+          "is_open": false,
+          "wait_time": 0,
+          "last_updated": "2026-09-23T23:10:29.000Z"
         },
         {
           "id": 7333,
@@ -680,7 +664,7 @@
           "land": "Echo Lake",
           "is_open": false,
           "wait_time": 0,
-          "last_updated": "2026-09-23T20:36:10.000Z"
+          "last_updated": "2026-09-23T23:10:29.000Z"
         },
         {
           "id": 12425,
@@ -688,7 +672,7 @@
           "land": "Pixar Plaza",
           "is_open": false,
           "wait_time": 0,
-          "last_updated": "2026-09-23T20:36:10.000Z"
+          "last_updated": "2026-09-23T23:10:29.000Z"
         },
         {
           "id": 10902,
@@ -696,15 +680,23 @@
           "land": "Star Wars: Galaxy's Edge",
           "is_open": true,
           "wait_time": 0,
-          "last_updated": "2026-09-23T20:36:10.000Z"
+          "last_updated": "2026-09-23T23:10:29.000Z"
+        },
+        {
+          "id": 6369,
+          "name": "Star Wars: Rise of the Resistance",
+          "land": "Star Wars: Galaxy's Edge",
+          "is_open": false,
+          "wait_time": 0,
+          "last_updated": "2026-09-23T23:10:29.000Z"
         },
         {
           "id": 14531,
           "name": "Star Wars: Rise of the Resistance Single Rider",
           "land": "Star Wars: Galaxy's Edge",
-          "is_open": true,
+          "is_open": false,
           "wait_time": 0,
-          "last_updated": "2026-09-23T20:36:10.000Z"
+          "last_updated": "2026-09-23T23:10:29.000Z"
         },
         {
           "id": 1176,
@@ -712,7 +704,7 @@
           "land": "Sunset Boulevard",
           "is_open": true,
           "wait_time": 0,
-          "last_updated": "2026-09-23T20:36:10.000Z"
+          "last_updated": "2026-09-23T23:10:29.000Z"
         },
         {
           "id": 16343,
@@ -720,88 +712,48 @@
           "land": "Sunset Boulevard",
           "is_open": true,
           "wait_time": 0,
-          "last_updated": "2026-09-23T20:36:10.000Z"
+          "last_updated": "2026-09-23T23:10:29.000Z"
+        },
+        {
+          "id": 5476,
+          "name": "Slinky Dog Dash",
+          "land": "Toy Story Land",
+          "is_open": false,
+          "wait_time": 0,
+          "last_updated": "2026-09-23T23:10:29.000Z"
         }
       ]
     },
     "animal_kingdom": {
       "name": "Disney's Animal Kingdom",
-      "crowd_score": 1.4,
-      "avg_wait": 10.0,
-      "open_attractions": 17,
-      "down_attractions": 3,
+      "crowd_score": 1.0,
+      "avg_wait": 0,
+      "open_attractions": 4,
+      "down_attractions": 16,
       "rides": [
-        {
-          "id": 116,
-          "name": "Meet Favorite Disney Pals at Adventurers Outpost",
-          "land": "Discovery Island",
-          "is_open": true,
-          "wait_time": 20,
-          "last_updated": "2026-09-23T20:36:17.000Z"
-        },
-        {
-          "id": 4439,
-          "name": "Avatar Flight of Passage",
-          "land": "Pandora - The World of Avatar",
-          "is_open": true,
-          "wait_time": 15,
-          "last_updated": "2026-09-23T20:36:17.000Z"
-        },
-        {
-          "id": 113,
-          "name": "Kilimanjaro Safaris",
-          "land": "Africa",
-          "is_open": true,
-          "wait_time": 10,
-          "last_updated": "2026-09-23T20:36:17.000Z"
-        },
-        {
-          "id": 14943,
-          "name": "Zootopia: Better Zoogether!",
-          "land": "Discovery Island",
-          "is_open": true,
-          "wait_time": 10,
-          "last_updated": "2026-09-23T20:36:17.000Z"
-        },
-        {
-          "id": 4438,
-          "name": "Na'vi River Journey",
-          "land": "Pandora - The World of Avatar",
-          "is_open": true,
-          "wait_time": 10,
-          "last_updated": "2026-09-23T20:36:17.000Z"
-        },
-        {
-          "id": 651,
-          "name": "Gorilla Falls Exploration Trail",
-          "land": "Africa",
-          "is_open": true,
-          "wait_time": 5,
-          "last_updated": "2026-09-23T20:36:17.000Z"
-        },
-        {
-          "id": 110,
-          "name": "Expedition Everest - Legend of the Forbidden Mountain",
-          "land": "Asia",
-          "is_open": true,
-          "wait_time": 5,
-          "last_updated": "2026-09-23T20:36:17.000Z"
-        },
-        {
-          "id": 112,
-          "name": "Kali River Rapids",
-          "land": "Asia",
-          "is_open": true,
-          "wait_time": 5,
-          "last_updated": "2026-09-23T20:36:17.000Z"
-        },
         {
           "id": 657,
           "name": "Festival of the Lion King",
           "land": "Africa",
           "is_open": true,
           "wait_time": 0,
-          "last_updated": "2026-09-23T20:36:17.000Z"
+          "last_updated": "2026-09-23T23:10:40.000Z"
+        },
+        {
+          "id": 651,
+          "name": "Gorilla Falls Exploration Trail",
+          "land": "Africa",
+          "is_open": false,
+          "wait_time": 0,
+          "last_updated": "2026-09-23T23:10:40.000Z"
+        },
+        {
+          "id": 113,
+          "name": "Kilimanjaro Safaris",
+          "land": "Africa",
+          "is_open": false,
+          "wait_time": 0,
+          "last_updated": "2026-09-23T23:10:40.000Z"
         },
         {
           "id": 655,
@@ -809,15 +761,23 @@
           "land": "Africa",
           "is_open": false,
           "wait_time": 0,
-          "last_updated": "2026-09-23T20:36:17.000Z"
+          "last_updated": "2026-09-23T23:10:40.000Z"
+        },
+        {
+          "id": 110,
+          "name": "Expedition Everest - Legend of the Forbidden Mountain",
+          "land": "Asia",
+          "is_open": false,
+          "wait_time": 0,
+          "last_updated": "2026-09-23T23:10:40.000Z"
         },
         {
           "id": 14533,
           "name": "Expedition Everest - Legend of the Forbidden Mountain Single Rider",
           "land": "Asia",
-          "is_open": true,
+          "is_open": false,
           "wait_time": 0,
-          "last_updated": "2026-09-23T20:36:17.000Z"
+          "last_updated": "2026-09-23T23:10:40.000Z"
         },
         {
           "id": 10921,
@@ -825,15 +785,23 @@
           "land": "Asia",
           "is_open": true,
           "wait_time": 0,
-          "last_updated": "2026-09-23T20:36:17.000Z"
+          "last_updated": "2026-09-23T23:10:40.000Z"
+        },
+        {
+          "id": 112,
+          "name": "Kali River Rapids",
+          "land": "Asia",
+          "is_open": false,
+          "wait_time": 0,
+          "last_updated": "2026-09-23T23:10:40.000Z"
         },
         {
           "id": 13806,
           "name": "Animal Care at Conservation Station",
           "land": "Conservation Station",
-          "is_open": true,
+          "is_open": false,
           "wait_time": 0,
-          "last_updated": "2026-09-23T20:36:17.000Z"
+          "last_updated": "2026-09-23T23:10:40.000Z"
         },
         {
           "id": 17661,
@@ -841,7 +809,7 @@
           "land": "Conservation Station",
           "is_open": false,
           "wait_time": 0,
-          "last_updated": "2026-09-23T20:36:17.000Z"
+          "last_updated": "2026-09-23T23:10:40.000Z"
         },
         {
           "id": 10920,
@@ -849,15 +817,23 @@
           "land": "Dinoland U.S.A",
           "is_open": true,
           "wait_time": 0,
-          "last_updated": "2026-09-23T20:36:17.000Z"
+          "last_updated": "2026-09-23T23:10:40.000Z"
         },
         {
           "id": 13811,
           "name": "Discovery Island Trails",
           "land": "Discovery Island",
-          "is_open": true,
+          "is_open": false,
           "wait_time": 0,
-          "last_updated": "2026-09-23T20:36:17.000Z"
+          "last_updated": "2026-09-23T23:10:40.000Z"
+        },
+        {
+          "id": 116,
+          "name": "Meet Favorite Disney Pals at Adventurers Outpost",
+          "land": "Discovery Island",
+          "is_open": false,
+          "wait_time": 0,
+          "last_updated": "2026-09-23T23:10:40.000Z"
         },
         {
           "id": 12451,
@@ -865,7 +841,7 @@
           "land": "Discovery Island",
           "is_open": false,
           "wait_time": 0,
-          "last_updated": "2026-09-23T20:36:17.000Z"
+          "last_updated": "2026-09-23T23:10:40.000Z"
         },
         {
           "id": 13751,
@@ -873,23 +849,47 @@
           "land": "Discovery Island",
           "is_open": true,
           "wait_time": 0,
-          "last_updated": "2026-09-23T20:36:17.000Z"
+          "last_updated": "2026-09-23T23:10:40.000Z"
+        },
+        {
+          "id": 14943,
+          "name": "Zootopia: Better Zoogether!",
+          "land": "Discovery Island",
+          "is_open": false,
+          "wait_time": 0,
+          "last_updated": "2026-09-23T23:10:40.000Z"
+        },
+        {
+          "id": 4439,
+          "name": "Avatar Flight of Passage",
+          "land": "Pandora - The World of Avatar",
+          "is_open": false,
+          "wait_time": 0,
+          "last_updated": "2026-09-23T23:10:40.000Z"
+        },
+        {
+          "id": 4438,
+          "name": "Na'vi River Journey",
+          "land": "Pandora - The World of Avatar",
+          "is_open": false,
+          "wait_time": 0,
+          "last_updated": "2026-09-23T23:10:40.000Z"
         },
         {
           "id": 13812,
           "name": "The Oasis Exhibits",
           "land": "The Oasis",
-          "is_open": true,
+          "is_open": false,
           "wait_time": 0,
-          "last_updated": "2026-09-23T20:36:17.000Z"
+          "last_updated": "2026-09-23T23:10:40.000Z"
         },
         {
           "id": 13808,
           "name": "Wilderness Explorers",
           "land": "The Oasis",
-          "is_open": true,
+          "is_open": false,
           "wait_time": 0,
-          "last_updated": "2026-09-23T20:36:17.000Z"
+          "last_updated": "2026-09-23T23:10:40.000Z"
         }
       ]
     }

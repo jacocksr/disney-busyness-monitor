@@ -135,7 +135,6 @@
   .stale-banner.visible { display: flex; }
   .stale-banner .stale-icon { font-size: 1.1rem; flex-shrink: 0; line-height: 1.4; }
   .stale-banner strong { color: #ffe4a3; }
-
   .section-label { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; margin: 0 0 1.1rem 0.2rem; color: var(--text); font-family: 'Baloo 2', sans-serif; font-size: 1.3rem; font-weight: 700; flex-wrap: wrap; }
   .section-label-left { display: flex; align-items: center; gap: 0.6rem; }
   .section-label .emoji { font-size: 1.4rem; }
@@ -182,7 +181,8 @@
   .card-icon { font-size: 1.6rem; margin-bottom: 0.4rem; display: block; }
 
   .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.9rem; gap: 0.5rem; }
-  .card-header h3 { font-family: 'Baloo 2', sans-serif; font-size: 1.2rem; font-weight: 700; color: #fff; }
+  .card-header h3 { font-family: 'Baloo 2', sans-serif; font-size: 1.2rem; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 0.45rem; }
+  .park-name-emoji { width: 24px; height: 24px; object-fit: contain; flex-shrink: 0; display: inline-block; }
 
   .score-badge { font-weight: 800; font-size: 1.05rem; padding: 0.3rem 0.7rem; border-radius: 10px; color: #12122a; text-align: center; white-space: nowrap; }
   .score-low { background: var(--green); }
@@ -224,7 +224,6 @@
     padding: 0.4rem 0.6rem; border-radius: 8px; display: flex; align-items: center; gap: 0.4rem; font-weight: 600;
   }
   .best-time-strip.muted { color: var(--text-muted); background: rgba(255,255,255,0.05); border-color: var(--card-border); }
-
   .heatmap-panel { margin-top: 2rem; margin-bottom: 2rem; }
   .heatmap-tabs { display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
   .heatmap-tab {
@@ -304,7 +303,6 @@
   .insights-panel { margin-top: 1.1rem; font-size: 0.88rem; color: var(--text-muted); line-height: 1.6; }
   .insight-item { margin-bottom: 0.8rem; padding: 0.7rem 0.9rem; border-left: 3px solid var(--gold); background: rgba(255,209,102,0.05); border-radius: 0 10px 10px 0; }
   .insight-item strong { color: var(--gold); }
-
   .modal-overlay {
     display: none; position: fixed; inset: 0; background: rgba(10,20,40,0.75); backdrop-filter: blur(3px);
     z-index: 200; align-items: center; justify-content: center; padding: 1.5rem;
@@ -422,7 +420,6 @@
       </div>
     </div>
   </div>
-
   <div class="panel heatmap-panel">
     <div class="panel-header">
       <h2 id="heatmapTitle">🔥 Ride Wait Heatmap</h2>
@@ -486,7 +483,6 @@
     </div>
   </div>
 </div>
-
 <script>
   const fallbackData = {
     updated_at: new Date().toISOString(),
@@ -559,6 +555,13 @@
   const STALE_THRESHOLD_MINUTES = 20;
   const MIN_SAMPLES_FOR_RELIABLE = 15;
   const EXCLUDED_NAME_PATTERNS = [/single rider/i, /lightning lane/i, /individual lightning lane/i];
+
+  const PARK_EMOJI_IMAGES = {
+    magic_kingdom: "images/MKEmoji_1_1023x1023.png",
+    epcot: "images/EPCOTEmoji_1_1023x1023.png",
+    hollywood_studios: "images/HSEmoji_1_1023x1023.png",
+    animal_kingdom: "images/AKEmoji_1_1023x1022.png"
+  };
 
   let activeParkKey = "magic_kingdom";
   let parkData = fallbackData;
@@ -763,7 +766,6 @@
         ? "&ndash;"
         : `${stats.longest.wait_time}m`;
       const longestName = (!isClosed && stats.longest) ? stats.longest.name : "";
-
       const card = document.createElement("div");
       card.className = `park-card ${key === activeParkKey ? 'active' : ''} ${isClosed ? 'closed' : ''}`;
       card.style.setProperty('--park-color', p.color || 'linear-gradient(90deg, #ffd166, #ff6fb5)');
@@ -773,10 +775,12 @@
         renderDetails();
         renderHeatmap();
       };
+      const parkEmojiSrc = PARK_EMOJI_IMAGES[key] || "";
+      const parkEmojiImg = parkEmojiSrc ? `<img src="${parkEmojiSrc}" alt="${p.name} emoji" class="park-name-emoji" />` : '';
       card.innerHTML = `
         <span class="card-icon">${p.icon || '🎡'}</span>
         <div class="card-header">
-          <h3>${p.name}</h3>
+          <h3>${parkEmojiImg}${p.name}</h3>
           ${getScoreBadge(p.crowd_score, phaseInfo)}
         </div>
         ${getStatusBanner(phaseInfo)}
@@ -931,7 +935,6 @@
     const points = getTodayPointsForRide(ride.id);
     const noHistoryEl = document.getElementById("rideModalNoHistory");
     const canvasEl = document.getElementById("rideModalSparkline");
-
     if (points.length < 2) {
       document.getElementById("rideModalAvg").textContent = "–";
       document.getElementById("rideModalPeak").textContent = "–";
@@ -1103,7 +1106,6 @@
     const minSamples = historicalSummary.min_samples_for_reliable || MIN_SAMPLES_FOR_RELIABLE;
     let anyReliable = false;
     let maxWait = 0;
-
     const rideRows = visibleRides.map(ride => {
       const entry = historicalSummary.rides[String(ride.id)];
       const cells = weekdayKeys.map(wd => {

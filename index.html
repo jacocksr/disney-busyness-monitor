@@ -86,16 +86,16 @@
   .hero p.tagline { color: var(--text-muted); font-size: 1.05rem; max-width: 560px; margin: 0 auto; }
 
   .hero-park-strip {
-    display: flex; align-items: center; justify-content: center; gap: 1.4rem;
-    margin: 1.6rem auto 0; flex-wrap: wrap;
+    display: flex; align-items: center; justify-content: center; gap: 1.1rem;
+    margin: 1.3rem auto 0; flex-wrap: wrap;
   }
-  .hero-park-strip button.hero-park-btn {
+  .park-select-btn {
     background: none; border: none; padding: 6px; cursor: pointer;
     border-radius: 16px;
     transition: box-shadow 0.2s ease, background 0.2s ease;
   }
-  .hero-park-strip button.hero-park-btn:hover { background: rgba(255,255,255,0.06); }
-  .hero-park-strip button.hero-park-btn.active-park {
+  .park-select-btn:hover { background: rgba(255,255,255,0.06); }
+  .park-select-btn.active-park {
     box-shadow: 0 0 0 2px var(--gold), 0 0 18px rgba(255,209,102,0.35);
     background: rgba(255,209,102,0.08);
   }
@@ -105,14 +105,26 @@
     transition: transform 0.2s ease;
     display: block;
   }
-  .hero-park-strip button.hero-park-btn:hover img { transform: translateY(-4px) scale(1.06); }
-  .hero-park-strip img.emoji-pulse { animation: emojiPulse 0.4s ease; }
+  .park-select-btn:hover img { transform: translateY(-4px) scale(1.06); }
+  img.emoji-pulse { animation: emojiPulse 0.4s ease; }
 
   @keyframes emojiPulse {
     0% { transform: scale(1); }
     35% { transform: scale(1.35); }
     100% { transform: scale(1); }
   }
+
+  .panel-park-strip {
+    display: flex; align-items: center; justify-content: center; gap: 1rem;
+    margin-bottom: 1.1rem; flex-wrap: wrap;
+  }
+  .panel-park-strip img {
+    width: 68px; height: 68px; object-fit: contain;
+    filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3));
+    transition: transform 0.2s ease;
+    display: block;
+  }
+  .panel-park-strip .park-select-btn:hover img { transform: translateY(-3px) scale(1.06); }
 
   .last-updated-wrap { position: relative; display: inline-block; margin-top: 1.25rem; }
 
@@ -125,12 +137,14 @@
   }
   .last-updated:hover { border-color: var(--gold); }
   .last-updated.is-stale { border-color: rgba(255,200,87,0.4); color: var(--yellow); }
+  .last-updated.is-refreshing { border-color: rgba(76,214,192,0.5); }
 
   .last-updated .dot {
     width: 8px; height: 8px; border-radius: 50%;
     background: var(--green); box-shadow: 0 0 8px var(--green); animation: pulse 2s infinite;
   }
   .last-updated.is-stale .dot { background: var(--yellow); box-shadow: 0 0 8px var(--yellow); }
+  .last-updated.is-refreshing .dot { background: var(--teal); box-shadow: 0 0 8px var(--teal); animation: pulse 0.8s infinite; }
 
   .last-updated .tz-caret { font-size: 0.7rem; opacity: 0.7; }
 
@@ -339,7 +353,7 @@
   .insight-item { margin-bottom: 0.8rem; padding: 0.7rem 0.9rem; border-left: 3px solid var(--gold); background: rgba(255,209,102,0.05); border-radius: 0 10px 10px 0; }
   .insight-item strong { color: var(--gold); }
 
-  .chart-wrap { position: relative; height: 130px; width: 100%; }
+  .chart-wrap { position: relative; height: 195px; width: 100%; }
   .chart-wrap canvas { position: absolute; inset: 0; }
 
   .modal-overlay {
@@ -381,6 +395,7 @@
     body { padding: 1rem; }
     .hero { padding: 1.75rem 0.5rem 1.5rem; }
     .hero-park-strip img { width: 80px; height: 80px; }
+    .panel-park-strip img { width: 48px; height: 48px; }
     .info-popover { left: auto; right: 0; }
     .ride-modal-stats { grid-template-columns: 1fr; }
   }
@@ -393,16 +408,16 @@
     <h1>Disney World Busyness Monitor</h1>
     <p class="tagline">Real-time wait times and historical crowd trends across all four Walt Disney World parks — plan your perfect day before you go.</p>
     <div class="hero-park-strip" id="heroParkStrip">
-      <button type="button" class="hero-park-btn" data-park-key="magic_kingdom" onclick="selectParkFromHero('magic_kingdom', this)">
+      <button type="button" class="park-select-btn" data-park-key="magic_kingdom" onclick="selectPark('magic_kingdom', this)">
         <img src="images/MKEmoji_1_1023x1023.png" alt="Magic Kingdom emoji" />
       </button>
-      <button type="button" class="hero-park-btn" data-park-key="epcot" onclick="selectParkFromHero('epcot', this)">
+      <button type="button" class="park-select-btn" data-park-key="epcot" onclick="selectPark('epcot', this)">
         <img src="images/EPCOTEmoji_1_1023x1023.png" alt="EPCOT emoji" />
       </button>
-      <button type="button" class="hero-park-btn" data-park-key="hollywood_studios" onclick="selectParkFromHero('hollywood_studios', this)">
+      <button type="button" class="park-select-btn" data-park-key="hollywood_studios" onclick="selectPark('hollywood_studios', this)">
         <img src="images/HSEmoji_1_1023x1023.png" alt="Hollywood Studios emoji" />
       </button>
-      <button type="button" class="hero-park-btn" data-park-key="animal_kingdom" onclick="selectParkFromHero('animal_kingdom', this)">
+      <button type="button" class="park-select-btn" data-park-key="animal_kingdom" onclick="selectPark('animal_kingdom', this)">
         <img src="images/AKEmoji_1_1023x1022.png" alt="Animal Kingdom emoji" />
       </button>
     </div>
@@ -445,6 +460,7 @@
         <h2 id="selectedParkTitle">Attraction Wait Times</h2>
         <input type="text" id="rideSearch" placeholder="🔍 Filter rides or lands..." />
       </div>
+      <div class="panel-park-strip" id="ridesPanelParkStrip"></div>
       <div class="table-container">
         <table id="ridesTable">
           <thead>
@@ -463,6 +479,7 @@
       <div class="panel-header">
         <h2>📈 Busyness Curve vs. Average</h2>
       </div>
+      <div class="panel-park-strip" id="chartPanelParkStrip"></div>
       <div class="chart-wrap">
         <canvas id="trendChart"></canvas>
       </div>
@@ -484,6 +501,7 @@
         <div class="heatmap-tab" data-mode="weekday" onclick="setHeatmapMode('weekday', this)">By Day of Week</div>
       </div>
     </div>
+    <div class="panel-park-strip" id="heatmapPanelParkStrip"></div>
     <div class="heatmap-caveat" id="heatmapCaveat"></div>
     <div class="heatmap-scroll">
       <table class="heatmap-table" id="heatmapTable">
@@ -611,6 +629,8 @@
   const STALE_THRESHOLD_MINUTES = 20;
   const MIN_SAMPLES_FOR_RELIABLE = 15;
   const EXCLUDED_NAME_PATTERNS = [/single rider/i, /lightning lane/i, /individual lightning lane/i];
+  const DATA_REFRESH_INTERVAL_MS = 5 * 60 * 1000;
+  const TIMESTAMP_TICK_INTERVAL_MS = 30 * 1000;
 
   const PARK_EMOJI_IMAGES = {
     magic_kingdom: "images/MKEmoji_1_1023x1023.png",
@@ -618,6 +638,8 @@
     hollywood_studios: "images/HSEmoji_1_1023x1023.png",
     animal_kingdom: "images/AKEmoji_1_1023x1022.png"
   };
+
+  const PARK_ORDER = ["magic_kingdom", "epcot", "hollywood_studios", "animal_kingdom"];
 
   let activeParkKey = "magic_kingdom";
   let parkData = fallbackData;
@@ -628,6 +650,7 @@
   let heatmapMode = "hour";
   let sortField = "wait_time";
   let sortDir = "desc";
+  let isRefreshing = false;
 
   const TIMEZONES = [
     { id: "America/New_York", label: "Eastern (Park Time)" },
@@ -694,7 +717,7 @@
 
   function updateTimestamp() {
     const text = formatUpdatedTime(parkData.updated_at);
-    document.getElementById("lastUpdatedText").textContent = `Updated: ${text}`;
+    document.getElementById("lastUpdatedText").textContent = isRefreshing ? "Updating..." : `Updated: ${text}`;
 
     const ageMinutes = getDataAgeMinutes();
     const isStale = ageMinutes > STALE_THRESHOLD_MINUTES;
@@ -702,13 +725,14 @@
     const banner = document.getElementById("staleBanner");
     const bannerText = document.getElementById("staleBannerText");
 
-    badge.classList.toggle("is-stale", isStale);
+    badge.classList.toggle("is-stale", isStale && !isRefreshing);
+    badge.classList.toggle("is-refreshing", isRefreshing);
 
     if (isStale) {
       const hours = Math.floor(ageMinutes / 60);
       const mins = ageMinutes % 60;
       const ageLabel = hours > 0 ? `${hours}h ${mins}m` : `${mins} min`;
-      bannerText.innerHTML = `<strong>Data may be out of date</strong> &mdash; last refreshed ${ageLabel} ago. Wait times shown below could differ from the park right now. We refresh roughly every 10 minutes; this page will update automatically once new data arrives.`;
+      bannerText.innerHTML = `<strong>Data may be out of date</strong> &mdash; last refreshed ${ageLabel} ago. Wait times shown below could differ from the park right now. We refresh roughly every 5 minutes; this page will update automatically once new data arrives.`;
       banner.classList.add("visible");
     } else {
       banner.classList.remove("visible");
@@ -754,28 +778,80 @@
     return { avgWait, longest };
   }
 
-  async function loadData() {
-    try {
-      const res = await fetch("data/live_wait_times.json");
-      if (res.ok) parkData = await res.json();
-    } catch (e) {
-      console.log("Using prototype fallback snapshot.");
-    }
-    try {
-      const res2 = await fetch("data/history_24h.json");
-      if (res2.ok) history24h = await res2.json();
-    } catch (e) { console.log("No 24h history available yet."); }
-    try {
-      const res3 = await fetch("data/historical_summary.json");
-      if (res3.ok) historicalSummary = await res3.json();
-    } catch (e) { console.log("No historical summary available yet."); }
-
-    renderTzOptions();
-    updateTimestamp();
+  function renderAll() {
+    renderPanelParkStrips();
     renderCards();
     renderDetails();
     renderHeatmap();
-    updateHeroActiveState();
+    updateAllActiveStates();
+  }
+
+  async function fetchJsonWithCacheBust(path) {
+    const bustedUrl = `${path}?t=${Date.now()}`;
+    const res = await fetch(bustedUrl, { cache: "no-store" });
+    if (!res.ok) throw new Error(`Failed to fetch ${path}: ${res.status}`);
+    return res.json();
+  }
+
+  async function fetchLatestData({ isInitialLoad = false } = {}) {
+    if (isRefreshing) return;
+    isRefreshing = true;
+    if (!isInitialLoad) updateTimestamp();
+
+    let nextParkData = null;
+    let nextHistory24h = null;
+    let nextHistoricalSummary = null;
+    let fetchSucceeded = false;
+
+    try {
+      nextParkData = await fetchJsonWithCacheBust("data/live_wait_times.json");
+      fetchSucceeded = true;
+    } catch (e) {
+      console.log("Live data fetch failed; keeping previous snapshot.", e);
+    }
+
+    try {
+      nextHistory24h = await fetchJsonWithCacheBust("data/history_24h.json");
+    } catch (e) {
+      console.log("No 24h history available yet.");
+    }
+
+    try {
+      nextHistoricalSummary = await fetchJsonWithCacheBust("data/historical_summary.json");
+    } catch (e) {
+      console.log("No historical summary available yet.");
+    }
+
+    if (fetchSucceeded && nextParkData) {
+      const incomingTs = new Date(nextParkData.updated_at).getTime();
+      const currentTs = new Date(parkData.updated_at).getTime();
+      const incomingIsNewer = isNaN(currentTs) || (!isNaN(incomingTs) && incomingTs >= currentTs);
+
+      if (isInitialLoad || incomingIsNewer) {
+        parkData = nextParkData;
+        if (nextHistory24h) history24h = nextHistory24h;
+        if (nextHistoricalSummary) historicalSummary = nextHistoricalSummary;
+        renderAll();
+      } else {
+        console.log("Fetched data was not newer than current snapshot; ignoring.");
+      }
+    }
+
+    isRefreshing = false;
+    updateTimestamp();
+  }
+
+  async function loadData() {
+    renderTzOptions();
+
+    renderAll();
+    updateTimestamp();
+
+    await fetchLatestData({ isInitialLoad: true });
+    updateTimestamp();
+
+    setInterval(() => { fetchLatestData({ isInitialLoad: false }); }, DATA_REFRESH_INTERVAL_MS);
+    setInterval(() => { updateTimestamp(); }, TIMESTAMP_TICK_INTERVAL_MS);
   }
 
   function getScoreBadge(score, phaseInfo) {
@@ -809,8 +885,8 @@
     return "Peak crowds — rope-drop or use Lightning Lane.";
   }
 
-  function updateHeroActiveState() {
-    document.querySelectorAll(".hero-park-btn").forEach(btn => {
+  function updateAllActiveStates() {
+    document.querySelectorAll(".park-select-btn").forEach(btn => {
       btn.classList.toggle("active-park", btn.dataset.parkKey === activeParkKey);
     });
   }
@@ -825,20 +901,38 @@
     setTimeout(() => card.classList.remove("just-clicked"), 350);
   }
 
-  function selectParkFromHero(key, btnEl) {
+  function pulseIconsForKey(key) {
+    document.querySelectorAll(`.park-select-btn[data-park-key="${key}"] img`).forEach(img => {
+      img.classList.remove("emoji-pulse");
+      void img.offsetWidth;
+      img.classList.add("emoji-pulse");
+    });
+  }
+
+  function buildParkStripHtml() {
+    return PARK_ORDER.map(key => {
+      const p = parkData.parks[key];
+      if (!p) return '';
+      const src = PARK_EMOJI_IMAGES[key] || "";
+      return `<button type="button" class="park-select-btn" data-park-key="${key}" onclick="selectPark('${key}', this)">
+        <img src="${src}" alt="${p.name} emoji" />
+      </button>`;
+    }).join('');
+  }
+
+  function renderPanelParkStrips() {
+    document.getElementById("ridesPanelParkStrip").innerHTML = buildParkStripHtml();
+    document.getElementById("chartPanelParkStrip").innerHTML = buildParkStripHtml();
+    document.getElementById("heatmapPanelParkStrip").innerHTML = buildParkStripHtml();
+  }
+
+  function selectPark(key) {
     activeParkKey = key;
     renderCards();
     renderDetails();
     renderHeatmap();
-    updateHeroActiveState();
-
-    const img = btnEl.querySelector("img");
-    if (img) {
-      img.classList.remove("emoji-pulse");
-      void img.offsetWidth;
-      img.classList.add("emoji-pulse");
-    }
-
+    updateAllActiveStates();
+    pulseIconsForKey(key);
     pulseCardForKey(key);
   }
 
@@ -860,14 +954,7 @@
       card.className = `park-card ${key === activeParkKey ? 'active' : ''} ${isClosed ? 'closed' : ''}`;
       card.dataset.parkKey = key;
       card.style.setProperty('--park-color', p.color || 'linear-gradient(90deg, #ffd166, #ff6fb5)');
-      card.onclick = () => {
-        activeParkKey = key;
-        renderCards();
-        renderDetails();
-        renderHeatmap();
-        updateHeroActiveState();
-        pulseCardForKey(key);
-      };
+      card.onclick = () => selectPark(key);
       const parkEmojiSrc = PARK_EMOJI_IMAGES[key] || "";
       const parkEmojiImg = parkEmojiSrc ? `<img src="${parkEmojiSrc}" alt="${p.name} emoji" class="park-name-emoji" />` : '';
       card.innerHTML = `
@@ -982,7 +1069,7 @@
 
     if (chartInstance) chartInstance.destroy();
 
-    const gradient = ctx.createLinearGradient(0, 0, 0, 130);
+    const gradient = ctx.createLinearGradient(0, 0, 0, 195);
     gradient.addColorStop(0, 'rgba(255, 209, 102, 0.32)');
     gradient.addColorStop(1, 'rgba(255, 209, 102, 0.02)');
 
@@ -1273,7 +1360,6 @@
   document.getElementById("rideSearch").addEventListener("input", renderDetails);
   window.addEventListener("DOMContentLoaded", loadData);
   document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeRideModal(); });
-  setInterval(() => { updateTimestamp(); renderCards(); if (parkData.parks[activeParkKey]) { renderDetails(); renderHeatmap(); } }, 30000);
 </script>
 </body>
 </html>

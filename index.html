@@ -15,6 +15,7 @@
     --card-bg: rgba(255,255,255,0.055);
     --card-bg-solid: #17324f;
     --header-bg-solid: #0f2545;
+    --header-bg-hover: #1b3d63;
     --card-border: rgba(255,255,255,0.12);
     --gold: #ffd166;
     --gold-deep: #f4a300;
@@ -88,12 +89,30 @@
     display: flex; align-items: center; justify-content: center; gap: 1.4rem;
     margin: 1.6rem auto 0; flex-wrap: wrap;
   }
+  .hero-park-strip button.hero-park-btn {
+    background: none; border: none; padding: 6px; cursor: pointer;
+    border-radius: 16px;
+    transition: box-shadow 0.2s ease, background 0.2s ease;
+  }
+  .hero-park-strip button.hero-park-btn:hover { background: rgba(255,255,255,0.06); }
+  .hero-park-strip button.hero-park-btn.active-park {
+    box-shadow: 0 0 0 2px var(--gold), 0 0 18px rgba(255,209,102,0.35);
+    background: rgba(255,209,102,0.08);
+  }
   .hero-park-strip img {
-    width: 128px; height: 128px; object-fit: contain;
+    width: 68px; height: 68px; object-fit: contain;
     filter: drop-shadow(0 6px 14px rgba(0,0,0,0.35));
     transition: transform 0.2s ease;
+    display: block;
   }
-  .hero-park-strip img:hover { transform: translateY(-4px) scale(1.06); }
+  .hero-park-strip button.hero-park-btn:hover img { transform: translateY(-4px) scale(1.06); }
+  .hero-park-strip img.emoji-pulse { animation: emojiPulse 0.4s ease; }
+
+  @keyframes emojiPulse {
+    0% { transform: scale(1); }
+    35% { transform: scale(1.35); }
+    100% { transform: scale(1); }
+  }
 
   .last-updated-wrap { position: relative; display: inline-block; margin-top: 1.25rem; }
 
@@ -276,8 +295,7 @@
   .heatmap-legend-gradient { display: flex; height: 12px; width: 140px; border-radius: 6px; overflow: hidden; }
   .heatmap-legend-gradient span { flex: 1; }
 
-  .content-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 1.5rem; margin-bottom: 2rem; }
-  @media (max-width: 900px) { .content-grid { grid-template-columns: 1fr; } }
+  .content-grid { display: flex; flex-direction: column; gap: 1.5rem; margin-bottom: 2rem; }
 
   .panel { background: var(--card-bg); backdrop-filter: blur(10px); border: 1px solid var(--card-border); border-radius: 18px; padding: 1.5rem; }
   .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.1rem; flex-wrap: wrap; gap: 0.6rem; }
@@ -297,7 +315,7 @@
   table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.88rem; }
   th { background: var(--header-bg-solid); padding: 0.7rem 0.85rem; position: sticky; top: 0; color: var(--gold); font-weight: 700; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; box-shadow: 0 1px 0 rgba(255,255,255,0.12); z-index: 2; }
   th.sortable { cursor: pointer; user-select: none; transition: color 0.15s, background 0.15s; }
-  th.sortable:hover { color: #fff; background: rgba(255,255,255,0.06); }
+  th.sortable:hover { color: #fff; background: var(--header-bg-hover); }
   th.sortable .sort-arrow { display: inline-block; margin-left: 0.3rem; font-size: 0.7rem; opacity: 0.4; transition: opacity 0.15s; }
   th.sortable.sort-active .sort-arrow { opacity: 1; color: var(--gold); }
   th:first-child { border-radius: 10px 0 0 0; }
@@ -362,11 +380,19 @@
     <div class="hero-badge">✨ Live Crowd Intelligence</div>
     <h1>Disney World Busyness Monitor</h1>
     <p class="tagline">Real-time wait times and historical crowd trends across all four Walt Disney World parks — plan your perfect day before you go.</p>
-    <div class="hero-park-strip">
-      <img src="images/MKEmoji_1_1023x1023.png" alt="Magic Kingdom emoji" />
-      <img src="images/EPCOTEmoji_1_1023x1023.png" alt="EPCOT emoji" />
-      <img src="images/HSEmoji_1_1023x1023.png" alt="Hollywood Studios emoji" />
-      <img src="images/AKEmoji_1_1023x1022.png" alt="Animal Kingdom emoji" />
+    <div class="hero-park-strip" id="heroParkStrip">
+      <button type="button" class="hero-park-btn" data-park-key="magic_kingdom" onclick="selectParkFromHero('magic_kingdom', this)">
+        <img src="images/MKEmoji_1_1023x1023.png" alt="Magic Kingdom emoji" />
+      </button>
+      <button type="button" class="hero-park-btn" data-park-key="epcot" onclick="selectParkFromHero('epcot', this)">
+        <img src="images/EPCOTEmoji_1_1023x1023.png" alt="EPCOT emoji" />
+      </button>
+      <button type="button" class="hero-park-btn" data-park-key="hollywood_studios" onclick="selectParkFromHero('hollywood_studios', this)">
+        <img src="images/HSEmoji_1_1023x1023.png" alt="Hollywood Studios emoji" />
+      </button>
+      <button type="button" class="hero-park-btn" data-park-key="animal_kingdom" onclick="selectParkFromHero('animal_kingdom', this)">
+        <img src="images/AKEmoji_1_1023x1022.png" alt="Animal Kingdom emoji" />
+      </button>
     </div>
     <div class="last-updated-wrap">
       <div class="last-updated" id="lastUpdated" onclick="toggleTzDropdown(event)">
@@ -402,7 +428,7 @@
   <div class="park-grid" id="parkGrid"></div>
 
   <div class="content-grid">
-    <div class="panel">
+    <div class="panel" id="ridesPanel">
       <div class="panel-header">
         <h2 id="selectedParkTitle">Attraction Wait Times</h2>
         <input type="text" id="rideSearch" placeholder="🔍 Filter rides or lands..." />
@@ -735,6 +761,7 @@
     renderCards();
     renderDetails();
     renderHeatmap();
+    updateHeroActiveState();
   }
 
   function getScoreBadge(score, phaseInfo) {
@@ -768,6 +795,30 @@
     return "Peak crowds — rope-drop or use Lightning Lane.";
   }
 
+  function updateHeroActiveState() {
+    document.querySelectorAll(".hero-park-btn").forEach(btn => {
+      btn.classList.toggle("active-park", btn.dataset.parkKey === activeParkKey);
+    });
+  }
+
+  function selectParkFromHero(key, btnEl) {
+    activeParkKey = key;
+    renderCards();
+    renderDetails();
+    renderHeatmap();
+    updateHeroActiveState();
+
+    const img = btnEl.querySelector("img");
+    if (img) {
+      img.classList.remove("emoji-pulse");
+      void img.offsetWidth;
+      img.classList.add("emoji-pulse");
+    }
+
+    const ridesPanel = document.getElementById("ridesPanel");
+    if (ridesPanel) ridesPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
   function renderCards() {
     const grid = document.getElementById("parkGrid");
     grid.innerHTML = "";
@@ -790,6 +841,7 @@
         renderCards();
         renderDetails();
         renderHeatmap();
+        updateHeroActiveState();
       };
       const parkEmojiSrc = PARK_EMOJI_IMAGES[key] || "";
       const parkEmojiImg = parkEmojiSrc ? `<img src="${parkEmojiSrc}" alt="${p.name} emoji" class="park-name-emoji" />` : '';

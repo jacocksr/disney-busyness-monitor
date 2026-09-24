@@ -392,13 +392,24 @@
   footer .heart { color: var(--pink); }
 
   @media (max-width: 600px) {
-    body { padding: 1rem; }
-    .hero { padding: 1.75rem 0.5rem 1.5rem; }
-    .hero-park-strip img { width: 80px; height: 80px; }
-    .panel-park-strip img { width: 48px; height: 48px; }
-    .info-popover { left: auto; right: 0; }
-    .ride-modal-stats { grid-template-columns: 1fr; }
+  body { padding: 1rem; }
+  .hero { padding: 1.75rem 0.5rem 1.5rem; }
+
+  .hero-park-strip {
+    gap: 0.5rem;               /* was 1.1rem/1.4rem — tightened to prevent overflow */
   }
+  .hero-park-strip .park-select-btn {
+    padding: 4px;               /* was 6px — trims a few px per icon */
+  }
+  .hero-park-strip img {
+    width: 56px;                /* was 80px — this is the actual fix */
+    height: 56px;
+  }
+
+  .panel-park-strip img { width: 48px; height: 48px; }
+  .info-popover { left: auto; right: 0; }
+  .ride-modal-stats { grid-template-columns: 1fr; }
+}
 </style>
 </head>
 <body>

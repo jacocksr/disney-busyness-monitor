@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-09-24T15:38:26.943194+00:00",
+  "updated_at": "2026-09-24T16:06:03.655286+00:00",
   "min_samples_for_reliable": 15,
   "rides": {
     "134": {
@@ -49,6 +49,10 @@
         "thu_15": {
           "avg_wait": 27.5,
           "samples": 2
+        },
+        "thu_16": {
+          "avg_wait": 25.0,
+          "samples": 1
         }
       }
     },
@@ -103,6 +107,10 @@
         "thu_15": {
           "avg_wait": 10.0,
           "samples": 2
+        },
+        "thu_16": {
+          "avg_wait": 20.0,
+          "samples": 1
         }
       }
     },
@@ -157,6 +165,10 @@
         "thu_15": {
           "avg_wait": 5.0,
           "samples": 2
+        },
+        "thu_16": {
+          "avg_wait": 5.0,
+          "samples": 1
         }
       }
     },
@@ -211,6 +223,10 @@
         "thu_15": {
           "avg_wait": 12.5,
           "samples": 2
+        },
+        "thu_16": {
+          "avg_wait": 5.0,
+          "samples": 1
         }
       }
     },
@@ -257,6 +273,10 @@
         "thu_15": {
           "avg_wait": 10.0,
           "samples": 2
+        },
+        "thu_16": {
+          "avg_wait": 10.0,
+          "samples": 1
         }
       }
     },
@@ -315,6 +335,10 @@
         "thu_15": {
           "avg_wait": 5.0,
           "samples": 2
+        },
+        "thu_16": {
+          "avg_wait": 5.0,
+          "samples": 1
         }
       }
     },
@@ -373,6 +397,10 @@
         "thu_15": {
           "avg_wait": 5.0,
           "samples": 2
+        },
+        "thu_16": {
+          "avg_wait": 5.0,
+          "samples": 1
         }
       }
     },
@@ -415,6 +443,10 @@
         "thu_15": {
           "avg_wait": 12.5,
           "samples": 2
+        },
+        "thu_16": {
+          "avg_wait": 20.0,
+          "samples": 1
         }
       }
     },
@@ -473,6 +505,10 @@
         "thu_15": {
           "avg_wait": 5.0,
           "samples": 2
+        },
+        "thu_16": {
+          "avg_wait": 5.0,
+          "samples": 1
         }
       }
     },
@@ -511,6 +547,10 @@
         "thu_15": {
           "avg_wait": 15.0,
           "samples": 2
+        },
+        "thu_16": {
+          "avg_wait": 15.0,
+          "samples": 1
         }
       }
     },
@@ -549,6 +589,10 @@
         "thu_15": {
           "avg_wait": 17.5,
           "samples": 2
+        },
+        "thu_16": {
+          "avg_wait": 25.0,
+          "samples": 1
         }
       }
     },
@@ -579,6 +623,10 @@
         "thu_15": {
           "avg_wait": 15.0,
           "samples": 2
+        },
+        "thu_16": {
+          "avg_wait": 15.0,
+          "samples": 1
         }
       }
     },
@@ -609,6 +657,10 @@
         "thu_15": {
           "avg_wait": 20.0,
           "samples": 2
+        },
+        "thu_16": {
+          "avg_wait": 30.0,
+          "samples": 1
         }
       }
     },
@@ -647,6 +699,10 @@
         "thu_15": {
           "avg_wait": 12.5,
           "samples": 2
+        },
+        "thu_16": {
+          "avg_wait": 10.0,
+          "samples": 1
         }
       }
     },
@@ -693,6 +749,10 @@
         "thu_15": {
           "avg_wait": 15.0,
           "samples": 2
+        },
+        "thu_16": {
+          "avg_wait": 10.0,
+          "samples": 1
         }
       }
     },
@@ -743,6 +803,10 @@
         "thu_15": {
           "avg_wait": 5.0,
           "samples": 2
+        },
+        "thu_16": {
+          "avg_wait": 5.0,
+          "samples": 1
         }
       }
     },
@@ -801,6 +865,10 @@
         "thu_15": {
           "avg_wait": 37.5,
           "samples": 2
+        },
+        "thu_16": {
+          "avg_wait": 35.0,
+          "samples": 1
         }
       }
     },
@@ -859,6 +927,10 @@
         "thu_15": {
           "avg_wait": 5.0,
           "samples": 2
+        },
+        "thu_16": {
+          "avg_wait": 5.0,
+          "samples": 1
         }
       }
     },
@@ -913,6 +985,10 @@
         "thu_15": {
           "avg_wait": 25.0,
           "samples": 2
+        },
+        "thu_16": {
+          "avg_wait": 25.0,
+          "samples": 1
         }
       }
     },
@@ -967,6 +1043,10 @@
         "thu_15": {
           "avg_wait": 5.0,
           "samples": 2
+        },
+        "thu_16": {
+          "avg_wait": 5.0,
+          "samples": 1
         }
       }
     },
@@ -1005,6 +1085,10 @@
         "thu_15": {
           "avg_wait": 15.0,
           "samples": 2
+        },
+        "thu_16": {
+          "avg_wait": 15.0,
+          "samples": 1
         }
       }
     },
@@ -1059,6 +1143,10 @@
         "thu_15": {
           "avg_wait": 25.0,
           "samples": 2
+        },
+        "thu_16": {
+          "avg_wait": 20.0,
+          "samples": 1
         }
       }
     },
@@ -1105,6 +1193,10 @@
         "thu_15": {
           "avg_wait": 10.0,
           "samples": 2
+        },
+        "thu_16": {
+          "avg_wait": 10.0,
+          "samples": 1
         }
       }
     },
@@ -1151,6 +1243,10 @@
         "thu_15": {
           "avg_wait": 5.0,
           "samples": 2
+        },
+        "thu_16": {
+          "avg_wait": 5.0,
+          "samples": 1
         }
       }
     },
@@ -1201,6 +1297,10 @@
         "thu_15": {
           "avg_wait": 20.0,
           "samples": 2
+        },
+        "thu_16": {
+          "avg_wait": 20.0,
+          "samples": 1
         }
       }
     },
@@ -1239,6 +1339,10 @@
         "thu_15": {
           "avg_wait": 15.0,
           "samples": 2
+        },
+        "thu_16": {
+          "avg_wait": 15.0,
+          "samples": 1
         }
       }
     },
@@ -1285,6 +1389,10 @@
         "thu_15": {
           "avg_wait": 7.5,
           "samples": 2
+        },
+        "thu_16": {
+          "avg_wait": 15.0,
+          "samples": 1
         }
       }
     },
@@ -1323,6 +1431,10 @@
         "thu_15": {
           "avg_wait": 15.0,
           "samples": 2
+        },
+        "thu_16": {
+          "avg_wait": 15.0,
+          "samples": 1
         }
       }
     },
@@ -1381,6 +1493,10 @@
         "thu_15": {
           "avg_wait": 5.0,
           "samples": 2
+        },
+        "thu_16": {
+          "avg_wait": 5.0,
+          "samples": 1
         }
       }
     },
@@ -1439,6 +1555,10 @@
         "thu_15": {
           "avg_wait": 20.0,
           "samples": 2
+        },
+        "thu_16": {
+          "avg_wait": 15.0,
+          "samples": 1
         }
       }
     },
@@ -1485,6 +1605,10 @@
         "thu_15": {
           "avg_wait": 10.0,
           "samples": 2
+        },
+        "thu_16": {
+          "avg_wait": 10.0,
+          "samples": 1
         }
       }
     },
@@ -1539,6 +1663,10 @@
         "thu_15": {
           "avg_wait": 5.0,
           "samples": 2
+        },
+        "thu_16": {
+          "avg_wait": 10.0,
+          "samples": 1
         }
       }
     },
@@ -1597,6 +1725,10 @@
         "thu_15": {
           "avg_wait": 15.0,
           "samples": 2
+        },
+        "thu_16": {
+          "avg_wait": 5.0,
+          "samples": 1
         }
       }
     },
@@ -1651,6 +1783,10 @@
         "thu_15": {
           "avg_wait": 5.0,
           "samples": 2
+        },
+        "thu_16": {
+          "avg_wait": 5.0,
+          "samples": 1
         }
       }
     },
@@ -1705,6 +1841,10 @@
         "thu_15": {
           "avg_wait": 30.0,
           "samples": 2
+        },
+        "thu_16": {
+          "avg_wait": 40.0,
+          "samples": 1
         }
       }
     },
@@ -1751,6 +1891,10 @@
         "thu_15": {
           "avg_wait": 20.0,
           "samples": 2
+        },
+        "thu_16": {
+          "avg_wait": 25.0,
+          "samples": 1
         }
       }
     },
@@ -1797,6 +1941,10 @@
         "thu_15": {
           "avg_wait": 40.0,
           "samples": 2
+        },
+        "thu_16": {
+          "avg_wait": 20.0,
+          "samples": 1
         }
       }
     },
@@ -1843,6 +1991,10 @@
         "thu_15": {
           "avg_wait": 30.0,
           "samples": 2
+        },
+        "thu_16": {
+          "avg_wait": 25.0,
+          "samples": 1
         }
       }
     },
@@ -1907,6 +2059,10 @@
         "thu_15": {
           "avg_wait": 25.0,
           "samples": 2
+        },
+        "thu_16": {
+          "avg_wait": 25.0,
+          "samples": 1
         }
       }
     },
@@ -1949,6 +2105,10 @@
         "thu_15": {
           "avg_wait": 87.5,
           "samples": 2
+        },
+        "thu_16": {
+          "avg_wait": 80.0,
+          "samples": 1
         }
       }
     },
@@ -1995,6 +2155,10 @@
         "thu_15": {
           "avg_wait": 32.5,
           "samples": 2
+        },
+        "thu_16": {
+          "avg_wait": 35.0,
+          "samples": 1
         }
       }
     },
@@ -2041,6 +2205,10 @@
         "thu_15": {
           "avg_wait": 40.0,
           "samples": 2
+        },
+        "thu_16": {
+          "avg_wait": 20.0,
+          "samples": 1
         }
       }
     },
@@ -2091,6 +2259,10 @@
         "thu_15": {
           "avg_wait": 30.0,
           "samples": 2
+        },
+        "thu_16": {
+          "avg_wait": 30.0,
+          "samples": 1
         }
       }
     },
@@ -2137,6 +2309,10 @@
         "thu_15": {
           "avg_wait": 15.0,
           "samples": 2
+        },
+        "thu_16": {
+          "avg_wait": 15.0,
+          "samples": 1
         }
       }
     },
@@ -2183,6 +2359,10 @@
         "thu_15": {
           "avg_wait": 15.0,
           "samples": 2
+        },
+        "thu_16": {
+          "avg_wait": 15.0,
+          "samples": 1
         }
       }
     },
@@ -2267,6 +2447,10 @@
         "thu_15": {
           "avg_wait": 5.0,
           "samples": 2
+        },
+        "thu_16": {
+          "avg_wait": 5.0,
+          "samples": 1
         }
       }
     },
@@ -2305,6 +2489,10 @@
         "thu_15": {
           "avg_wait": 47.5,
           "samples": 2
+        },
+        "thu_16": {
+          "avg_wait": 60.0,
+          "samples": 1
         }
       }
     },
@@ -2365,6 +2553,10 @@
         "thu_15": {
           "avg_wait": 32.5,
           "samples": 2
+        },
+        "thu_16": {
+          "avg_wait": 30.0,
+          "samples": 1
         }
       }
     },
@@ -2403,6 +2595,10 @@
         "thu_15": {
           "avg_wait": 25.0,
           "samples": 2
+        },
+        "thu_16": {
+          "avg_wait": 20.0,
+          "samples": 1
         }
       }
     },
@@ -2457,6 +2653,10 @@
         "thu_15": {
           "avg_wait": 17.5,
           "samples": 2
+        },
+        "thu_16": {
+          "avg_wait": 10.0,
+          "samples": 1
         }
       }
     },
@@ -2511,6 +2711,10 @@
         "thu_15": {
           "avg_wait": 47.5,
           "samples": 2
+        },
+        "thu_16": {
+          "avg_wait": 45.0,
+          "samples": 1
         }
       }
     },
@@ -2583,6 +2787,10 @@
         "thu_15": {
           "avg_wait": 50.0,
           "samples": 2
+        },
+        "thu_16": {
+          "avg_wait": 55.0,
+          "samples": 1
         }
       }
     },
@@ -2637,6 +2845,10 @@
         "thu_15": {
           "avg_wait": 40.0,
           "samples": 2
+        },
+        "thu_16": {
+          "avg_wait": 50.0,
+          "samples": 1
         }
       }
     },
@@ -2679,6 +2891,10 @@
         "thu_15": {
           "avg_wait": 57.5,
           "samples": 2
+        },
+        "thu_16": {
+          "avg_wait": 60.0,
+          "samples": 1
         }
       }
     },
@@ -2725,6 +2941,10 @@
         "thu_15": {
           "avg_wait": 52.5,
           "samples": 2
+        },
+        "thu_16": {
+          "avg_wait": 70.0,
+          "samples": 1
         }
       }
     },
@@ -2779,6 +2999,10 @@
         "thu_15": {
           "avg_wait": 45.0,
           "samples": 2
+        },
+        "thu_16": {
+          "avg_wait": 35.0,
+          "samples": 1
         }
       }
     },
@@ -2829,6 +3053,10 @@
         "thu_15": {
           "avg_wait": 32.5,
           "samples": 2
+        },
+        "thu_16": {
+          "avg_wait": 40.0,
+          "samples": 1
         }
       }
     },
@@ -2879,6 +3107,10 @@
         "thu_15": {
           "avg_wait": 75.0,
           "samples": 2
+        },
+        "thu_16": {
+          "avg_wait": 75.0,
+          "samples": 1
         }
       }
     },
@@ -2921,6 +3153,10 @@
         "thu_15": {
           "avg_wait": 5.0,
           "samples": 2
+        },
+        "thu_16": {
+          "avg_wait": 5.0,
+          "samples": 1
         }
       }
     },
@@ -2967,6 +3203,10 @@
         "thu_15": {
           "avg_wait": 50.0,
           "samples": 2
+        },
+        "thu_16": {
+          "avg_wait": 55.0,
+          "samples": 1
         }
       }
     },
@@ -2997,6 +3237,10 @@
         "thu_15": {
           "avg_wait": 5.0,
           "samples": 2
+        },
+        "thu_16": {
+          "avg_wait": 5.0,
+          "samples": 1
         }
       }
     },
@@ -3039,6 +3283,10 @@
         "thu_15": {
           "avg_wait": 30.0,
           "samples": 2
+        },
+        "thu_16": {
+          "avg_wait": 40.0,
+          "samples": 1
         }
       }
     },
@@ -3077,6 +3325,10 @@
         "thu_15": {
           "avg_wait": 15.0,
           "samples": 2
+        },
+        "thu_16": {
+          "avg_wait": 25.0,
+          "samples": 1
         }
       }
     },
@@ -3123,6 +3375,10 @@
         "thu_15": {
           "avg_wait": 32.5,
           "samples": 2
+        },
+        "thu_16": {
+          "avg_wait": 25.0,
+          "samples": 1
         }
       }
     },
@@ -3215,6 +3471,10 @@
         "thu_15": {
           "avg_wait": 42.5,
           "samples": 2
+        },
+        "thu_16": {
+          "avg_wait": 45.0,
+          "samples": 1
         }
       }
     },
@@ -3261,6 +3521,10 @@
         "thu_15": {
           "avg_wait": 50.0,
           "samples": 2
+        },
+        "thu_16": {
+          "avg_wait": 55.0,
+          "samples": 1
         }
       }
     },
@@ -3307,6 +3571,10 @@
         "thu_15": {
           "avg_wait": 32.5,
           "samples": 2
+        },
+        "thu_16": {
+          "avg_wait": 35.0,
+          "samples": 1
         }
       }
     },
@@ -3349,6 +3617,10 @@
         "thu_15": {
           "avg_wait": 80.0,
           "samples": 2
+        },
+        "thu_16": {
+          "avg_wait": 75.0,
+          "samples": 1
         }
       }
     },
@@ -3408,6 +3680,16 @@
         },
         "thu_15": {
           "avg_wait": 30.0,
+          "samples": 1
+        }
+      }
+    },
+    "8956": {
+      "name": "Remy's Ratatouille Adventure",
+      "park": "epcot",
+      "buckets": {
+        "thu_16": {
+          "avg_wait": 40.0,
           "samples": 1
         }
       }

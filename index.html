@@ -84,6 +84,17 @@
 
   .hero p.tagline { color: var(--text-muted); font-size: 1.05rem; max-width: 560px; margin: 0 auto; }
 
+  .hero-park-strip {
+    display: flex; align-items: center; justify-content: center; gap: 1.4rem;
+    margin: 1.6rem auto 0; flex-wrap: wrap;
+  }
+  .hero-park-strip img {
+    width: 64px; height: 64px; object-fit: contain;
+    filter: drop-shadow(0 6px 14px rgba(0,0,0,0.35));
+    transition: transform 0.2s ease;
+  }
+  .hero-park-strip img:hover { transform: translateY(-4px) scale(1.06); }
+
   .last-updated-wrap { position: relative; display: inline-block; margin-top: 1.25rem; }
 
   .last-updated {
@@ -339,6 +350,7 @@
   @media (max-width: 600px) {
     body { padding: 1rem; }
     .hero { padding: 1.75rem 0.5rem 1.5rem; }
+    .hero-park-strip img { width: 48px; height: 48px; }
     .info-popover { left: auto; right: 0; }
     .ride-modal-stats { grid-template-columns: 1fr; }
   }
@@ -348,8 +360,14 @@
 <div class="container">
   <div class="hero">
     <div class="hero-badge">✨ Live Crowd Intelligence</div>
-    <h1>🏰 Disney World Busyness Monitor</h1>
+    <h1>Disney World Busyness Monitor</h1>
     <p class="tagline">Real-time wait times and historical crowd trends across all four Walt Disney World parks — plan your perfect day before you go.</p>
+    <div class="hero-park-strip">
+      <img src="images/MKEmoji_1_1023x1023.png" alt="Magic Kingdom emoji" />
+      <img src="images/EPCOTEmoji_1_1023x1023.png" alt="EPCOT emoji" />
+      <img src="images/HSEmoji_1_1023x1023.png" alt="Hollywood Studios emoji" />
+      <img src="images/AKEmoji_1_1023x1022.png" alt="Animal Kingdom emoji" />
+    </div>
     <div class="last-updated-wrap">
       <div class="last-updated" id="lastUpdated" onclick="toggleTzDropdown(event)">
         <span class="dot"></span> <span id="lastUpdatedText">Updated: Syncing...</span> <span class="tz-caret">▾</span>

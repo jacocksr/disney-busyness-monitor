@@ -178,11 +178,9 @@
   .park-card:hover { transform: translateY(-6px) scale(1.01); box-shadow: 0 14px 30px rgba(0,0,0,0.35); }
   .park-card.active { border-color: var(--gold); box-shadow: 0 0 0 2px rgba(255,209,102,0.3), 0 14px 30px rgba(0,0,0,0.4); }
 
-  .card-icon { font-size: 1.6rem; margin-bottom: 0.4rem; display: block; }
-
   .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.9rem; gap: 0.5rem; }
-  .card-header h3 { font-family: 'Baloo 2', sans-serif; font-size: 1.2rem; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 0.45rem; }
-  .park-name-emoji { width: 24px; height: 24px; object-fit: contain; flex-shrink: 0; display: inline-block; }
+  .card-header h3 { font-family: 'Baloo 2', sans-serif; font-size: 1.2rem; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 0.55rem; }
+  .park-name-emoji { width: 34px; height: 34px; object-fit: contain; flex-shrink: 0; display: inline-block; }
 
   .score-badge { font-weight: 800; font-size: 1.05rem; padding: 0.3rem 0.7rem; border-radius: 10px; color: #12122a; text-align: center; white-space: nowrap; }
   .score-low { background: var(--green); }
@@ -778,7 +776,6 @@
       const parkEmojiSrc = PARK_EMOJI_IMAGES[key] || "";
       const parkEmojiImg = parkEmojiSrc ? `<img src="${parkEmojiSrc}" alt="${p.name} emoji" class="park-name-emoji" />` : '';
       card.innerHTML = `
-        <span class="card-icon">${p.icon || '🎡'}</span>
         <div class="card-header">
           <h3>${parkEmojiImg}${p.name}</h3>
           ${getScoreBadge(p.crowd_score, phaseInfo)}

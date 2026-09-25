@@ -2,7 +2,7 @@
 Disney World Busyness Monitor - Data Collector & Static JSON Generator
 Runs via GitHub Actions on a cron schedule (every ~10 minutes).
 Pulls live wait times for the 4 Walt Disney World theme parks via Queue-Times API,
-computes real-time crowd index, and maintains three tiers of historical data:
+computes real-time crowd index, and maintains four tiers of historical data:
 
   1. data/live_wait_times.json      - current snapshot (unchanged behavior)
   2. data/history_24h.json          - raw ~10-min resolution, rolling 24 hours
@@ -10,11 +10,20 @@ computes real-time crowd index, and maintains three tiers of historical data:
   4. data/historical_summary.json   - permanent aggregate: running avg wait per
                                        ride, bucketed by day-of-week + hour.
                                        Never grows unbounded; only updates in place.
+  5. data/events/YYYY-MM-DD.jsonl   - NEW: permanent raw event log, one file per
+                                       calendar day, one line per (ride, scrape).
+                                       Preserves exact date + full context
+                                       (park hours, weekday, month, holiday,
+                                       weather) forever, at bounded per-day size.
+                                       Never rewritten after the day ends -> git
+                                       history grows by one small new file per
+                                       day instead of one big diff every 10 min.
 """
 
 import json
 import os
 import datetime
+import calendar
 import requests
 
 PARKS = {
@@ -24,7 +33,27 @@ PARKS = {
     "animal_kingdom": {"id": 8, "name": "Disney's Animal Kingdom", "capacity_weight": 0.8}
 }
 
+# Same DEFAULT_HOURS the frontend hardcodes today -- now the source of truth also
+# lives here so it can be written into every event record.
+DEFAULT_HOURS = {
+    "magic_kingdom":      {"early_entry": "08:30", "open": "09:00", "close": "22:00"},
+    "epcot":               {"early_entry": "08:30", "open": "09:00", "close": "21:00"},
+    "hollywood_studios":   {"early_entry": "08:30", "open": "09:00", "close": "21:00"},
+    "animal_kingdom":      {"early_entry": "07:30", "open": "08:00", "close": "18:00"}
+}
+
+# Fixed-date + floating US holidays relevant to WDW crowd patterns.
+# Extend this dict as needed; floating holidays are resolved at runtime below.
+FIXED_HOLIDAYS = {
+    (1, 1): "New Year's Day",
+    (7, 4): "Independence Day",
+    (12, 24): "Christmas Eve",
+    (12, 25): "Christmas Day",
+    (12, 31): "New Year's Eve",
+}
+
 DATA_DIR = "data"
+EVENTS_DIR = os.path.join(DATA_DIR, "events")
 LIVE_FILE = os.path.join(DATA_DIR, "live_wait_times.json")
 HISTORY_24H_FILE = os.path.join(DATA_DIR, "history_24h.json")
 HISTORY_7D_FILE = os.path.join(DATA_DIR, "history_7d.json")
@@ -35,6 +64,8 @@ RETENTION_7D_DAYS = 7
 MIN_SAMPLES_FOR_RELIABLE = 15  # ~3 weeks of same weekday/hour before day-of-week view is trusted
 
 WEEKDAY_ABBR = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"]
+WEEKDAY_NAME = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+MONTH_NAME = list(calendar.month_name)  # index 1-12
 
 
 def fetch_park_queue(park_id: int):
@@ -127,10 +158,80 @@ def update_summary(summary, park_key, ride, now):
     bucket["samples"] = n + 1
 
 
+def get_holiday_name(date_obj):
+    """Resolve fixed-date holidays and a few common floating US holidays for a given date."""
+    key = (date_obj.month, date_obj.day)
+    if key in FIXED_HOLIDAYS:
+        return FIXED_HOLIDAYS[key]
+
+    year = date_obj.year
+
+    def nth_weekday(month, weekday, n):
+        """1-indexed nth occurrence of `weekday` (0=Mon) in `month`."""
+        d = datetime.date(year, month, 1)
+        offset = (weekday - d.weekday()) % 7
+        d += datetime.timedelta(days=offset + 7 * (n - 1))
+        return d
+
+    def last_weekday(month, weekday):
+        d = datetime.date(year, month, calendar.monthrange(year, month)[1])
+        offset = (d.weekday() - weekday) % 7
+        return d - datetime.timedelta(days=offset)
+
+    floating = {
+        nth_weekday(11, 3, 4): "Thanksgiving",              # 4th Thursday of November
+        last_weekday(5, 0): "Memorial Day",                 # last Monday of May
+        nth_weekday(9, 0, 1): "Labor Day",                  # 1st Monday of September
+        nth_weekday(1, 0, 3): "MLK Day",                    # 3rd Monday of January
+        nth_weekday(2, 0, 3): "Presidents' Day",            # 3rd Monday of February
+    }
+    return floating.get(date_obj, None)
+
+
+def get_park_hours_for_event(park_key):
+    """Returns the park's scheduled hours dict; swap for a real per-day hours API later if needed."""
+    return DEFAULT_HOURS.get(park_key)
+
+
+def append_event_log(date_str, records):
+    """
+    Appends raw per-ride event records to data/events/YYYY-MM-DD.jsonl (one line per record).
+    Files are never rewritten once the day is over -> bounded git diff per run,
+    and full raw history back to day one stays queryable by exact calendar date.
+    """
+    os.makedirs(EVENTS_DIR, exist_ok=True)
+    path = os.path.join(EVENTS_DIR, f"{date_str}.jsonl")
+    with open(path, "a", encoding="utf-8") as f:
+        for record in records:
+            f.write(json.dumps(record, separators=(",", ":")) + "\n")
+
+
+def build_event_record(now, park_key, park_info, ride, weather=None):
+    """Builds one flat, fully self-describing event record for the raw log."""
+    date_obj = now.date()
+    holiday_name = get_holiday_name(date_obj)
+    return {
+        "timestamp": now.isoformat(),
+        "park": park_key,
+        "attraction_id": ride.get("id"),
+        "attraction": ride.get("name"),
+        "land": ride.get("land"),
+        "wait": ride.get("wait_time", 0),
+        "operational_status": "open" if ride.get("is_open") else "closed",
+        "park_hours": get_park_hours_for_event(park_key),
+        "weekday": WEEKDAY_NAME[now.weekday()],
+        "month": MONTH_NAME[now.month],
+        "is_holiday": holiday_name is not None,
+        "holiday_name": holiday_name,
+        "weather": weather,  # placeholder: wire up a weather API call here when ready
+    }
+
+
 def run_collector():
     os.makedirs(DATA_DIR, exist_ok=True)
     now = datetime.datetime.now(datetime.timezone.utc)
     timestamp_iso = now.isoformat()
+    today_str = now.date().isoformat()
 
     snapshot = {"updated_at": timestamp_iso, "parks": {}}
 
@@ -138,6 +239,8 @@ def run_collector():
     history_7d = load_json(HISTORY_7D_FILE, {"updated_at": timestamp_iso, "rides": {}})
     summary = load_json(SUMMARY_FILE, {"updated_at": timestamp_iso, "min_samples_for_reliable": MIN_SAMPLES_FOR_RELIABLE, "rides": {}})
     summary["min_samples_for_reliable"] = MIN_SAMPLES_FOR_RELIABLE
+
+    event_records = []
 
     for key, info in PARKS.items():
         data = fetch_park_queue(info["id"])
@@ -174,6 +277,7 @@ def run_collector():
             update_24h_history(history_24h, key, ride, timestamp_iso)
             update_7d_history(history_7d, key, ride, timestamp_iso, now)
             update_summary(summary, key, ride, now)
+            event_records.append(build_event_record(now, key, info, ride))
 
     # Prune rolling windows
     cutoff_24h = (now - datetime.timedelta(hours=RETENTION_24H_HOURS)).isoformat()
@@ -188,16 +292,20 @@ def run_collector():
     history_7d["updated_at"] = timestamp_iso
     summary["updated_at"] = timestamp_iso
 
-    # Write all four files
+    # Write all four existing files (unchanged behavior)
     save_json(LIVE_FILE, snapshot)
     save_json(HISTORY_24H_FILE, history_24h)
     save_json(HISTORY_7D_FILE, history_7d)
     save_json(SUMMARY_FILE, summary)
 
+    # Append today's raw event log (new tier 5 -- never rewrites prior days)
+    append_event_log(today_str, event_records)
+
     print(f"Successfully generated {LIVE_FILE} at {timestamp_iso}")
     print(f"24h history: {sum(len(r['points']) for r in history_24h['rides'].values())} points across {len(history_24h['rides'])} rides")
     print(f"7d history:  {sum(len(r['points']) for r in history_7d['rides'].values())} points across {len(history_7d['rides'])} rides")
     print(f"Summary buckets: {sum(len(r['buckets']) for r in summary['rides'].values())} across {len(summary['rides'])} rides")
+    print(f"Event log: appended {len(event_records)} records to data/events/{today_str}.jsonl")
 
 
 if __name__ == "__main__":

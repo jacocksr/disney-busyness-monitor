@@ -815,7 +815,7 @@
     let fetchSucceeded = false;
 
     try {
-      nextParkData = await fetchJsonWithCacheBust("data/live_wait_times.json");
+      nextParkData = await fetchJsonWithCacheBust('https://queue-times-probe.jacocksr.workers.dev/api/live-wait-times');
       fetchSucceeded = true;
     } catch (e) {
       console.log("Live data fetch failed; keeping previous snapshot.", e);

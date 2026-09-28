@@ -149,7 +149,6 @@
   .last-updated .tz-caret { font-size: 0.7rem; opacity: 0.7; }
 
   @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-
   .tz-dropdown {
     display: none; position: absolute; top: calc(100% + 8px); left: 50%; transform: translateX(-50%);
     background: var(--card-bg-solid); border: 1px solid var(--card-border); border-radius: 12px;
@@ -247,7 +246,6 @@
   }
   .park-status-banner.pre-open { background: rgba(255,200,87,0.15); color: var(--yellow); border: 1px solid rgba(255,200,87,0.3); }
   .park-status-banner.early-entry { background: rgba(76,214,192,0.15); color: var(--teal); border: 1px solid rgba(76,214,192,0.3); }
-
   .card-metrics-top {
     display: flex; justify-content: space-between; font-size: 0.9rem; color: var(--text-muted);
     border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1rem; gap: 0.6rem;
@@ -333,7 +331,6 @@
   .table-container { max-height: 480px; overflow-y: auto; border-radius: 12px; }
   .table-container::-webkit-scrollbar { width: 8px; }
   .table-container::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 8px; }
-
   table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.88rem; }
   th { background: var(--header-bg-solid); padding: 0.7rem 0.85rem; position: sticky; top: 0; color: var(--gold); font-weight: 700; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; box-shadow: 0 1px 0 rgba(255,255,255,0.12); z-index: 2; }
   th.sortable { cursor: pointer; user-select: none; transition: color 0.15s, background 0.15s; }
@@ -405,7 +402,6 @@
     width: 70px;                /* was 80px — this is the actual fix */
     height: 70px;
   }
-
   .panel-park-strip img { width: 48px; height: 48px; }
   .info-popover { left: auto; right: 0; }
   .ride-modal-stats { grid-template-columns: 1fr; }
@@ -535,7 +531,6 @@
 
   <footer>Made with <span class="heart">♥</span> for Disney World planners &mdash; data refreshes automatically.</footer>
 </div>
-
 <div class="modal-overlay" id="rideModalOverlay" onclick="if(event.target===this) closeRideModal()">
   <div class="ride-modal">
     <div class="ride-modal-header">
@@ -642,7 +637,6 @@
   const EXCLUDED_NAME_PATTERNS = [/single rider/i, /lightning lane/i, /individual lightning lane/i];
   const DATA_REFRESH_INTERVAL_MS = 5 * 60 * 1000;
   const TIMESTAMP_TICK_INTERVAL_MS = 30 * 1000;
-
   const PARK_EMOJI_IMAGES = {
     magic_kingdom: "images/MKEmoji_1_1023x1023.png",
     epcot: "images/EPCOTEmoji_1_1023x1023.png",
@@ -659,6 +653,8 @@
   let chartInstance = null;
   let sparklineInstance = null;
   let heatmapMode = "hour";
+  let heatmapSortCol = "name";
+  let heatmapSortDir = "asc";
   let sortField = "wait_time";
   let sortDir = "desc";
   let isRefreshing = false;
@@ -837,7 +833,6 @@
       const incomingTs = new Date(nextParkData.updated_at).getTime();
       const currentTs = new Date(parkData.updated_at).getTime();
       const incomingIsNewer = isNaN(currentTs) || (!isNaN(incomingTs) && incomingTs >= currentTs);
-
       if (isInitialLoad || incomingIsNewer) {
         parkData = nextParkData;
         if (nextHistory24h) history24h = nextHistory24h;
@@ -1201,8 +1196,20 @@
 
   function setHeatmapMode(mode, el) {
     heatmapMode = mode;
+    heatmapSortCol = "name";
+    heatmapSortDir = "asc";
     document.querySelectorAll(".heatmap-tab").forEach(t => t.classList.remove("active"));
     el.classList.add("active");
+    renderHeatmap();
+  }
+
+  function setHeatmapSort(col) {
+    if (heatmapSortCol === col) {
+      heatmapSortDir = heatmapSortDir === "asc" ? "desc" : "asc";
+    } else {
+      heatmapSortCol = col;
+      heatmapSortDir = col === "name" ? "asc" : "desc";
+    }
     renderHeatmap();
   }
 
@@ -1219,7 +1226,9 @@
     const r = Math.round(c1[0] + (c2[0] - c1[0]) * frac);
     const g = Math.round(c1[1] + (c2[1] - c1[1]) * frac);
     const b = Math.round(c1[2] + (c2[2] - c1[2]) * frac);
-    return `rgb(${r},${g},${b})`;
+    const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+    const textColor = brightness > 150 ? "#12122a" : "#ffffff";
+    return { bg: `rgb(${r},${g},${b})`, text: textColor };
   }
 
   function renderHeatmapByHour() {
@@ -1342,14 +1351,37 @@
     const head = document.getElementById("heatmapHead");
     const body = document.getElementById("heatmapBody");
 
-    head.innerHTML = `<tr><th class="ride-col">Attraction</th>${colLabels.map(l => `<th>${l}</th>`).join('')}</tr>`;
+    const sortedRows = rows.slice().sort((a, b) => {
+      let av, bv;
+      if (heatmapSortCol === "name") {
+        av = a.name.toLowerCase();
+        bv = b.name.toLowerCase();
+      } else {
+        av = a.cells[heatmapSortCol];
+        bv = b.cells[heatmapSortCol];
+        av = (av === null || av === undefined) ? -1 : av;
+        bv = (bv === null || bv === undefined) ? -1 : bv;
+      }
+      if (av < bv) return heatmapSortDir === "asc" ? -1 : 1;
+      if (av > bv) return heatmapSortDir === "asc" ? 1 : -1;
+      return 0;
+    });
 
-    if (rows.length === 0) {
+    const nameArrow = heatmapSortCol === "name" ? (heatmapSortDir === "asc" ? "▲" : "▼") : "▾";
+    const nameActive = heatmapSortCol === "name" ? "sort-active" : "";
+    const colHeadersHtml = colLabels.map((l, i) => {
+      const active = heatmapSortCol === i;
+      const arrow = active ? (heatmapSortDir === "asc" ? "▲" : "▼") : "▾";
+      return `<th class="sortable ${active ? 'sort-active' : ''}" onclick="setHeatmapSort(${i})">${l} <span class="sort-arrow">${arrow}</span></th>`;
+    }).join('');
+
+    head.innerHTML = `<tr><th class="ride-col sortable ${nameActive}" onclick="setHeatmapSort('name')">Attraction <span class="sort-arrow">${nameArrow}</span></th>${colHeadersHtml}</tr>`;
+
+    if (sortedRows.length === 0) {
       renderHeatmapEmpty("No attraction data available for this park right now.");
       return;
     }
-
-    body.innerHTML = rows.map(row => {
+    body.innerHTML = sortedRows.map(row => {
       const cellsHtml = row.cells.map((val, i) => {
         if (val === null) {
           return `<td><span class="heatmap-cell no-data">&ndash;</span></td>`;
@@ -1357,7 +1389,7 @@
         const color = getHeatColor(val, maxWait);
         const lowSample = minSamples && row.samples && row.samples[i] < minSamples;
         const title = lowSample ? `${val} min avg (${row.samples[i]} samples — needs ${minSamples})` : `${val} min avg`;
-        return `<td><span class="heatmap-cell has-data" style="background:${color}; opacity:${lowSample ? 0.55 : 1}" title="${title}">${val}</span></td>`;
+        return `<td><span class="heatmap-cell has-data" style="background:${color.bg}; color:${color.text}; opacity:${lowSample ? 0.55 : 1}" title="${title}">${val}</span></td>`;
       }).join('');
       return `<tr><td class="ride-name" title="${row.name}">${row.name}</td>${cellsHtml}</tr>`;
     }).join('');

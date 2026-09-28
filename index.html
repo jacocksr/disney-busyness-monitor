@@ -203,6 +203,37 @@
   .info-popover .legend-row { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem; }
   .info-popover .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
 
+  .best-park-banner {
+    background: linear-gradient(135deg, rgba(255,209,102,0.12), rgba(255,111,181,0.08));
+    border: 1px solid rgba(255,209,102,0.35);
+    border-radius: 16px;
+    padding: 1.1rem 1.4rem;
+    margin-bottom: 1.5rem;
+  }
+  .best-park-content { display: flex; align-items: flex-start; gap: 0.9rem; }
+  .best-park-icon { font-size: 1.8rem; line-height: 1; }
+  .best-park-title { font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 1.1rem; color: #fff; margin-bottom: 0.3rem; }
+  .best-park-sub { font-size: 0.88rem; color: var(--text-muted); line-height: 1.5; }
+
+  .vs-normal-pill {
+    display: inline-flex; align-items: center; gap: 0.3rem;
+    font-size: 0.72rem; font-weight: 600; padding: 0.15rem 0.55rem;
+    border-radius: 999px; margin-top: 0.6rem;
+  }
+  .vs-normal-pill.below { background: rgba(53,208,138,0.15); color: var(--green); }
+  .vs-normal-pill.above { background: rgba(255,93,122,0.15); color: var(--red); }
+
+.average-wait-row {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+}
+
+.average-wait-row .vs-normal-pill {
+  margin-top: 0;
+}
+
   .park-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-bottom: 2.5rem; }
   @media (max-width: 720px) { .park-grid { grid-template-columns: 1fr; } }
 
@@ -254,17 +285,40 @@
   .metric-value { font-weight: 700; color: #fff; font-size: 1.15rem; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .metric-label { font-size: 0.76rem; text-transform: uppercase; letter-spacing: 0.04em; opacity: 0.8; }
 
-  .card-metrics-longest {
-    display: flex; justify-content: space-between; align-items: baseline; gap: 0.7rem;
-    font-size: 0.9rem; color: var(--text-muted);
-    border-top: 1px solid rgba(255,255,255,0.08); margin-top: 0.8rem; padding-top: 0.8rem;
-  }
-  .card-metrics-longest .metric-longest-left { display: flex; flex-direction: column; min-width: 0; flex: 1; }
-  .card-metrics-longest .metric-longest-name {
-    font-size: 0.82rem; font-weight: 500; color: var(--text); white-space: nowrap;
-    overflow: hidden; text-overflow: ellipsis; max-width: 100%;
-  }
-  .card-metrics-longest .metric-value { font-size: 1.15rem; flex-shrink: 0; }
+.card-metrics-longest {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  border-top: 1px solid rgba(255,255,255,0.08);
+  margin-top: 0.8rem;
+  padding-top: 0.8rem;
+}
+
+.card-metrics-longest .metric-longest-name {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+  flex: 1;
+}
+
+.card-metrics-longest .metric-value {
+  font-size: 1.15rem;
+  flex-shrink: 0;
+}
+
+.longest-wait-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.7rem;
+  min-width: 0;
+}
 
   .best-time-strip {
     margin-top: 1rem; font-size: 0.85rem; color: var(--teal);
@@ -459,6 +513,7 @@
       </div>
     </div>
   </div>
+  <div class="best-park-banner" id="bestParkBanner"></div>
   <div class="park-grid" id="parkGrid"></div>
 
   <div class="content-grid">
@@ -530,9 +585,9 @@
   </div>
 
   <footer>
-  Made with <span class="heart">♥</span> for Disney World planners &mdash; data refreshes automatically.<br>
-  Wait time data powered by <a href="https://queue-times.com" target="_blank" rel="noopener" style="color:var(--gold); text-decoration:underline;">Queue-Times.com</a>.
-</footer>
+    Made with <span class="heart">♥</span> for Disney World planners &mdash; data refreshes automatically.<br>
+    Wait time data powered by <a href="https://queue-times.com" target="_blank" rel="noopener" style="color:var(--gold); text-decoration:underline;">Queue-Times.com</a>.
+  </footer>
 </div>
 <div class="modal-overlay" id="rideModalOverlay" onclick="if(event.target===this) closeRideModal()">
   <div class="ride-modal">
@@ -788,11 +843,86 @@
     return { avgWait, longest };
   }
 
+  function getCurrentBucketKey() {
+    const abbrs = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
+    const easternNow = new Date(new Date().toLocaleString("en-US", { timeZone: "America/New_York" }));
+    return `${abbrs[easternNow.getDay()]}_${String(easternNow.getHours()).padStart(2, "0")}`;
+  }
+
+  function getParkBaseline(park) {
+    if (!historicalSummary || !historicalSummary.rides) return null;
+    const bucketKey = getCurrentBucketKey();
+    const visibleRides = getVisibleRides(park).filter(r => r.is_open);
+    let totalWeighted = 0, totalSamples = 0;
+    visibleRides.forEach(ride => {
+      const entry = historicalSummary.rides[String(ride.id)];
+      if (!entry) return;
+      const bucket = entry.buckets[bucketKey];
+      if (!bucket) return;
+      totalWeighted += bucket.avg_wait * bucket.samples;
+      totalSamples += bucket.samples;
+    });
+    if (totalSamples === 0) return null;
+    return { avgWait: totalWeighted / totalSamples, samples: totalSamples };
+  }
+
+  function getParkComparison(parkKey, park) {
+    const phaseInfo = getParkPhase(parkKey, park);
+    if (phaseInfo.phase !== "open") return { status: "closed" };
+    const stats = computeLiveStats(park);
+    if (stats.avgWait === null) return { status: "no-data" };
+    const baseline = getParkBaseline(park);
+    const minSamples = (historicalSummary && historicalSummary.min_samples_for_reliable) || MIN_SAMPLES_FOR_RELIABLE;
+    if (!baseline || baseline.samples < minSamples) return { status: "insufficient-data" };
+    const pctDiff = baseline.avgWait > 0
+      ? Math.round(((stats.avgWait - baseline.avgWait) / baseline.avgWait) * 100)
+      : 0;
+    return { status: "ready", pctDiff };
+  }
+
+  function renderBestParkBanner() {
+    const banner = document.getElementById("bestParkBanner");
+    const comparisons = PARK_ORDER
+      .map(key => ({ key, park: parkData.parks[key] }))
+      .filter(x => x.park)
+      .map(x => ({ ...x, comp: getParkComparison(x.key, x.park) }));
+
+    const ready = comparisons.filter(x => x.comp.status === "ready");
+
+    if (ready.length === 0) {
+      banner.innerHTML = `
+        <div class="best-park-content">
+          <span class="best-park-icon">📊</span>
+          <div>
+            <div class="best-park-title">Gathering baseline data</div>
+            <div class="best-park-sub">We need a few weeks of history at this time of day before we can reliably say which park is running below normal. Check back soon!</div>
+          </div>
+        </div>`;
+      return;
+    }
+
+    ready.sort((a, b) => a.comp.pctDiff - b.comp.pctDiff);
+    const best = ready[0];
+    const direction = best.comp.pctDiff <= 0 ? "below" : "above";
+    const icon = best.comp.pctDiff <= 0 ? "🟢" : "🔴";
+    const magnitude = Math.abs(best.comp.pctDiff);
+
+    banner.innerHTML = `
+      <div class="best-park-content">
+        <span class="best-park-icon">🏆</span>
+        <div>
+          <div class="best-park-title">Best Park Right Now: ${best.park.name}</div>
+          <div class="best-park-sub">${icon} Current wait times are approximately ${magnitude}% ${direction} typical levels for this time of day.</div>
+        </div>
+      </div>`;
+  }
+
   function renderAll() {
     renderPanelParkStrips();
     renderCards();
     renderDetails();
     renderHeatmap();
+    renderBestParkBanner();
     updateAllActiveStates();
   }
 
@@ -954,11 +1084,15 @@
       const stats = computeLiveStats(p);
       const avgWaitDisplay = (phaseInfo.phase === "pre-open" || phaseInfo.phase === "closed-for-day" || stats.avgWait === null)
         ? "&ndash;"
-        : `${stats.avgWait}m`;
+        : `${stats.avgWait} min`;
       const longestDisplay = (phaseInfo.phase === "pre-open" || phaseInfo.phase === "closed-for-day" || !stats.longest)
         ? "&ndash;"
-        : `${stats.longest.wait_time}m`;
+        : `${stats.longest.wait_time}min`;
       const longestName = (!isClosed && stats.longest) ? stats.longest.name : "";
+      const comp = getParkComparison(key, p);
+      const vsNormalPill = comp.status === "ready"
+        ? `<span class="vs-normal-pill ${comp.pctDiff <= 0 ? 'below' : 'above'}">${comp.pctDiff <= 0 ? '🟢' : '🔴'} ${Math.abs(comp.pctDiff)}% ${comp.pctDiff <= 0 ? 'below' : 'above'} normal</span>`
+        : '';
       const card = document.createElement("div");
       card.className = `park-card ${key === activeParkKey ? 'active' : ''} ${isClosed ? 'closed' : ''}`;
       card.dataset.parkKey = key;
@@ -973,15 +1107,26 @@
         </div>
         ${getStatusBanner(phaseInfo)}
         <div class="card-metrics-top">
-          <div><span class="metric-label">Avg Wait</span><span class="metric-value">${avgWaitDisplay}</span></div>
-          <div><span class="metric-label">Down</span><span class="metric-value" style="color:${p.down_attractions > 0 ? 'var(--red)' : '#fff'}">${p.down_attractions}</span></div>
+          <div>
+            <span class="metric-label">Average Wait</span>
+            <div class="average-wait-row">
+              <span class="metric-value">${avgWaitDisplay}</span>
+              ${vsNormalPill}
+            </div>
+          </div>
+          <div>
+            <span class="metric-label">Down</span>
+            <span class="metric-value" style="color:${p.down_attractions > 0 ? 'var(--red)' : '#fff'}">${p.down_attractions}</span>
+          </div>
         </div>
         <div class="card-metrics-longest">
-          <div class="metric-longest-left">
-            <span class="metric-label">Longest Wait</span>
-            ${longestName ? `<span class="metric-longest-name" title="${longestName}">${longestName}</span>` : ''}
+          <span class="metric-label">Longest Wait</span>
+          <div class="longest-wait-row">
+            ${longestName
+              ? `<span class="metric-longest-name" title="${longestName}">${longestName}</span>`
+              : '<span></span>'}
+            <span class="metric-value">${longestDisplay}</span>
           </div>
-          <span class="metric-value">${longestDisplay}</span>
         </div>
         <div class="best-time-strip ${isClosed ? 'muted' : ''}">💡 ${getBestTimeTip(p.crowd_score, phaseInfo)}</div>
       `;

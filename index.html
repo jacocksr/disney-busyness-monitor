@@ -822,13 +822,13 @@
     }
 
     try {
-      nextHistory24h = await fetchJsonWithCacheBust("data/history_24h.json");
+      nextHistory24h = await fetchJsonWithCacheBust('https://queue-times-probe.jacocksr.workers.dev/api/history-24h');
     } catch (e) {
       console.log("No 24h history available yet.");
     }
 
     try {
-      nextHistoricalSummary = await fetchJsonWithCacheBust("data/historical_summary.json");
+      nextHistoricalSummary = await fetchJsonWithCacheBust('https://queue-times-probe.jacocksr.workers.dev/api/historical-summary');
     } catch (e) {
       console.log("No historical summary available yet.");
     }

@@ -326,6 +326,32 @@
     padding: 0.5rem 0.7rem; border-radius: 8px; display: flex; align-items: center; gap: 0.5rem; font-weight: 600;
   }
   .best-time-strip.muted { color: var(--text-muted); background: rgba(255,255,255,0.05); border-color: var(--card-border); }
+
+  .closure-row {
+    margin-top: 0.7rem;
+    font-size: 0.82rem; font-weight: 600; padding: 0.45rem 0.7rem; border-radius: 8px;
+    display: flex; align-items: center; gap: 0.5rem; cursor: pointer;
+    background: rgba(255,93,122,0.1); border: 1px solid rgba(255,93,122,0.28); color: var(--red);
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .closure-row:hover { background: rgba(255,93,122,0.16); border-color: rgba(255,93,122,0.4); }
+  .closure-row.none {
+    background: rgba(53,208,138,0.08); border-color: rgba(53,208,138,0.22); color: var(--green);
+    cursor: default; font-weight: 500;
+  }
+  .closure-row .closure-caret { margin-left: auto; font-size: 0.7rem; opacity: 0.7; }
+  .closure-modal-body-scroll { max-height: min(60vh, 480px); overflow-y: auto; padding-right: 0.3rem; }
+  .closure-modal-body-scroll::-webkit-scrollbar { width: 8px; }
+  .closure-modal-body-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 8px; }
+  .closure-modal-list { display: flex; flex-direction: column; gap: 0.6rem; }
+  .closure-modal-item {
+    background: rgba(255,255,255,0.04); border: 1px solid var(--card-border); border-radius: 10px;
+    padding: 0.7rem 0.9rem; display: flex; flex-direction: column; gap: 0.2rem;
+  }
+  .closure-modal-item .closure-ride-name { color: #fff; font-weight: 700; font-size: 0.95rem; }
+  .closure-modal-item .closure-ride-land { color: var(--text-muted); font-size: 0.78rem; }
+  .closure-modal-item .closure-duration { color: var(--red); font-size: 0.82rem; font-weight: 600; margin-top: 0.2rem; }
+  .closure-modal-empty { text-align: center; padding: 1.5rem 1rem; color: var(--text-muted); font-size: 0.85rem; font-style: italic; }
   .heatmap-panel { margin-top: 2rem; margin-bottom: 2rem; }
   .heatmap-tabs { display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
   .heatmap-tab {
@@ -361,9 +387,14 @@
   .heatmap-cell {
     display: inline-flex; align-items: center; justify-content: center;
     width: 30px; height: 22px; border-radius: 4px; font-size: 0.62rem; font-weight: 700;
-    color: rgba(255,255,255,0.85); cursor: default; transition: transform 0.12s;
+    color: rgba(255,255,255,0.85); cursor: pointer; transition: transform 0.12s;
   }
   .heatmap-cell.has-data:hover { transform: scale(1.15); }
+  .heatmap-table tbody tr[data-ride-id] { cursor: pointer; }
+  .heatmap-table tbody tr[data-ride-id]:hover td.ride-name { color: var(--gold); background: #1c3f61; }
+  .heatmap-table tbody tr[data-ride-id]:hover td { background: transparent; }
+  .hm-stat-sub { font-size: 0.66rem; color: var(--text-muted); margin-top: 0.25rem; line-height: 1.3; }
+  .hm-modal-note { font-size: 0.72rem; color: var(--text-muted); margin-top: 0.9rem; line-height: 1.5; font-style: italic; }
   .heatmap-cell.no-data { background: rgba(255,255,255,0.03); color: rgba(255,255,255,0.15); }
   .heatmap-legend { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.9rem; font-size: 0.72rem; color: var(--text-muted); flex-wrap: wrap; }
   .heatmap-legend-gradient { display: flex; height: 12px; width: 140px; border-radius: 6px; overflow: hidden; }
@@ -621,6 +652,58 @@
     </div>
   </div>
 </div>
+<div class="modal-overlay" id="hmModalOverlay" onclick="if(event.target===this) closeHeatmapRideModal()">
+  <div class="ride-modal">
+    <div class="ride-modal-header">
+      <div>
+        <div class="ride-modal-eyebrow" id="hmModalLand">Land</div>
+        <div class="ride-modal-title" id="hmModalName">Ride Name</div>
+      </div>
+      <button class="ride-modal-close" onclick="closeHeatmapRideModal()">&#10005;</button>
+    </div>
+    <div class="ride-modal-body">
+      <div class="ride-modal-stats">
+        <div class="ride-modal-stat">
+          <div class="ride-modal-stat-label">Avg Wait (24 Hrs)</div>
+          <div class="ride-modal-stat-value" id="hmModalAvg24">&ndash;</div>
+          <div class="hm-stat-sub" id="hmModalAvg24Sub"></div>
+        </div>
+        <div class="ride-modal-stat">
+          <div class="ride-modal-stat-label">Avg Wait (7 Days)</div>
+          <div class="ride-modal-stat-value" id="hmModalAvg7">&ndash;</div>
+          <div class="hm-stat-sub" id="hmModalAvg7Sub"></div>
+        </div>
+        <div class="ride-modal-stat">
+          <div class="ride-modal-stat-label">Peak Wait</div>
+          <div class="ride-modal-stat-value" id="hmModalPeak">&ndash;</div>
+          <div class="hm-stat-sub" id="hmModalPeakSub"></div>
+        </div>
+      </div>
+      <div class="ride-modal-chart-title">Last 24 Hours Wait Time History</div>
+      <div class="ride-modal-sparkline-wrap">
+        <div class="ride-modal-no-history" id="hmModalNoHistory">Not enough history yet &mdash; check back after a few more updates.</div>
+        <canvas id="hmModalSparkline" height="120" style="display:none;"></canvas>
+      </div>
+      <div class="hm-modal-note" id="hmModalNote"></div>
+    </div>
+  </div>
+</div>
+<div class="modal-overlay" id="closureModalOverlay" onclick="if(event.target===this) closeClosureModal()">
+  <div class="ride-modal">
+    <div class="ride-modal-header">
+      <div>
+        <div class="ride-modal-eyebrow" id="closureModalPark">Park</div>
+        <div class="ride-modal-title">Temporary Closures</div>
+      </div>
+      <button class="ride-modal-close" onclick="closeClosureModal()">✕</button>
+    </div>
+    <div class="ride-modal-body">
+      <div class="closure-modal-body-scroll">
+        <div class="closure-modal-list" id="closureModalList"></div>
+      </div>
+    </div>
+  </div>
+</div>
 <script>
   const fallbackData = {
     updated_at: new Date().toISOString(),
@@ -710,6 +793,7 @@
   let historicalSummary = null;
   let chartInstance = null;
   let sparklineInstance = null;
+  let hmSparklineInstance = null;
   let heatmapMode = "hour";
   let heatmapSortCol = "name";
   let heatmapSortDir = "asc";
@@ -841,6 +925,41 @@
     const avgWait = Math.round(openRides.reduce((sum, r) => sum + (r.wait_time || 0), 0) / openRides.length);
     const longest = openRides.reduce((max, r) => (r.wait_time > (max ? max.wait_time : -1) ? r : max), null);
     return { avgWait, longest };
+  }
+
+  function estimateClosureMinutes(rideId) {
+    if (!history24h || !history24h.rides) return { minutes: null, unknown: true };
+    const entry = history24h.rides[String(rideId)];
+    if (!entry || !entry.points || entry.points.length === 0) return { minutes: null, unknown: true };
+    const lastOpenPoint = entry.points[entry.points.length - 1];
+    const lastOpenTime = new Date(lastOpenPoint[0]).getTime();
+    if (isNaN(lastOpenTime)) return { minutes: null, unknown: true };
+    const minutes = Math.max(0, Math.round((Date.now() - lastOpenTime) / 60000));
+    return { minutes, unknown: false };
+  }
+
+  function formatClosureDuration(closureInfo) {
+    if (!closureInfo || closureInfo.unknown || closureInfo.minutes === null) return "down (duration unknown)";
+    const m = closureInfo.minutes;
+    if (m < 60) return "down " + m + " min";
+    const h = Math.floor(m / 60);
+    const rem = m % 60;
+    return rem > 0 ? ("down " + h + "h " + rem + "m") : ("down " + h + "h");
+  }
+
+  // Returns closed rides using the SAME visibility filter as the standby
+  // queue table (excludes single rider / Lightning Lane variants). This is
+  // the count that should drive both the "Down" stat and the closure row,
+  // so they never disagree the way down_attractions (raw Worker count,
+  // includes excluded variants) vs. the old closure list did.
+  function getClosureList(park) {
+    const closedRides = getVisibleRides(park).filter(r => !r.is_open);
+    return closedRides.map(r => ({
+      id: r.id,
+      name: r.name,
+      land: r.land,
+      closureInfo: estimateClosureMinutes(r.id)
+    }));
   }
 
   function getCurrentBucketKey() {
@@ -1093,6 +1212,16 @@
       const vsNormalPill = comp.status === "ready"
         ? `<span class="vs-normal-pill ${comp.pctDiff <= 0 ? 'below' : 'above'}">${comp.pctDiff <= 0 ? '🟢' : '🔴'} ${Math.abs(comp.pctDiff)}% ${comp.pctDiff <= 0 ? 'below' : 'above'} normal</span>`
         : '';
+
+      // Use the SAME filtered closure list to drive both the "Down" stat
+      // and the closure row below, so they never disagree again. This
+      // replaces the raw p.down_attractions (Worker's unfiltered count,
+      // includes single-rider/Lightning-Lane variants) with a count that
+      // matches what the standby queue table and closure modal show.
+      const closureList = isClosed ? [] : getClosureList(p);
+      const downCount = closureList.length;
+      const closureRowHtml = buildClosureRowHtml(key, closureList, isClosed);
+
       const card = document.createElement("div");
       card.className = `park-card ${key === activeParkKey ? 'active' : ''} ${isClosed ? 'closed' : ''}`;
       card.dataset.parkKey = key;
@@ -1116,7 +1245,7 @@
           </div>
           <div>
             <span class="metric-label">Down</span>
-            <span class="metric-value" style="color:${p.down_attractions > 0 ? 'var(--red)' : '#fff'}">${p.down_attractions}</span>
+            <span class="metric-value" style="color:${downCount > 0 ? 'var(--red)' : '#fff'}">${isClosed ? '&ndash;' : downCount}</span>
           </div>
         </div>
         <div class="card-metrics-longest">
@@ -1128,10 +1257,67 @@
             <span class="metric-value">${longestDisplay}</span>
           </div>
         </div>
+        ${closureRowHtml}
         <div class="best-time-strip ${isClosed ? 'muted' : ''}">💡 ${getBestTimeTip(p.crowd_score, phaseInfo)}</div>
       `;
       grid.appendChild(card);
     }
+  }
+
+  function buildClosureRowHtml(parkKey, closureList, isParkClosed) {
+    if (isParkClosed) return "";
+    if (closureList.length === 0) {
+      return '<div class="closure-row none">✅ No temporary closures</div>';
+    }
+    var countLabel = closureList.length + ' temporary closure' + (closureList.length === 1 ? '' : 's');
+    return '<div class="closure-row" onclick="openClosureModal(event, \'' + parkKey + '\')">'
+      + '⛔ ' + countLabel
+      + '<span class="closure-caret">▾</span>'
+      + '</div>';
+  }
+
+  function escapeHtml(str) {
+    if (str === null || str === undefined) return "";
+    return String(str)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  function openClosureModal(e, parkKey) {
+    e.stopPropagation();
+    const park = parkData.parks[parkKey];
+    if (!park) return;
+    const closureList = getClosureList(park);
+
+    document.getElementById("closureModalPark").textContent = park.name;
+
+    const listEl = document.getElementById("closureModalList");
+    if (closureList.length === 0) {
+      listEl.innerHTML = '<div class="closure-modal-empty">No temporary closures right now.</div>';
+    } else {
+      var html = "";
+      for (var i = 0; i < closureList.length; i++) {
+        var c = closureList[i];
+        var duration = formatClosureDuration(c.closureInfo);
+        html += '<div class="closure-modal-item">'
+          + '<span class="closure-ride-name">' + escapeHtml(c.name) + '</span>'
+          + '<span class="closure-ride-land">' + escapeHtml(c.land) + '</span>'
+          + '<span class="closure-duration">⛔ ' + escapeHtml(duration) + '</span>'
+          + '</div>';
+      }
+      listEl.innerHTML = html;
+    }
+
+    document.getElementById("closureModalOverlay").classList.add("active");
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeClosureModal() {
+    document.getElementById("closureModalOverlay").classList.remove("active");
+    document.body.style.overflow = "";
   }
 
   function getWaitPillStyle(waitTime) {
@@ -1420,6 +1606,7 @@
     renderHeatmapTable(
       hours.map(h => formatHourShort(h)),
       rideRows.map(({ ride, pointsByHour }) => ({
+        id: ride.id,
         name: ride.name,
         cells: hours.map(h => {
           const arr = pointsByHour[h];
@@ -1468,7 +1655,7 @@
         if (weightedAvg > maxWait) maxWait = weightedAvg;
         return { avg: Math.round(weightedAvg), samples: totalSamples };
       });
-      return { name: ride.name, cells };
+      return { id: ride.id, name: ride.name, cells };
     });
 
     if (!anyReliable) {
@@ -1481,6 +1668,7 @@
     renderHeatmapTable(
       weekdayLabels,
       rideRows.map(r => ({
+        id: r.id,
         name: r.name,
         cells: r.cells.map(c => c ? c.avg : null),
         samples: r.cells.map(c => c ? c.samples : 0)
@@ -1539,7 +1727,7 @@
         const title = lowSample ? `${val} min avg (${row.samples[i]} samples — needs ${minSamples})` : `${val} min avg`;
         return `<td><span class="heatmap-cell has-data" style="background:${color.bg}; color:${color.text}; opacity:${lowSample ? 0.55 : 1}" title="${title}">${val}</span></td>`;
       }).join('');
-      return `<tr><td class="ride-name" title="${row.name}">${row.name}</td>${cellsHtml}</tr>`;
+      return `<tr data-ride-id="${escapeHtml(row.id)}"><td class="ride-name" title="${escapeHtml(row.name)}">${escapeHtml(row.name)}</td>${cellsHtml}</tr>`;
     }).join('');
   }
 
@@ -1548,9 +1736,131 @@
     else renderHeatmapByWeekday();
   }
 
+
+  function getRideHistoryStats(rideId) {
+    const points = getTodayPointsForRide(rideId).filter(pt => typeof pt[1] === "number");
+    let h24 = null;
+    if (points.length > 0) {
+      const waits = points.map(pt => pt[1]);
+      const peak = Math.max(...waits);
+      const peakPt = points.find(pt => pt[1] === peak);
+      h24 = {
+        avg: Math.round(waits.reduce((a, b) => a + b, 0) / waits.length),
+        peak, peakTime: peakPt ? peakPt[0] : null, count: waits.length
+      };
+    }
+    let d7 = null;
+    const entry = historicalSummary && historicalSummary.rides ? historicalSummary.rides[String(rideId)] : null;
+    if (entry && entry.buckets) {
+      let weighted = 0, samples = 0, bestKey = null, bestAvg = -1;
+      Object.entries(entry.buckets).forEach(([k, b]) => {
+        weighted += b.avg_wait * b.samples;
+        samples += b.samples;
+        if (b.avg_wait > bestAvg) { bestAvg = b.avg_wait; bestKey = k; }
+      });
+      if (samples > 0) d7 = { avg: Math.round(weighted / samples), samples, peakBucketAvg: Math.round(bestAvg), peakBucketKey: bestKey };
+    }
+    return { points, h24, d7 };
+  }
+
+  function formatBucketKey(key) {
+    if (!key) return "";
+    const [wd, hr] = key.split("_");
+    const names = { sun: "Sun", mon: "Mon", tue: "Tue", wed: "Wed", thu: "Thu", fri: "Fri", sat: "Sat" };
+    return `${names[wd] || wd} ${formatHourShort(parseInt(hr, 10))}`;
+  }
+
+  function openHeatmapRideModal(rideId) {
+    const park = parkData.parks[activeParkKey];
+    if (!park) return;
+    const ride = (park.rides || []).find(r => String(r.id) === String(rideId));
+    if (!ride) return;
+
+    document.getElementById("hmModalLand").textContent = `${park.name} \u00b7 ${ride.land}`;
+    document.getElementById("hmModalName").textContent = ride.name;
+
+    const st = getRideHistoryStats(ride.id);
+    const setTxt = (id, t) => { document.getElementById(id).textContent = t; };
+
+    if (st.h24) {
+      setTxt("hmModalAvg24", `${st.h24.avg} min`);
+      setTxt("hmModalAvg24Sub", `${st.h24.count} readings`);
+      setTxt("hmModalPeak", `${st.h24.peak} min`);
+      setTxt("hmModalPeakSub", st.h24.peakTime ? `at ${formatUpdatedTime(st.h24.peakTime)}` : "");
+    } else {
+      setTxt("hmModalAvg24", "\u2013"); setTxt("hmModalAvg24Sub", "No data yet");
+      setTxt("hmModalPeak", "\u2013"); setTxt("hmModalPeakSub", "");
+    }
+
+    if (st.d7) {
+      setTxt("hmModalAvg7", `${st.d7.avg} min`);
+      setTxt("hmModalAvg7Sub", `${st.d7.samples} samples`);
+    } else {
+      setTxt("hmModalAvg7", "\u2013"); setTxt("hmModalAvg7Sub", "No data yet");
+    }
+
+    let note = "";
+    if (st.d7 && st.d7.peakBucketKey) {
+      note = `Typically busiest: ${formatBucketKey(st.d7.peakBucketKey)} (avg ${st.d7.peakBucketAvg} min). `;
+    }
+    note += "Averages include every reading recorded while the ride was reporting a wait.";
+    setTxt("hmModalNote", note);
+
+    const noHistoryEl = document.getElementById("hmModalNoHistory");
+    const canvasEl = document.getElementById("hmModalSparkline");
+    if (st.points.length < 2) {
+      noHistoryEl.style.display = "block";
+      canvasEl.style.display = "none";
+      if (hmSparklineInstance) { hmSparklineInstance.destroy(); hmSparklineInstance = null; }
+    } else {
+      noHistoryEl.style.display = "none";
+      canvasEl.style.display = "block";
+      renderHeatmapModalSparkline(st.points);
+    }
+
+    document.getElementById("hmModalOverlay").classList.add("active");
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeHeatmapRideModal() {
+    document.getElementById("hmModalOverlay").classList.remove("active");
+    document.body.style.overflow = "";
+  }
+
+  function renderHeatmapModalSparkline(points) {
+    const ctx = document.getElementById("hmModalSparkline").getContext("2d");
+    const labels = points.map(pt => new Date(pt[0]).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }));
+    const data = points.map(pt => pt[1]);
+    if (hmSparklineInstance) hmSparklineInstance.destroy();
+    const gradient = ctx.createLinearGradient(0, 0, 0, 120);
+    gradient.addColorStop(0, "rgba(255, 209, 102, 0.3)");
+    gradient.addColorStop(1, "rgba(255, 209, 102, 0.02)");
+    hmSparklineInstance = new Chart(ctx, {
+      type: "line",
+      data: { labels, datasets: [{ data, borderColor: "#ffd166", backgroundColor: gradient, borderWidth: 2, pointRadius: 0, pointHoverRadius: 4, tension: 0.3, fill: true }] },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false }, tooltip: {
+          backgroundColor: "#0f2545", titleColor: "#ffd166", bodyColor: "#f5f8fc",
+          borderColor: "rgba(255,255,255,0.15)", borderWidth: 1, padding: 8, cornerRadius: 6,
+          callbacks: { label: (c) => `${c.parsed.y} min` }
+        }},
+        scales: {
+          y: { grid: { color: "rgba(255,255,255,0.06)" }, ticks: { color: "#a9bdd4", callback: v => v + "m" } },
+          x: { grid: { color: "transparent" }, ticks: { color: "#a9bdd4", maxTicksLimit: 6 } }
+        }
+      }
+    });
+  }
+
+  document.getElementById("heatmapBody").addEventListener("click", (e) => {
+    const tr = e.target.closest("tr[data-ride-id]");
+    if (tr) openHeatmapRideModal(tr.dataset.rideId);
+  });
+
   document.getElementById("rideSearch").addEventListener("input", renderDetails);
   window.addEventListener("DOMContentLoaded", loadData);
-  document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeRideModal(); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") { closeRideModal(); closeClosureModal(); closeHeatmapRideModal(); } });
 </script>
 </body>
 </html>

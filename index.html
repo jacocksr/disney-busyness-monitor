@@ -944,20 +944,20 @@
     let fetchSucceeded = false;
 
     try {
-      nextParkData = await fetchJsonWithCacheBust('https://queue-times-probe.jacocksr.workers.dev/api/live-wait-times');
+      nextParkData = await fetchJsonWithCacheBust('https://queue-times-probe-test.westgamecocks.workers.dev/api/live-wait-times');
       fetchSucceeded = true;
     } catch (e) {
       console.log("Live data fetch failed; keeping previous snapshot.", e);
     }
 
     try {
-      nextHistory24h = await fetchJsonWithCacheBust('https://queue-times-probe.jacocksr.workers.dev/api/history-24h');
+      nextHistory24h = await fetchJsonWithCacheBust('https://queue-times-probe-test.westgamecocks.workers.dev/api/history-24h');
     } catch (e) {
       console.log("No 24h history available yet.");
     }
 
     try {
-      nextHistoricalSummary = await fetchJsonWithCacheBust('https://queue-times-probe.jacocksr.workers.dev/api/historical-summary');
+      nextHistoricalSummary = await fetchJsonWithCacheBust('https://queue-times-probe-test.westgamecocks.workers.dev/api/historical-summary');
     } catch (e) {
       console.log("No historical summary available yet.");
     }

@@ -800,6 +800,8 @@
   let sortField = "wait_time";
   let sortDir = "desc";
   let isRefreshing = false;
+  const SUMMARY_REFRESH_INTERVAL_MS = 60 * 60 * 1000;
+  let lastSummaryFetchAt = 0;
 
   const TIMEZONES = [
     { id: "America/New_York", label: "Eastern (Park Time)" },
@@ -1076,7 +1078,11 @@
     }
 
     try {
-      nextHistoricalSummary = await fetchJsonWithCacheBust('https://queue-times-probe-test.westgamecocks.workers.dev/api/historical-summary');
+      const summaryEmpty = !historicalSummary || Object.keys(historicalSummary.rides || {}).length === 0;
+      const summaryDue = summaryEmpty || (Date.now() - lastSummaryFetchAt) >= SUMMARY_REFRESH_INTERVAL_MS;
+      if (summaryDue) {
+        nextHistoricalSummary = await fetchJsonWithCacheBust('https://queue-times-probe-test.westgamecocks.workers.dev/api/historical-summary');
+      }
     } catch (e) {
       console.log("No historical summary available yet.");
     }
@@ -1088,7 +1094,7 @@
       if (isInitialLoad || incomingIsNewer) {
         parkData = nextParkData;
         if (nextHistory24h) history24h = nextHistory24h;
-        if (nextHistoricalSummary) historicalSummary = nextHistoricalSummary;
+        if (nextHistoricalSummary) { historicalSummary = nextHistoricalSummary; lastSummaryFetchAt = Date.now(); }
         renderAll();
       } else {
         console.log("Fetched data was not newer than current snapshot; ignoring.");
@@ -1750,17 +1756,23 @@
       };
     }
     let d7 = null;
+    let busiest = null;
     const entry = historicalSummary && historicalSummary.rides ? historicalSummary.rides[String(rideId)] : null;
+    if (entry && entry.last_7_days) {
+      d7 = {
+        avg: Math.round(entry.last_7_days.avg_wait),
+        peak: entry.last_7_days.peak_wait,
+        samples: entry.last_7_days.samples
+      };
+    }
     if (entry && entry.buckets) {
-      let weighted = 0, samples = 0, bestKey = null, bestAvg = -1;
+      let bestKey = null, bestAvg = -1;
       Object.entries(entry.buckets).forEach(([k, b]) => {
-        weighted += b.avg_wait * b.samples;
-        samples += b.samples;
         if (b.avg_wait > bestAvg) { bestAvg = b.avg_wait; bestKey = k; }
       });
-      if (samples > 0) d7 = { avg: Math.round(weighted / samples), samples, peakBucketAvg: Math.round(bestAvg), peakBucketKey: bestKey };
+      if (bestKey) busiest = { key: bestKey, avg: Math.round(bestAvg) };
     }
-    return { points, h24, d7 };
+    return { points, h24, d7, busiest };
   }
 
   function formatBucketKey(key) {
@@ -1786,10 +1798,13 @@
       setTxt("hmModalAvg24", `${st.h24.avg} min`);
       setTxt("hmModalAvg24Sub", `${st.h24.count} readings`);
       setTxt("hmModalPeak", `${st.h24.peak} min`);
-      setTxt("hmModalPeakSub", st.h24.peakTime ? `at ${formatUpdatedTime(st.h24.peakTime)}` : "");
+      const peakAt = st.h24.peakTime ? `at ${formatUpdatedTime(st.h24.peakTime)}` : "";
+      const peak7 = (st.d7 && st.d7.peak !== undefined) ? `7-day peak ${st.d7.peak} min` : "";
+      setTxt("hmModalPeakSub", [peakAt, peak7].filter(Boolean).join(" \u00b7 "));
     } else {
       setTxt("hmModalAvg24", "\u2013"); setTxt("hmModalAvg24Sub", "No data yet");
-      setTxt("hmModalPeak", "\u2013"); setTxt("hmModalPeakSub", "");
+      setTxt("hmModalPeak", "\u2013");
+      setTxt("hmModalPeakSub", (st.d7 && st.d7.peak !== undefined) ? `7-day peak ${st.d7.peak} min` : "");
     }
 
     if (st.d7) {
@@ -1800,10 +1815,10 @@
     }
 
     let note = "";
-    if (st.d7 && st.d7.peakBucketKey) {
-      note = `Typically busiest: ${formatBucketKey(st.d7.peakBucketKey)} (avg ${st.d7.peakBucketAvg} min). `;
+    if (st.busiest) {
+      note = `Typically busiest: ${formatBucketKey(st.busiest.key)} (avg ${st.busiest.avg} min). `;
     }
-    note += "Averages include every reading recorded while the ride was reporting a wait.";
+    note += "7-day figures exclude zero-minute readings; the 24-hour average includes every open reading.";
     setTxt("hmModalNote", note);
 
     const noHistoryEl = document.getElementById("hmModalNoHistory");

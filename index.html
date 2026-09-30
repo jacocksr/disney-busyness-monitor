@@ -335,6 +335,27 @@
     transition: background 0.15s, border-color 0.15s;
   }
   .closure-row:hover { background: rgba(255,93,122,0.16); border-color: rgba(255,93,122,0.4); }
+  .closure-row.info {
+    background: rgba(167,139,250,0.10); border-color: rgba(167,139,250,0.28); color: var(--purple);
+  }
+  .closure-row.info:hover { background: rgba(167,139,250,0.17); border-color: rgba(167,139,250,0.42); }
+  .closure-section-title {
+    font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold);
+    font-weight: 700; margin: 0.9rem 0 0.1rem;
+  }
+  .closure-section-title:first-child { margin-top: 0; }
+  .closure-modal-item .closure-tag { color: var(--purple); font-size: 0.82rem; font-weight: 600; margin-top: 0.2rem; }
+  .closure-modal-item .closure-muted { color: var(--text-muted); font-size: 0.82rem; font-weight: 500; margin-top: 0.2rem; }
+  .closure-modal-item .closure-live { color: var(--green); font-size: 0.82rem; font-weight: 600; margin-top: 0.2rem; }
+  .status-refurb { color: var(--purple); font-weight: 600; font-size: 0.82rem; }
+  .status-muted { color: var(--text-muted); font-weight: 500; font-size: 0.82rem; }
+  tr.special-group-row td {
+    cursor: pointer; background: rgba(255,255,255,0.04); color: var(--gold);
+    font-size: 0.78rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
+    border-top: 1px solid rgba(255,255,255,0.12);
+  }
+  tr.special-group-row:hover td { background: rgba(255,209,102,0.08); }
+  .special-caret { margin-left: 0.4rem; }
   .closure-row.none {
     background: rgba(53,208,138,0.08); border-color: rgba(53,208,138,0.22); color: var(--green);
     cursor: default; font-weight: 500;
@@ -693,7 +714,7 @@
     <div class="ride-modal-header">
       <div>
         <div class="ride-modal-eyebrow" id="closureModalPark">Park</div>
-        <div class="ride-modal-title">Temporary Closures</div>
+        <div class="ride-modal-title">Closures &amp; Special Attractions</div>
       </div>
       <button class="ride-modal-close" onclick="closeClosureModal()">✕</button>
     </div>
@@ -800,6 +821,26 @@
   let sortField = "wait_time";
   let sortDir = "desc";
   let isRefreshing = false;
+  let showSpecialRows = false;
+
+  // ── Ride classification (edit these lists as the park calendar changes) ──
+  // Applies to ALL four parks. Order of precedence: event > meet > show > limited hours.
+  // Special items are kept off the Down count, closure row, wait averages and heatmaps;
+  // they live in their own popup section and a collapsed group at the bottom of the table.
+
+  // Party / after-hours / ticketed-event experiences.
+  const EVENT_NAME_PATTERNS = [/not.so.scary/i, /very merry/i, /jollywood nights/i, /after hours/i, /halloween party/i, /christmas party/i];
+  // Character meet-and-greets (every park uses "Meet ..." titles).
+  const MEET_NAME_PATTERNS = [/^meet\b/i];
+  // Scheduled live shows / theater performances.
+  const SHOW_NAME_PATTERNS = [/live on stage/i, /sing.along/i, /musical adventure/i, /better zoogether/i, /festival of the lion king/i, /fantasmic/i, /finding nemo/i, /turtle talk/i];
+  // Other experiences with limited operating hours.
+  const LIMITED_HOURS_NAME_PATTERNS = [/pirate.{0,2}s adventure/i, /conservation station/i, /wildlife express/i];
+  // Planned refurbishments: always tagged "Refurbishment" while closed.
+  const REFURBISHMENT_NAME_PATTERNS = [/walt disney world railroad/i, /carousel of progress/i];
+  // Closed entries that are really one attraction (e.g. multiple stations) are merged.
+  const MERGE_CLOSURE_GROUPS = [{ pattern: /^walt disney world railroad/i, name: "Walt Disney World Railroad", unit: "station" }];
+  const SPECIAL_KIND_LABELS = { event: "Event", meet: "Character meet", show: "Show", limited: "Limited hours" };
   const SUMMARY_REFRESH_INTERVAL_MS = 60 * 60 * 1000;
   let lastSummaryFetchAt = 0;
 
@@ -922,7 +963,7 @@
   }
 
   function computeLiveStats(park) {
-    const openRides = getVisibleRides(park).filter(r => r.is_open);
+    const openRides = getStandardRides(park).filter(r => r.is_open);
     if (openRides.length === 0) return { avgWait: null, longest: null };
     const avgWait = Math.round(openRides.reduce((sum, r) => sum + (r.wait_time || 0), 0) / openRides.length);
     const longest = openRides.reduce((max, r) => (r.wait_time > (max ? max.wait_time : -1) ? r : max), null);
@@ -937,7 +978,7 @@
     const lastOpenTime = new Date(lastOpenPoint[0]).getTime();
     if (isNaN(lastOpenTime)) return { minutes: null, unknown: true };
     const minutes = Math.max(0, Math.round((Date.now() - lastOpenTime) / 60000));
-    return { minutes, unknown: false };
+    return { minutes, unknown: false, lastOpenIso: lastOpenPoint[0] };
   }
 
   function formatClosureDuration(closureInfo) {
@@ -949,19 +990,101 @@
     return rem > 0 ? ("down " + h + "h " + rem + "m") : ("down " + h + "h");
   }
 
-  // Returns closed rides using the SAME visibility filter as the standby
-  // queue table (excludes single rider / Lightning Lane variants). This is
-  // the count that should drive both the "Down" stat and the closure row,
-  // so they never disagree the way down_attractions (raw Worker count,
-  // includes excluded variants) vs. the old closure list did.
-  function getClosureList(park) {
-    const closedRides = getVisibleRides(park).filter(r => !r.is_open);
-    return closedRides.map(r => ({
-      id: r.id,
-      name: r.name,
-      land: r.land,
-      closureInfo: estimateClosureMinutes(r.id)
-    }));
+  function getRideKind(r) {
+    const n = (r && r.name) || "";
+    if (EVENT_NAME_PATTERNS.some(rx => rx.test(n))) return "event";
+    if (MEET_NAME_PATTERNS.some(rx => rx.test(n))) return "meet";
+    if (SHOW_NAME_PATTERNS.some(rx => rx.test(n))) return "show";
+    if (LIMITED_HOURS_NAME_PATTERNS.some(rx => rx.test(n))) return "limited";
+    return "standard";
+  }
+
+  function getStandardRides(park) {
+    return getVisibleRides(park).filter(r => getRideKind(r) === "standard");
+  }
+
+  function hasNoRecentOpenReading(rideId) {
+    if (!history24h || !history24h.rides) return false;
+    const entry = history24h.rides[String(rideId)];
+    return !entry || !entry.points || entry.points.length === 0;
+  }
+
+  // For a CLOSED standard ride: extended closure (refurbishment / 24h+) or temporary downtime.
+  function classifyClosedRide(r) {
+    const n = r.name || "";
+    if (REFURBISHMENT_NAME_PATTERNS.some(rx => rx.test(n))) return { group: "extended", tag: "Refurbishment" };
+    if (hasNoRecentOpenReading(r.id)) return { group: "extended", tag: "Extended closure (24h+)" };
+    return { group: "temporary" };
+  }
+
+  // Epoch ms of today's earliest park opening (early entry, ET) for the given park.
+  function getTodayParkOpenMs(parkKey, park) {
+    const hours = (park && park.hours) || DEFAULT_HOURS[parkKey];
+    if (!hours) return null;
+    const [h, m] = (hours.earlyEntry || hours.open).split(":").map(Number);
+    const now = new Date();
+    const wall = new Date(now.toLocaleString("en-US", { timeZone: "America/New_York" }));
+    const offsetMs = wall.getTime() - now.getTime();
+    const target = new Date(wall);
+    target.setHours(h, m, 0, 0);
+    return target.getTime() - offsetMs;
+  }
+
+  function formatLastOpen(iso) {
+    const etDay = d => d.toLocaleDateString("en-CA", { timeZone: "America/New_York" });
+    const d = new Date(iso);
+    const dayKey = etDay(d);
+    let dayLabel;
+    if (dayKey === etDay(new Date())) dayLabel = "today";
+    else if (dayKey === etDay(new Date(Date.now() - 24 * 60 * 60 * 1000))) dayLabel = "yesterday";
+    else dayLabel = d.toLocaleDateString([], { month: "short", day: "numeric", timeZone: "America/New_York" });
+    return `${formatUpdatedTime(iso)} ${dayLabel}`;
+  }
+
+  // "down 1h 20m" for mid-day breakdowns; "not open yet today" when the ride's last open
+  // reading predates today's park opening (avoids counting overnight hours as downtime).
+  function formatClosureStatus(closureInfo, parkKey, park) {
+    if (closureInfo && !closureInfo.unknown && closureInfo.lastOpenIso) {
+      const openMs = getTodayParkOpenMs(parkKey, park);
+      const lastMs = Date.parse(closureInfo.lastOpenIso);
+      if (openMs !== null && !isNaN(lastMs) && lastMs < openMs) {
+        return `not open yet today \u00b7 last open ${formatLastOpen(closureInfo.lastOpenIso)}`;
+      }
+    }
+    return formatClosureDuration(closureInfo);
+  }
+
+  // Splits a park's non-running attractions into three groups so that only genuine
+  // short-term downtime drives the card's Down count and red closure row.
+  function getClosureGroups(park) {
+    const groups = { temporary: [], extended: [], special: [] };
+    const merged = {};
+    getVisibleRides(park).forEach(r => {
+      const kind = getRideKind(r);
+      if (kind !== "standard") {
+        groups.special.push({ id: r.id, name: r.name, land: r.land, kind, is_open: r.is_open, wait_time: r.wait_time });
+        return;
+      }
+      if (r.is_open) return;
+      const cls = classifyClosedRide(r);
+      if (cls.group === "temporary") {
+        groups.temporary.push({ id: r.id, name: r.name, land: r.land, closureInfo: estimateClosureMinutes(r.id) });
+        return;
+      }
+      const mg = MERGE_CLOSURE_GROUPS.find(g => g.pattern.test(r.name || ""));
+      if (mg) {
+        if (!merged[mg.name]) {
+          merged[mg.name] = { id: mg.name, name: mg.name, lands: [], count: 0, unit: mg.unit, tag: cls.tag };
+          groups.extended.push(merged[mg.name]);
+        }
+        const m = merged[mg.name];
+        m.count += 1;
+        if (r.land && !m.lands.includes(r.land)) m.lands.push(r.land);
+      } else {
+        groups.extended.push({ id: r.id, name: r.name, lands: [r.land], count: 1, unit: null, tag: cls.tag });
+      }
+    });
+    return groups;
   }
 
   function getCurrentBucketKey() {
@@ -973,7 +1096,7 @@
   function getParkBaseline(park) {
     if (!historicalSummary || !historicalSummary.rides) return null;
     const bucketKey = getCurrentBucketKey();
-    const visibleRides = getVisibleRides(park).filter(r => r.is_open);
+    const visibleRides = getStandardRides(park).filter(r => r.is_open);
     let totalWeighted = 0, totalSamples = 0;
     visibleRides.forEach(ride => {
       const entry = historicalSummary.rides[String(ride.id)];
@@ -1048,10 +1171,9 @@
   }
 
   async function fetchJsonWithCacheBust(path) {
-    const bustedUrl = `${path}?t=${Date.now()}`;
-    const res = await fetch(bustedUrl, { cache: "no-store" });
-    if (!res.ok) throw new Error(`Failed to fetch ${path}: ${res.status}`);
-    return res.json();
+   const res = await fetch(path);
+   if (!res.ok) throw new Error(`Failed to fetch ${path}: ${res.status}`);
+   return res.json();
   }
 
   async function fetchLatestData({ isInitialLoad = false } = {}) {
@@ -1219,14 +1341,12 @@
         ? `<span class="vs-normal-pill ${comp.pctDiff <= 0 ? 'below' : 'above'}">${comp.pctDiff <= 0 ? '🟢' : '🔴'} ${Math.abs(comp.pctDiff)}% ${comp.pctDiff <= 0 ? 'below' : 'above'} normal</span>`
         : '';
 
-      // Use the SAME filtered closure list to drive both the "Down" stat
-      // and the closure row below, so they never disagree again. This
-      // replaces the raw p.down_attractions (Worker's unfiltered count,
-      // includes single-rider/Lightning-Lane variants) with a count that
-      // matches what the standby queue table and closure modal show.
-      const closureList = isClosed ? [] : getClosureList(p);
-      const downCount = closureList.length;
-      const closureRowHtml = buildClosureRowHtml(key, closureList, isClosed);
+      // Only genuine short-term downtime on standard attractions drives the
+      // Down count and red closure row. Refurbishments/extended closures and
+      // events/shows/meets live in the popup sections.
+      const closureGroups = isClosed ? { temporary: [], extended: [], special: [] } : getClosureGroups(p);
+      const downCount = closureGroups.temporary.length;
+      const closureRowHtml = buildClosureRowHtml(key, closureGroups, isClosed);
 
       const card = document.createElement("div");
       card.className = `park-card ${key === activeParkKey ? 'active' : ''} ${isClosed ? 'closed' : ''}`;
@@ -1270,16 +1390,26 @@
     }
   }
 
-  function buildClosureRowHtml(parkKey, closureList, isParkClosed) {
+  function buildClosureRowHtml(parkKey, groups, isParkClosed) {
     if (isParkClosed) return "";
-    if (closureList.length === 0) {
-      return '<div class="closure-row none">✅ No temporary closures</div>';
+    var html = "";
+    var tempN = groups.temporary.length;
+    if (tempN === 0) {
+      html += '<div class="closure-row none">✅ No temporary closures</div>';
+    } else {
+      html += '<div class="closure-row" onclick="openClosureModal(event, \'' + parkKey + '\')">'
+        + '⛔ ' + tempN + ' temporary closure' + (tempN === 1 ? '' : 's')
+        + '<span class="closure-caret">▾</span></div>';
     }
-    var countLabel = closureList.length + ' temporary closure' + (closureList.length === 1 ? '' : 's');
-    return '<div class="closure-row" onclick="openClosureModal(event, \'' + parkKey + '\')">'
-      + '⛔ ' + countLabel
-      + '<span class="closure-caret">▾</span>'
-      + '</div>';
+    var extN = groups.extended.length, spN = groups.special.length;
+    if (extN + spN > 0) {
+      var parts = [];
+      if (extN > 0) parts.push('🛠 ' + extN + ' refurbishment/extended');
+      if (spN > 0) parts.push('🎟️ ' + spN + ' event/show/meet');
+      html += '<div class="closure-row info" onclick="openClosureModal(event, \'' + parkKey + '\')">'
+        + parts.join(' · ') + '<span class="closure-caret">▾</span></div>';
+    }
+    return html;
   }
 
   function escapeHtml(str) {
@@ -1296,27 +1426,53 @@
     e.stopPropagation();
     const park = parkData.parks[parkKey];
     if (!park) return;
-    const closureList = getClosureList(park);
+    const groups = getClosureGroups(park);
 
     document.getElementById("closureModalPark").textContent = park.name;
 
-    const listEl = document.getElementById("closureModalList");
-    if (closureList.length === 0) {
-      listEl.innerHTML = '<div class="closure-modal-empty">No temporary closures right now.</div>';
+    let html = "";
+    html += '<div class="closure-section-title">Temporary closures</div>';
+    if (groups.temporary.length === 0) {
+      html += '<div class="closure-modal-empty">No temporary closures right now.</div>';
     } else {
-      var html = "";
-      for (var i = 0; i < closureList.length; i++) {
-        var c = closureList[i];
-        var duration = formatClosureDuration(c.closureInfo);
+      groups.temporary.forEach(c => {
         html += '<div class="closure-modal-item">'
           + '<span class="closure-ride-name">' + escapeHtml(c.name) + '</span>'
           + '<span class="closure-ride-land">' + escapeHtml(c.land) + '</span>'
-          + '<span class="closure-duration">⛔ ' + escapeHtml(duration) + '</span>'
+          + '<span class="closure-duration">⛔ ' + escapeHtml(formatClosureStatus(c.closureInfo, parkKey, park)) + '</span>'
           + '</div>';
-      }
-      listEl.innerHTML = html;
+      });
     }
 
+    if (groups.extended.length > 0) {
+      html += '<div class="closure-section-title">Refurbishment &amp; extended closures</div>';
+      groups.extended.forEach(c => {
+        let land = c.lands.filter(Boolean).join(" · ");
+        if (c.unit && c.count > 1) land += " (" + c.count + " " + c.unit + "s)";
+        html += '<div class="closure-modal-item">'
+          + '<span class="closure-ride-name">' + escapeHtml(c.name) + '</span>'
+          + '<span class="closure-ride-land">' + escapeHtml(land) + '</span>'
+          + '<span class="closure-tag">🛠 ' + escapeHtml(c.tag) + '</span>'
+          + '</div>';
+      });
+    }
+
+    if (groups.special.length > 0) {
+      html += '<div class="closure-section-title">Events, shows &amp; character meets</div>';
+      groups.special.forEach(c => {
+        const label = SPECIAL_KIND_LABELS[c.kind] || "Special";
+        const status = c.is_open
+          ? '<span class="closure-live">● ' + escapeHtml(label) + ' · Running now' + (c.wait_time > 0 ? ' · ' + c.wait_time + ' min' : '') + '</span>'
+          : '<span class="closure-muted">' + escapeHtml(label) + ' · Not running right now</span>';
+        html += '<div class="closure-modal-item">'
+          + '<span class="closure-ride-name">' + escapeHtml(c.name) + '</span>'
+          + '<span class="closure-ride-land">' + escapeHtml(c.land) + '</span>'
+          + status
+          + '</div>';
+      });
+    }
+
+    document.getElementById("closureModalList").innerHTML = html;
     document.getElementById("closureModalOverlay").classList.add("active");
     document.body.style.overflow = "hidden";
   }
@@ -1363,13 +1519,19 @@
     const titleEmojiImg = parkEmojiSrc ? `<img src="${parkEmojiSrc}" alt="${park.name} emoji" class="panel-title-emoji" />` : (park.icon ? `${park.icon} ` : '');
     document.getElementById("selectedParkTitle").innerHTML = `${titleEmojiImg}${park.name} Standby Queue`;
 
+    renderRideRows(park);
+    updateSortHeaderUI();
+    renderChart(park);
+  }
+
+  function renderRideRows(park) {
     const searchVal = document.getElementById("rideSearch").value.toLowerCase();
     const body = document.getElementById("ridesBody");
     body.innerHTML = "";
 
-    let filtered = getVisibleRides(park).filter(r => r.name.toLowerCase().includes(searchVal) || r.land.toLowerCase().includes(searchVal));
+    const matchesSearch = r => (r.name || "").toLowerCase().includes(searchVal) || (r.land || "").toLowerCase().includes(searchVal);
 
-    filtered = filtered.slice().sort((a, b) => {
+    const sortRides = list => list.slice().sort((a, b) => {
       let av = a[sortField], bv = b[sortField];
       if (sortField === "wait_time") {
         av = a.is_open ? a.wait_time : -1;
@@ -1383,28 +1545,48 @@
       return 0;
     });
 
-    filtered.forEach(r => {
+    const buildRow = (r) => {
+      const kind = getRideKind(r);
       const row = document.createElement("tr");
       row.className = "ride-row";
       let waitDisplay;
       if (r.is_open) {
         const style = getWaitPillStyle(r.wait_time);
         waitDisplay = `<span class="wait-pill" style="background:${style.bg}; color:${style.color}">${r.wait_time} min</span>`;
+      } else if (kind !== "standard") {
+        waitDisplay = `<span class="status-muted">Not running right now</span>`;
       } else {
-        waitDisplay = `<span class="status-down">⛔ Temporary Closure</span>`;
+        const cls = classifyClosedRide(r);
+        waitDisplay = cls.group === "extended"
+          ? `<span class="status-refurb">🛠 ${escapeHtml(cls.tag)}</span>`
+          : `<span class="status-down">⛔ Temporary Closure</span>`;
       }
-
+      const landText = kind !== "standard"
+        ? `${SPECIAL_KIND_LABELS[kind] || "Special"} · ${r.land || ""}`
+        : (r.land || "");
       row.innerHTML = `
-        <td><strong>${r.name}</strong></td>
-        <td><span class="land-tag">${r.land}</span></td>
+        <td><strong>${escapeHtml(r.name)}</strong></td>
+        <td><span class="land-tag">${escapeHtml(landText)}</span></td>
         <td style="text-align: right;">${waitDisplay}</td>
       `;
       row.onclick = () => openRideModal(r, park.name);
-      body.appendChild(row);
-    });
+      return row;
+    };
 
-    updateSortHeaderUI();
-    renderChart(park);
+    const visible = getVisibleRides(park).filter(matchesSearch);
+    const standardRows = sortRides(visible.filter(r => getRideKind(r) === "standard"));
+    const specialRows = sortRides(visible.filter(r => getRideKind(r) !== "standard"));
+
+    standardRows.forEach(r => body.appendChild(buildRow(r)));
+
+    if (specialRows.length > 0) {
+      const hdr = document.createElement("tr");
+      hdr.className = "special-group-row";
+      hdr.innerHTML = `<td colspan="3">🎟️ Events, shows &amp; character meets (${specialRows.length})<span class="special-caret">${showSpecialRows ? "▾" : "▸"}</span></td>`;
+      hdr.onclick = () => { showSpecialRows = !showSpecialRows; renderRideRows(park); };
+      body.appendChild(hdr);
+      if (showSpecialRows) specialRows.forEach(r => body.appendChild(buildRow(r)));
+    }
   }
 
   function renderChart(park) {
@@ -1577,7 +1759,7 @@
     document.getElementById("heatmapTitle").textContent = "🔥 Ride Wait Heatmap — Today by Hour";
 
     const park = parkData.parks[activeParkKey];
-    const visibleRides = getVisibleRides(park).filter(r => r.is_open).slice(0, 12);
+    const visibleRides = getStandardRides(park).filter(r => r.is_open).slice(0, 12);
 
     if (!history24h || !history24h.rides || visibleRides.length === 0) {
       renderHeatmapEmpty("Collecting today's data — the heatmap will populate as more scrapes come in throughout the day.");
@@ -1588,11 +1770,15 @@
     const hours = [];
     for (let h = 8; h <= Math.min(23, nowHour); h++) hours.push(h);
 
+    const etDateFmt = { timeZone: "America/New_York" };
+    const todayET = new Date().toLocaleDateString("en-CA", etDateFmt);
+
     const rideRows = visibleRides.map(ride => {
       const entry = history24h.rides[String(ride.id)];
       const pointsByHour = {};
       if (entry) {
         entry.points.forEach(([iso, wait]) => {
+          if (new Date(iso).toLocaleDateString("en-CA", etDateFmt) !== todayET) return;
           const localHour = new Date(new Date(iso).toLocaleString("en-US", { timeZone: "America/New_York" })).getHours();
           if (!pointsByHour[localHour]) pointsByHour[localHour] = [];
           pointsByHour[localHour].push(wait);
@@ -1635,7 +1821,7 @@
     document.getElementById("heatmapTitle").textContent = "🔥 Ride Wait Heatmap — By Day of Week";
 
     const park = parkData.parks[activeParkKey];
-    const visibleRides = getVisibleRides(park).filter(r => r.is_open).slice(0, 12);
+    const visibleRides = getStandardRides(park).filter(r => r.is_open).slice(0, 12);
     const weekdayLabels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
     const weekdayKeys = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
 

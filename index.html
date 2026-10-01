@@ -414,6 +414,22 @@
   .heatmap-table tbody tr[data-ride-id] { cursor: pointer; }
   .heatmap-table tbody tr[data-ride-id]:hover td.ride-name { color: var(--gold); background: #1c3f61; }
   .heatmap-table tbody tr[data-ride-id]:hover td { background: transparent; }
+  .chart-title-row {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 0.5rem 0.8rem; flex-wrap: wrap; margin-bottom: 0.6rem;
+  }
+  .chart-title-row .ride-modal-chart-title { margin-bottom: 0; }
+  .day-nav { display: inline-flex; align-items: center; gap: 0.4rem; }
+  .day-nav-btn {
+    width: 28px; height: 28px; border-radius: 50%; padding: 0;
+    background: rgba(255,255,255,0.08); border: 1px solid var(--card-border);
+    color: var(--text-muted); font-size: 0.65rem; cursor: pointer;
+    display: inline-flex; align-items: center; justify-content: center;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+  }
+  .day-nav-btn:hover:not(:disabled) { background: rgba(255,209,102,0.18); color: var(--gold); border-color: var(--gold); }
+  .day-nav-btn:disabled { opacity: 0.3; cursor: default; }
+  .day-nav-label { font-size: 0.72rem; font-weight: 600; color: var(--text-muted); min-width: 8.5rem; text-align: center; }
   .hm-stat-sub { font-size: 0.66rem; color: var(--text-muted); margin-top: 0.25rem; line-height: 1.3; }
   .hm-modal-note { font-size: 0.72rem; color: var(--text-muted); margin-top: 0.9rem; line-height: 1.5; font-style: italic; }
   .heatmap-cell.no-data { background: rgba(255,255,255,0.03); color: rgba(255,255,255,0.15); }
@@ -657,15 +673,22 @@
           <div class="ride-modal-stat-value" id="rideModalCurrent">–</div>
         </div>
         <div class="ride-modal-stat">
-          <div class="ride-modal-stat-label">Today's Avg</div>
+          <div class="ride-modal-stat-label" id="rideModalAvgLabel">Today's Avg</div>
           <div class="ride-modal-stat-value" id="rideModalAvg">–</div>
         </div>
         <div class="ride-modal-stat">
-          <div class="ride-modal-stat-label">Today's Peak</div>
+          <div class="ride-modal-stat-label" id="rideModalPeakLabel">Today's Peak</div>
           <div class="ride-modal-stat-value" id="rideModalPeak">–</div>
         </div>
       </div>
-      <div class="ride-modal-chart-title">Today's Wait Time History</div>
+      <div class="chart-title-row">
+        <div class="ride-modal-chart-title" id="rideModalChartTitle">Today's Wait Time History</div>
+        <div class="day-nav">
+          <button type="button" class="day-nav-btn" id="rideModalPrevDay" onclick="stepDay('ride', -1)" aria-label="Previous day">◀</button>
+          <span class="day-nav-label" id="rideModalDayLabel"></span>
+          <button type="button" class="day-nav-btn" id="rideModalNextDay" onclick="stepDay('ride', 1)" aria-label="Next day">▶</button>
+        </div>
+      </div>
       <div class="ride-modal-sparkline-wrap" id="rideModalSparkWrap">
         <div class="ride-modal-no-history" id="rideModalNoHistory">Not enough history yet today &mdash; check back after a few more updates.</div>
         <canvas id="rideModalSparkline" height="120" style="display:none;"></canvas>
@@ -700,7 +723,14 @@
           <div class="hm-stat-sub" id="hmModalPeakSub"></div>
         </div>
       </div>
-      <div class="ride-modal-chart-title">Last 24 Hours Wait Time History</div>
+      <div class="chart-title-row">
+        <div class="ride-modal-chart-title" id="hmModalChartTitle">Today's Wait Time History</div>
+        <div class="day-nav">
+          <button type="button" class="day-nav-btn" id="hmModalPrevDay" onclick="stepDay('hm', -1)" aria-label="Previous day">◀</button>
+          <span class="day-nav-label" id="hmModalDayLabel"></span>
+          <button type="button" class="day-nav-btn" id="hmModalNextDay" onclick="stepDay('hm', 1)" aria-label="Next day">▶</button>
+        </div>
+      </div>
       <div class="ride-modal-sparkline-wrap">
         <div class="ride-modal-no-history" id="hmModalNoHistory">Not enough history yet &mdash; check back after a few more updates.</div>
         <canvas id="hmModalSparkline" height="120" style="display:none;"></canvas>
@@ -1644,35 +1674,169 @@
     document.getElementById("rideModalName").textContent = ride.name;
     document.getElementById("rideModalCurrent").textContent = ride.is_open ? `${ride.wait_time} min` : "Closed";
 
-    const points = getTodayPointsForRide(ride.id);
-    const noHistoryEl = document.getElementById("rideModalNoHistory");
-    const canvasEl = document.getElementById("rideModalSparkline");
-    if (points.length < 2) {
-      document.getElementById("rideModalAvg").textContent = "–";
-      document.getElementById("rideModalPeak").textContent = "–";
-      noHistoryEl.style.display = "block";
-      canvasEl.style.display = "none";
-      if (sparklineInstance) { sparklineInstance.destroy(); sparklineInstance = null; }
-    } else {
-      const waits = points.map(p => p[1]);
-      const avg = Math.round(waits.reduce((a, b) => a + b, 0) / waits.length);
-      const peak = Math.max(...waits);
-      document.getElementById("rideModalAvg").textContent = `${avg} min`;
-      document.getElementById("rideModalPeak").textContent = `${peak} min`;
-      noHistoryEl.style.display = "none";
-      canvasEl.style.display = "block";
-      renderSparkline(points);
-    }
+    initDayNav("ride", ride.id);
 
     document.getElementById("rideModalOverlay").classList.add("active");
     document.body.style.overflow = "hidden";
   }
 
   function closeRideModal() {
+    dayNavState.ride = null;
     document.getElementById("rideModalOverlay").classList.remove("active");
     document.body.style.overflow = "";
   }
 
+
+  // ── Day-by-day wait history (shared by the standby and heatmap popups) ──
+  // Today comes from the rolling 24h history; earlier days come from the worker's
+  // nightly archive (/api/ride-history). If the archive isn't available, earlier
+  // days still appear (as "partial") for whatever the 24h history still holds.
+  const RIDE_HISTORY_TTL_MS = 10 * 60 * 1000;
+  const rideHistoryCache = {};
+  const dayNavState = { ride: null, hm: null };
+  const DAY_NAV_CONFIG = {
+    ride: {
+      prefix: "rideModal",
+      render: pts => renderSparkline(pts),
+      clear: () => { if (sparklineInstance) { sparklineInstance.destroy(); sparklineInstance = null; } }
+    },
+    hm: {
+      prefix: "hmModal",
+      render: pts => renderHeatmapModalSparkline(pts),
+      clear: () => { if (hmSparklineInstance) { hmSparklineInstance.destroy(); hmSparklineInstance = null; } }
+    }
+  };
+
+  function etDateKey(d) {
+    return d.toLocaleDateString("en-CA", { timeZone: "America/New_York" });
+  }
+
+  function formatDayKey(dayKey, withWeekday) {
+    const opts = { month: "short", day: "numeric", timeZone: "UTC" };
+    if (withWeekday) opts.weekday = "short";
+    return new Date(dayKey + "T12:00:00Z").toLocaleDateString([], opts);
+  }
+
+  async function loadArchivedDays(rideId) {
+    const key = String(rideId);
+    const cached = rideHistoryCache[key];
+    if (cached && Date.now() - cached.at < RIDE_HISTORY_TTL_MS) return cached.days;
+    try {
+      const res = await fetch(`${API_BASE}/api/ride-history?ride=${encodeURIComponent(key)}`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      const days = (data && data.days) || {};
+      rideHistoryCache[key] = { at: Date.now(), days };
+      return days;
+    } catch (e) {
+      console.log("Ride history archive unavailable:", e);
+      return {};
+    }
+  }
+
+  // Returns { "YYYY-MM-DD": { points: [[epochMs, wait], ...], partial: bool } }
+  function buildDaySeries(rideId, archivedDays) {
+    const series = {};
+    const todayKey = etDateKey(new Date());
+
+    Object.entries(archivedDays || {}).forEach(([day, pts]) => {
+      if (day === todayKey || !Array.isArray(pts)) return;
+      series[day] = { points: pts.map(p => [p[0] * 1000, p[1]]), partial: false };
+    });
+
+    const live = {};
+    getTodayPointsForRide(rideId).forEach(p => {
+      if (typeof p[1] !== "number") return;
+      const ms = Date.parse(p[0]);
+      if (isNaN(ms)) return;
+      const day = etDateKey(new Date(ms));
+      (live[day] = live[day] || []).push([ms, p[1]]);
+    });
+    Object.entries(live).forEach(([day, pts]) => {
+      if (day === todayKey || !series[day]) series[day] = { points: pts, partial: day !== todayKey };
+    });
+
+    if (!series[todayKey]) series[todayKey] = { points: [], partial: false };
+    return series;
+  }
+
+  function initDayNav(kind, rideId) {
+    const state = { rideId: String(rideId), archived: null, series: {}, days: [], selected: null };
+    dayNavState[kind] = state;
+    rebuildDayNav(kind, state, true);
+    loadArchivedDays(rideId).then(archived => {
+      if (dayNavState[kind] !== state) return;
+      state.archived = archived;
+      rebuildDayNav(kind, state, false);
+    });
+  }
+
+  function rebuildDayNav(kind, state, resetSelection) {
+    state.series = buildDaySeries(state.rideId, state.archived);
+    state.days = Object.keys(state.series).sort();
+    if (resetSelection || !state.series[state.selected]) state.selected = etDateKey(new Date());
+    renderDayNav(kind, state);
+  }
+
+  function stepDay(kind, delta) {
+    const state = dayNavState[kind];
+    if (!state) return;
+    const j = state.days.indexOf(state.selected) + delta;
+    if (j < 0 || j >= state.days.length) return;
+    state.selected = state.days[j];
+    renderDayNav(kind, state);
+  }
+
+  function renderDayNav(kind, state) {
+    const cfg = DAY_NAV_CONFIG[kind];
+    const todayKey = etDateKey(new Date());
+    const entry = state.series[state.selected] || { points: [], partial: false };
+    const isToday = state.selected === todayKey;
+    const idx = state.days.indexOf(state.selected);
+
+    document.getElementById(cfg.prefix + "PrevDay").disabled = idx <= 0;
+    document.getElementById(cfg.prefix + "NextDay").disabled = idx < 0 || idx >= state.days.length - 1;
+
+    let label = formatDayKey(state.selected, true);
+    if (isToday) label = "Today · " + label;
+    else if (entry.partial) label += " · partial";
+    document.getElementById(cfg.prefix + "DayLabel").textContent = label;
+    document.getElementById(cfg.prefix + "ChartTitle").textContent = isToday ? "Today's Wait Time History" : "Wait Time History";
+
+    const points = entry.points;
+    const noHistoryEl = document.getElementById(cfg.prefix + "NoHistory");
+    const canvasEl = document.getElementById(cfg.prefix + "Sparkline");
+    if (points.length < 2) {
+      noHistoryEl.textContent = isToday
+        ? "Not enough history yet today — check back after a few more updates."
+        : "No readings recorded for this day.";
+      noHistoryEl.style.display = "block";
+      canvasEl.style.display = "none";
+      cfg.clear();
+    } else {
+      noHistoryEl.style.display = "none";
+      canvasEl.style.display = "block";
+      cfg.render(points);
+    }
+
+    if (kind === "ride") updateRideDayStats(points, isToday, state.selected);
+  }
+
+  function updateRideDayStats(points, isToday, dayKey) {
+    const shortDay = formatDayKey(dayKey, false);
+    document.getElementById("rideModalAvgLabel").textContent = isToday ? "Today's Avg" : `${shortDay} Avg`;
+    document.getElementById("rideModalPeakLabel").textContent = isToday ? "Today's Peak" : `${shortDay} Peak`;
+    if (points.length < 2) {
+      document.getElementById("rideModalAvg").textContent = "–";
+      document.getElementById("rideModalPeak").textContent = "–";
+      return;
+    }
+    const waits = points.map(pt => pt[1]);
+    document.getElementById("rideModalAvg").textContent = `${Math.round(waits.reduce((a, b) => a + b, 0) / waits.length)} min`;
+    document.getElementById("rideModalPeak").textContent = `${Math.max(...waits)} min`;
+  }
+
+  // Rolling 24h points for a ride (ISO timestamp, wait). Use buildDaySeries() for per-day views.
   function getTodayPointsForRide(rideId) {
     if (!history24h || !history24h.rides) return [];
     const entry = history24h.rides[String(rideId)];
@@ -2009,23 +2173,14 @@
     note += "7-day figures exclude zero-minute readings; the 24-hour average includes every open reading.";
     setTxt("hmModalNote", note);
 
-    const noHistoryEl = document.getElementById("hmModalNoHistory");
-    const canvasEl = document.getElementById("hmModalSparkline");
-    if (st.points.length < 2) {
-      noHistoryEl.style.display = "block";
-      canvasEl.style.display = "none";
-      if (hmSparklineInstance) { hmSparklineInstance.destroy(); hmSparklineInstance = null; }
-    } else {
-      noHistoryEl.style.display = "none";
-      canvasEl.style.display = "block";
-      renderHeatmapModalSparkline(st.points);
-    }
+    initDayNav("hm", ride.id);
 
     document.getElementById("hmModalOverlay").classList.add("active");
     document.body.style.overflow = "hidden";
   }
 
   function closeHeatmapRideModal() {
+    dayNavState.hm = null;
     document.getElementById("hmModalOverlay").classList.remove("active");
     document.body.style.overflow = "";
   }
@@ -2064,6 +2219,12 @@
   document.getElementById("rideSearch").addEventListener("input", renderDetails);
   window.addEventListener("DOMContentLoaded", loadData);
   document.addEventListener("keydown", (e) => { if (e.key === "Escape") { closeRideModal(); closeClosureModal(); closeHeatmapRideModal(); } });
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+    const delta = e.key === "ArrowLeft" ? -1 : 1;
+    if (document.getElementById("rideModalOverlay").classList.contains("active")) stepDay("ride", delta);
+    else if (document.getElementById("hmModalOverlay").classList.contains("active")) stepDay("hm", delta);
+  });
 </script>
 </body>
 </html>

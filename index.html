@@ -794,6 +794,7 @@
     animal_kingdom:      { earlyEntry: "07:30", open: "08:00", close: "18:00" }
   };
 
+  const API_BASE = 'https://wdw-queue-probe.jacocksr.workers.dev';
   const STALE_THRESHOLD_MINUTES = 20;
   const MIN_SAMPLES_FOR_RELIABLE = 15;
   const EXCLUDED_NAME_PATTERNS = [/single rider/i, /lightning lane/i, /individual lightning lane/i];
@@ -1187,14 +1188,15 @@
     let fetchSucceeded = false;
 
     try {
-      nextParkData = await fetchJsonWithCacheBust('https://queue-times-probe-test.westgamecocks.workers.dev/api/live-wait-times');
+      nextParkData = await fetchJsonWithCacheBust(`${API_BASE}/api/live-wait-times`);
+      if (!nextParkData.parks || Object.keys(nextParkData.parks).length === 0) throw new Error("Live data empty");
       fetchSucceeded = true;
     } catch (e) {
       console.log("Live data fetch failed; keeping previous snapshot.", e);
     }
 
     try {
-      nextHistory24h = await fetchJsonWithCacheBust('https://queue-times-probe-test.westgamecocks.workers.dev/api/history-24h');
+      nextHistory24h = await fetchJsonWithCacheBust(`${API_BASE}/api/history-24h`);
     } catch (e) {
       console.log("No 24h history available yet.");
     }
@@ -1203,7 +1205,7 @@
       const summaryEmpty = !historicalSummary || Object.keys(historicalSummary.rides || {}).length === 0;
       const summaryDue = summaryEmpty || (Date.now() - lastSummaryFetchAt) >= SUMMARY_REFRESH_INTERVAL_MS;
       if (summaryDue) {
-        nextHistoricalSummary = await fetchJsonWithCacheBust('https://queue-times-probe-test.westgamecocks.workers.dev/api/historical-summary');
+        nextHistoricalSummary = await fetchJsonWithCacheBust(`${API_BASE}/api/historical-summary`);
       }
     } catch (e) {
       console.log("No historical summary available yet.");

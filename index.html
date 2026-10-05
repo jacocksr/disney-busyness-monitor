@@ -3,7 +3,18 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Disney World Busyness Monitor | Plan Your Magical Day</title>
+<meta name="color-scheme" content="dark light" />
+<script>
+  (() => {
+    let saved = null;
+    try { saved = localStorage.getItem('wdw_theme'); } catch (e) { /* storage unavailable */ }
+    const theme = saved === 'light' || saved === 'dark'
+      ? saved
+      : (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+    document.documentElement.setAttribute('data-theme', theme);
+  })();
+</script>
+<title>Disney World Park Pulse | Plan Your Magical Day</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -528,13 +539,277 @@
   .info-popover { left: auto; right: 0; }
   .ride-modal-stats { grid-template-columns: 1fr; }
 }
+
+  /* ============================================================
+     LIGHT / DARK THEME SYSTEM
+     The dark theme remains the original visual identity. The
+     light theme is intentionally warm and airy rather than plain
+     white, so the site still feels like a vacation experience.
+     ============================================================ */
+  [data-theme="light"] {
+    --bg-1: #f7f9fc;
+    --bg-2: #edf3f8;
+    --bg-3: #e4edf5;
+    --card-bg: rgba(255,255,255,0.86);
+    --card-bg-solid: #ffffff;
+    --header-bg-solid: #f0f5f9;
+    --header-bg-hover: #e4edf5;
+    --card-border: rgba(23,50,79,0.13);
+    --gold: #c98200;
+    --gold-deep: #a96700;
+    --pink: #c92d78;
+    --teal: #087f78;
+    --purple: #6941c6;
+    --text: #17324f;
+    --text-muted: #5d7084;
+    --green: #168a58;
+    --yellow: #b87400;
+    --red: #c73a55;
+    --gray: #65788d;
+  }
+
+  [data-theme="light"] body {
+    background:
+      radial-gradient(ellipse 70% 45% at 15% -10%, rgba(255,209,102,0.20), transparent),
+      radial-gradient(ellipse 70% 45% at 100% 10%, rgba(76,214,192,0.16), transparent),
+      linear-gradient(160deg, var(--bg-1) 0%, var(--bg-2) 50%, var(--bg-3) 100%);
+  }
+
+  [data-theme="light"] body::before {
+    opacity: 0.10;
+  }
+
+  /* Convert the small number of legacy hard-coded dark-theme surfaces
+     so the existing site components follow the selected theme too. */
+  [data-theme="light"] .park-card,
+  [data-theme="light"] .panel,
+  [data-theme="light"] .ride-modal {
+    box-shadow: 0 6px 22px rgba(23,50,79,0.08);
+  }
+
+  [data-theme="light"] .park-card:hover {
+    box-shadow: 0 14px 30px rgba(23,50,79,0.13);
+  }
+
+  [data-theme="light"] .park-card.active {
+    box-shadow: 0 0 0 2px rgba(201,130,0,0.32), 0 14px 30px rgba(23,50,79,0.10);
+  }
+
+  [data-theme="light"] .card-header h3,
+  [data-theme="light"] .panel-header h2,
+  [data-theme="light"] .ride-modal-title,
+  [data-theme="light"] .metric-value {
+    color: var(--text);
+  }
+
+  [data-theme="light"] .card-metrics-top {
+    border-top-color: var(--card-border);
+  }
+
+  [data-theme="light"] .card-metrics-longest {
+    border-top-color: var(--card-border);
+  }
+
+  [data-theme="light"] #rideSearch {
+    background: rgba(255,255,255,0.92);
+    color: var(--text);
+  }
+
+  [data-theme="light"] #rideSearch::placeholder {
+    color: #718398;
+  }
+
+  [data-theme="light"] tr:hover td {
+    background: #f2f6fa;
+  }
+
+  [data-theme="light"] td {
+    border-bottom-color: rgba(23,50,79,0.08);
+  }
+
+  [data-theme="light"] .heatmap-cell.no-data {
+    background: rgba(23,50,79,0.045);
+    color: rgba(23,50,79,0.25);
+  }
+
+  [data-theme="light"] .heatmap-scroll::-webkit-scrollbar-thumb,
+  [data-theme="light"] .table-container::-webkit-scrollbar-thumb {
+    background: rgba(23,50,79,0.18);
+  }
+
+  [data-theme="light"] .ride-modal-stat,
+  [data-theme="light"] .ride-modal-sparkline-wrap {
+    background: #f6f9fc;
+  }
+
+  [data-theme="light"] .ride-modal-close {
+    background: rgba(23,50,79,0.06);
+  }
+
+  [data-theme="light"] .ride-modal-close:hover {
+    background: rgba(23,50,79,0.12);
+    color: var(--text);
+  }
+
+  [data-theme="light"] .modal-overlay {
+    background: rgba(23,50,79,0.42);
+  }
+
+  [data-theme="light"] .best-time-strip.muted {
+    background: rgba(23,50,79,0.04);
+  }
+
+  [data-theme="light"] .theme-toggle-btn {
+    background: rgba(255,255,255,0.94);
+    border-color: rgba(23,50,79,0.14);
+    color: var(--text);
+    box-shadow: 0 6px 18px rgba(23,50,79,0.10);
+  }
+
+  .theme-toggle-btn {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 100;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    min-height: 40px;
+    padding: 0.48rem 0.8rem;
+    border: 1px solid var(--card-border);
+    border-radius: 999px;
+    background: var(--card-bg-solid);
+    color: var(--text);
+    font: 600 0.78rem/1 'Poppins', sans-serif;
+    cursor: pointer;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.16);
+    transition: transform 0.2s ease, border-color 0.2s ease, background 0.25s ease, color 0.25s ease;
+  }
+
+  .theme-toggle-btn:hover {
+    transform: translateY(-1px);
+    border-color: var(--gold);
+  }
+
+  .theme-toggle-btn:focus-visible,
+  .park-select-btn:focus-visible,
+  .info-btn:focus-visible,
+  .last-updated:focus-visible,
+  .heatmap-tab:focus-visible,
+  .ride-modal-close:focus-visible,
+  th.sortable:focus-visible {
+    outline: 3px solid rgba(76,214,192,0.55);
+    outline-offset: 3px;
+  }
+
+  .theme-toggle-icon {
+    font-size: 1rem;
+    line-height: 1;
+  }
+
+  .theme-toggle-btn .theme-toggle-label {
+    white-space: nowrap;
+  }
+
+  @media (max-width: 600px) {
+    .theme-toggle-btn {
+      top: 0.65rem;
+      right: 0.65rem;
+      min-height: 38px;
+      padding: 0.45rem 0.65rem;
+    }
+    .theme-toggle-btn .theme-toggle-label {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      scroll-behavior: auto !important;
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+    }
+  }
+
+
+  /* ── Light-mode overrides for components added after the theme prototype ── */
+  [data-theme="light"] .hero h1 {
+    background: linear-gradient(90deg, #d98200, #d6336c 45%, #0f9488 90%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  [data-theme="light"] .park-select-btn:not(.active-park):hover,
+  [data-theme="light"] .tz-option:hover { background: rgba(23,50,79,0.06); }
+  [data-theme="light"] .info-btn:not(:hover),
+  [data-theme="light"] .heatmap-tab:not(.active),
+  [data-theme="light"] .day-nav-btn { background: rgba(23,50,79,0.06); }
+  [data-theme="light"] .stale-banner strong { color: #8a5a00; }
+  [data-theme="light"] .best-park-title,
+  [data-theme="light"] .closure-modal-item .closure-ride-name,
+  [data-theme="light"] .ride-modal-stat-value { color: var(--text); }
+  [data-theme="light"] .score-low,
+  [data-theme="light"] .score-mod { color: #fff; }
+  [data-theme="light"] th.sortable:hover { color: var(--text); }
+  [data-theme="light"] .heatmap-table tbody tr[data-ride-id]:hover td.ride-name { background: #eaf1f7; }
+  [data-theme="light"] .closure-modal-item { background: rgba(23,50,79,0.04); }
+  [data-theme="light"] tr.special-group-row td { background: rgba(23,50,79,0.04); border-top-color: var(--card-border); color: var(--gold-deep); }
+  [data-theme="light"] tr.special-group-row:hover td { background: rgba(201,130,0,0.10); }
+  [data-theme="light"] .closure-modal-body-scroll::-webkit-scrollbar-thumb { background: rgba(23,50,79,0.18); }
+  [data-theme="light"] th,
+  [data-theme="light"] .hero-badge { color: var(--gold-deep); }
+  [data-theme="light"] th.sortable.sort-active .sort-arrow { color: var(--gold-deep); }
+  [data-theme="light"] footer a { color: var(--gold-deep) !important; }
+
+
+  /* Theme-only transition; existing theme colors remain unchanged. */
+  ::view-transition-old(root), ::view-transition-new(root) {
+    animation-duration: 480ms;
+    animation-timing-function: ease-in-out;
+  }
+  html.theme-fading body, html.theme-fading body * {
+    transition: background-color 480ms ease-in-out, color 480ms ease-in-out,
+      border-color 480ms ease-in-out, box-shadow 480ms ease-in-out,
+      fill 480ms ease-in-out, stroke 480ms ease-in-out !important;
+  }
+  .theme-background-fade {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: 1;
+    transition: opacity 480ms ease-in-out;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    ::view-transition-old(root), ::view-transition-new(root) { animation: none !important; }
+    html.theme-fading body, html.theme-fading body * { transition: none !important; }
+  }
+
+/* Compact park cards */
+.park-card{padding:1.35rem}.pulse-header{display:flex;justify-content:space-between;align-items:flex-start;gap:.7rem;margin-bottom:1rem}
+.pulse-identity{display:flex;align-items:center;gap:.65rem;min-width:0}.pulse-identity img{width:52px;height:52px;object-fit:contain;flex-shrink:0}
+.pulse-identity h3{font:700 1.35rem/1.2 'Baloo 2',sans-serif;color:var(--text)}.pulse-descriptor{font-size:.76rem;color:var(--text-muted);margin-top:.2rem}
+.pulse-waits{display:grid;grid-template-columns:1fr 1fr;gap:1rem;border-top:1px solid var(--card-border);padding-top:.85rem;margin-bottom:.8rem}
+.pulse-waits .label{font-size:.68rem;color:var(--text-muted);letter-spacing:.05em;text-transform:uppercase}.pulse-waits .value{font-size:1.35rem;font-weight:700;color:var(--text)}
+.pulse-ride{font-size:.73rem;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.pulse-closures{font-size:.8rem;margin:.7rem 0}.pulse-closure-main{color:var(--green)}.pulse-closure-main.down{color:var(--red)}
+.pulse-disclosure{display:block;background:none;border:0;padding:.25rem 0;color:var(--text-muted);font:inherit;font-size:.72rem;text-align:left;cursor:pointer}
+.pulse-disclosure:hover{color:var(--gold)}.pulse-insight{display:flex;gap:.4rem;margin:.85rem 0;color:var(--teal);font-size:.8rem}.pulse-insight strong{display:block}.pulse-insight small{display:block;font-size:.73rem;color:var(--text-muted);margin-top:.12rem}
+.pulse-footer{border-top:1px solid var(--card-border);padding-top:.7rem;display:flex;justify-content:space-between;align-items:center;gap:.5rem;font-size:.8rem;color:var(--text)}
+.pulse-weather small{display:block;font-size:.65rem;color:var(--text-muted);margin-top:.1rem}.pulse-weather-details{border:0;background:none;color:var(--gold);font:600 .75rem 'Poppins',sans-serif;cursor:pointer;padding:.4rem .2rem;white-space:nowrap}
+.pulse-disclosure:focus-visible,.pulse-weather-details:focus-visible{outline:2px solid var(--teal);outline-offset:3px}
+.weather-panel{margin-bottom:1.5rem}.weather-panel h2{color:var(--text)}.weather-meta{font-size:.75rem;line-height:1.5;color:var(--text-muted)}.weather-current{font-size:1.1rem;color:var(--text);margin:.7rem 0}
+.weather-hours{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:.5rem;margin:.8rem 0}.weather-hour{background:var(--card-bg-solid);border:1px solid var(--card-border);border-radius:10px;padding:.7rem;font-size:.72rem;min-width:0;color:var(--text-muted)}.weather-hour strong{display:block;color:var(--text);font-size:1rem}.weather-status{font-size:.78rem;color:var(--text-muted);margin:.7rem 0}.weather-warning{color:var(--yellow)}.weather-alert{border:1px solid var(--red);padding:.7rem;border-radius:10px;margin:.6rem 0}.weather-alert summary{color:var(--red);cursor:pointer}.weather-alert p{font-size:.78rem;white-space:pre-wrap;color:var(--text)}
+@media(max-width:800px){.weather-hours{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:450px){.weather-hours{grid-template-columns:repeat(2,minmax(0,1fr))}.pulse-identity h3{font-size:1.2rem}.pulse-identity img{width:44px;height:44px}.park-card{padding:1.1rem}.score-badge{font-size:.95rem;padding:.35rem .5rem}}
+
+
 </style>
 </head>
 <body>
+<button type="button" class="theme-toggle-btn" id="themeToggleBtn"
+  onclick="toggleTheme()" aria-label="Switch to light mode" title="Switch theme">
+  <span class="theme-toggle-icon" id="themeIcon" aria-hidden="true">☀️</span>
+  <span class="theme-toggle-label" id="themeText">Light Mode</span>
+</button>
 <div class="container">
   <div class="hero">
     <div class="hero-badge">✨ Live Crowd Intelligence</div>
-    <h1>Disney World Busyness Monitor</h1>
+    <h1>Disney World Park Pulse</h1>
     <p class="tagline">Real-time wait times and historical crowd trends across all four Walt Disney World parks — plan your perfect day before you go.</p>
     <div class="hero-park-strip" id="heroParkStrip">
       <button type="button" class="park-select-btn" data-park-key="magic_kingdom" onclick="selectPark('magic_kingdom', this)">
@@ -584,6 +859,8 @@
   <div class="best-park-banner" id="bestParkBanner"></div>
   <div class="park-grid" id="parkGrid"></div>
 
+<section class="panel weather-panel" id="weatherPanel" aria-labelledby="weatherTitle"><div class="panel-header"><div><div class="weather-meta">Park Weather at a Glance</div><h2 id="weatherTitle">Nearby Weather</h2></div><span class="weather-meta">National Weather Service</span></div><div id="weatherContent">Loading nearby weather…</div></section>
+
   <div class="content-grid">
     <div class="panel" id="ridesPanel">
       <div class="panel-header">
@@ -628,6 +905,7 @@
       <h2 id="heatmapTitle">🔥 Ride Wait Heatmap</h2>
       <div class="heatmap-tabs">
         <div class="heatmap-tab active" data-mode="hour" onclick="setHeatmapMode('hour', this)">By Hour Today</div>
+        <div class="heatmap-tab" data-mode="daily" onclick="setHeatmapMode('daily', this)">Last 7 Days</div>
         <div class="heatmap-tab" data-mode="weekday" onclick="setHeatmapMode('weekday', this)">By Day of Week</div>
       </div>
     </div>
@@ -874,6 +1152,93 @@
   const SPECIAL_KIND_LABELS = { event: "Event", meet: "Character meet", show: "Show", limited: "Limited hours" };
   const SUMMARY_REFRESH_INTERVAL_MS = 60 * 60 * 1000;
   let lastSummaryFetchAt = 0;
+
+  let currentTheme = document.documentElement.dataset.theme || 'dark';
+
+  function updateThemeButton() {
+    const isLight = currentTheme === 'light';
+    const icon = document.getElementById('themeIcon');
+    const text = document.getElementById('themeText');
+    const button = document.getElementById('themeToggleBtn');
+    if (!icon || !text || !button) return;
+
+    icon.textContent = isLight ? '🌙' : '☀️';
+    text.textContent = isLight ? 'Dark Mode' : 'Light Mode';
+    button.setAttribute('aria-label', isLight ? 'Switch to dark mode' : 'Switch to light mode');
+    button.setAttribute('title', isLight ? 'Switch to dark mode' : 'Switch to light mode');
+  }
+
+  function applyTheme(theme, persist = true) {
+    currentTheme = theme === 'light' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    if (persist) {
+      try { localStorage.setItem('wdw_theme', currentTheme); } catch (e) { /* storage unavailable */ }
+    }
+    updateThemeButton();
+
+    // Chart.js canvases are not CSS-driven, so repaint any that are on screen.
+    const activePark = parkData && parkData.parks ? parkData.parks[activeParkKey] : null;
+    if (activePark) renderChart(activePark);
+    if (dayNavState.ride) renderDayNav('ride', dayNavState.ride);
+    if (dayNavState.hm) renderDayNav('hm', dayNavState.hm);
+  }
+
+  let themeTransitionBusy = false;
+
+  function toggleTheme() {
+    if (themeTransitionBusy) return;
+    const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      applyTheme(nextTheme);
+      return;
+    }
+    themeTransitionBusy = true;
+    if (typeof document.startViewTransition === 'function') {
+      const transition = document.startViewTransition(() => applyTheme(nextTheme));
+      transition.finished.catch(() => {}).finally(() => { themeTransitionBusy = false; });
+      return;
+    }
+
+    // Fallback: interpolate colors and fade the old page gradient.
+    const layer = document.createElement('div');
+    layer.className = 'theme-background-fade';
+    layer.setAttribute('aria-hidden', 'true');
+    layer.style.backgroundImage = getComputedStyle(document.body).backgroundImage;
+    document.body.prepend(layer);
+    document.documentElement.classList.add('theme-fading');
+    void layer.offsetWidth;
+    applyTheme(nextTheme);
+    requestAnimationFrame(() => { layer.style.opacity = '0'; });
+    setTimeout(() => {
+      layer.remove();
+      document.documentElement.classList.remove('theme-fading');
+      themeTransitionBusy = false;
+    }, 520);
+  }
+
+  function getThemeColor(name, fallback) {
+    const value = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+    return value || fallback;
+  }
+
+  // One place for every Chart.js color so the three charts stay consistent in both themes.
+  function chartTheme() {
+    const isLight = document.documentElement.dataset.theme === 'light';
+    return {
+      isLight,
+      textColor: getThemeColor('--text-muted', '#a9bdd4'),
+      primary: getThemeColor('--gold', '#ffd166'),
+      secondary: getThemeColor('--purple', '#a78bfa'),
+      surface: getThemeColor('--card-bg-solid', '#17324f'),
+      text: getThemeColor('--text', '#f5f8fc'),
+      border: getThemeColor('--card-border', 'rgba(255,255,255,0.15)'),
+      grid: isLight ? 'rgba(23,50,79,0.09)' : 'rgba(255,255,255,0.06)',
+      pointBorder: isLight ? '#ffffff' : '#0f2545',
+      fillTop: isLight ? 'rgba(201,130,0,0.24)' : 'rgba(255,209,102,0.32)',
+      fillTopSmall: isLight ? 'rgba(201,130,0,0.22)' : 'rgba(255,209,102,0.3)',
+      fillBottom: isLight ? 'rgba(201,130,0,0.02)' : 'rgba(255,209,102,0.02)'
+    };
+  }
 
   const TIMEZONES = [
     { id: "America/New_York", label: "Eastern (Park Time)" },
@@ -1403,7 +1768,7 @@
           </div>
           <div>
             <span class="metric-label">Down</span>
-            <span class="metric-value" style="color:${downCount > 0 ? 'var(--red)' : '#fff'}">${isClosed ? '&ndash;' : downCount}</span>
+            <span class="metric-value" style="color:${downCount > 0 ? 'var(--red)' : 'var(--text)'}">${isClosed ? '&ndash;' : downCount}</span>
           </div>
         </div>
         <div class="card-metrics-longest">
@@ -1626,12 +1991,13 @@
     const hours = ['9a', '10a', '11a', '12p', '1p', '2p', '3p', '4p', '5p', '6p', '7p'];
     const todayData = park.hourly_today || [20, 30, 45, 50, 48, 45, 50, 55, 45, 35, 20];
     const histData = park.hourly_hist || [18, 25, 40, 45, 44, 42, 45, 48, 42, 30, 18];
+    const c = chartTheme();
 
     if (chartInstance) chartInstance.destroy();
 
     const gradient = ctx.createLinearGradient(0, 0, 0, 195);
-    gradient.addColorStop(0, 'rgba(255, 209, 102, 0.32)');
-    gradient.addColorStop(1, 'rgba(255, 209, 102, 0.02)');
+    gradient.addColorStop(0, c.fillTop);
+    gradient.addColorStop(1, c.fillBottom);
 
     chartInstance = new Chart(ctx, {
       type: 'line',
@@ -1640,13 +2006,13 @@
         datasets: [
           {
             label: 'Today (Observed)', data: todayData,
-            borderColor: '#ffd166', backgroundColor: gradient,
-            pointBackgroundColor: '#ffd166', pointBorderColor: '#0f2545',
+            borderColor: c.primary, backgroundColor: gradient,
+            pointBackgroundColor: c.primary, pointBorderColor: c.pointBorder,
             pointRadius: 3, pointHoverRadius: 5, borderWidth: 2.5, tension: 0.35, fill: true
           },
           {
             label: 'Historical Avg for Today', data: histData,
-            borderColor: '#a78bfa', borderDash: [6, 5], borderWidth: 1.5,
+            borderColor: c.secondary, borderDash: [6, 5], borderWidth: 1.5,
             pointRadius: 0, tension: 0.35, fill: false
           }
         ]
@@ -1655,15 +2021,15 @@
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-          legend: { labels: { color: '#a9bdd4', usePointStyle: true, padding: 10, boxWidth: 8, font: { size: 10 } } },
+          legend: { labels: { color: c.textColor, usePointStyle: true, padding: 10, boxWidth: 8, font: { size: 10 } } },
           tooltip: {
-            backgroundColor: '#17324f', titleColor: '#ffd166', bodyColor: '#f5f8fc',
-            borderColor: 'rgba(255,255,255,0.15)', borderWidth: 1, padding: 10, cornerRadius: 8
+            backgroundColor: c.surface, titleColor: c.primary, bodyColor: c.text,
+            borderColor: c.border, borderWidth: 1, padding: 10, cornerRadius: 8
           }
         },
         scales: {
-          y: { grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: '#a9bdd4', callback: v => v + 'm', font: { size: 9 } } },
-          x: { grid: { color: 'transparent' }, ticks: { color: '#a9bdd4', font: { size: 9 } } }
+          y: { grid: { color: c.grid }, ticks: { color: c.textColor, callback: v => v + 'm', font: { size: 9 } } },
+          x: { grid: { color: 'transparent' }, ticks: { color: c.textColor, font: { size: 9 } } }
         }
       }
     });
@@ -1846,37 +2212,35 @@
 
   function renderSparkline(points) {
     const ctx = document.getElementById('rideModalSparkline').getContext('2d');
-    const labels = points.map(p => {
-      const d = new Date(p[0]);
-      return d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-    });
+    const labels = points.map(p => new Date(p[0]).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }));
     const data = points.map(p => p[1]);
+    const c = chartTheme();
 
     if (sparklineInstance) sparklineInstance.destroy();
 
     const gradient = ctx.createLinearGradient(0, 0, 0, 120);
-    gradient.addColorStop(0, 'rgba(255, 209, 102, 0.3)');
-    gradient.addColorStop(1, 'rgba(255, 209, 102, 0.02)');
+    gradient.addColorStop(0, c.fillTopSmall);
+    gradient.addColorStop(1, c.fillBottom);
 
     sparklineInstance = new Chart(ctx, {
       type: 'line',
       data: {
         labels: labels,
         datasets: [{
-          data: data, borderColor: '#ffd166', backgroundColor: gradient,
+          data: data, borderColor: c.primary, backgroundColor: gradient,
           borderWidth: 2, pointRadius: 0, pointHoverRadius: 4, tension: 0.3, fill: true
         }]
       },
       options: {
         responsive: true,
         plugins: { legend: { display: false }, tooltip: {
-          backgroundColor: '#0f2545', titleColor: '#ffd166', bodyColor: '#f5f8fc',
-          borderColor: 'rgba(255,255,255,0.15)', borderWidth: 1, padding: 8, cornerRadius: 6,
+          backgroundColor: c.surface, titleColor: c.primary, bodyColor: c.text,
+          borderColor: c.border, borderWidth: 1, padding: 8, cornerRadius: 6,
           callbacks: { label: (ctx) => `${ctx.parsed.y} min` }
         }},
         scales: {
-          y: { grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: '#a9bdd4', callback: v => v + 'm' } },
-          x: { grid: { color: 'transparent' }, ticks: { color: '#a9bdd4', maxTicksLimit: 6 } }
+          y: { grid: { color: c.grid }, ticks: { color: c.textColor, callback: v => v + 'm' } },
+          x: { grid: { color: 'transparent' }, ticks: { color: c.textColor, maxTicksLimit: 6 } }
         }
       }
     });
@@ -2018,9 +2382,10 @@
 
     if (!anyReliable) {
       caveat.classList.add("visible");
-      caveat.innerHTML = `<strong>Not enough data yet:</strong> day-of-week patterns need at least ${minSamples} samples per ride/day (roughly 3 weeks) to be considered reliable. Values shown below are preliminary and will refine over time.`;
+      caveat.innerHTML = `<strong>Not enough data yet:</strong> day-of-week cells have fewer than ${minSamples} readings. Values are preliminary; reading counts do not establish multiple weeks of coverage.`;
     } else {
-      caveat.classList.remove("visible");
+      caveat.classList.add("visible");
+      caveat.textContent = "Historical weekday averages combine all collected dates for each weekday. They are not a single week's report; multiple readings on one date do not establish a multi-week pattern.";
     }
 
     renderHeatmapTable(
@@ -2089,8 +2454,66 @@
     }).join('');
   }
 
+  function renderHeatmapLast7Days() {
+    const caveat = document.getElementById('heatmapCaveat');
+    document.getElementById('heatmapTitle').textContent = '🔥 Ride Wait Heatmap — Last 7 Days';
+    const data = historicalSummary && historicalSummary.daily_heatmap;
+    if (!data || !data.rides) {
+      caveat.classList.add('visible');
+      caveat.textContent = 'Daily history is initializing. Deploy the updated queue Worker, then wait for its next completed-hour rollup and the summary refresh. No weekday averages are substituted for dates.';
+      renderHeatmapEmpty('Date-specific summary not available yet.');
+      return;
+    }
+    const parts = new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(new Date());
+    const fields = Object.fromEntries(parts.map(p => [p.type, p.value]));
+    const today = `${fields.year}-${fields.month}-${fields.day}`;
+    const [year, month, day] = today.split('-').map(Number);
+    const days = Array.from({length: 7}, (_, i) => new Date(Date.UTC(year, month - 1, day - 6 + i)).toISOString().slice(0, 10));
+    const labels = days.map(key => {
+      const date = new Date(key + 'T12:00:00Z');
+      const weekday = date.toLocaleDateString('en-US', {weekday:'short', timeZone:'UTC'});
+      const monthName = date.toLocaleDateString('en-US', {month:'short', timeZone:'UTC'});
+      return `${weekday} · ${monthName}/${key.slice(8)}${key === today ? ' *' : ''}`;
+    });
+    const park = parkData.parks[activeParkKey];
+    // Include currently closed standard attractions when they have daily history.
+    const rides = getStandardRides(park).filter(r => data.rides[String(r.id)]).slice(0, 12);
+    let maxWait = 0;
+    const rows = rides.map(ride => {
+      const entries = data.rides[String(ride.id)] || {};
+      const cells = days.map(key => {
+        const e = entries[key];
+        if (!e || !(e.samples > 0) || !Number.isFinite(e.avg_wait)) return null;
+        const value = Math.round(e.avg_wait);
+        maxWait = Math.max(maxWait, value);
+        return value;
+      });
+      return {id: ride.id, name: ride.name, cells, samples: days.map(key => entries[key]?.samples || 0)};
+    });
+    caveat.classList.add('visible');
+    caveat.textContent = '* Today is partial and includes completed hourly rollups only. Values are averages of recorded positive waits while open; zero-minute waits and closed readings are excluded. A dash means no qualifying readings. Dates use Eastern park time. ' +
+      (data.as_of_day !== today ? 'The cached summary is from an earlier date; newer daily data is pending. ' : '') +
+      'Summary updated: ' + formatUpdatedTime(historicalSummary.updated_at) + '.';
+    if (!rows.length) {
+      renderHeatmapEmpty('No qualifying daily history available for this park yet.');
+      return;
+    }
+    // Daily descriptive averages are not assigned a multi-week reliability label.
+    renderHeatmapTable(labels, rows, maxWait, 0);
+    const byId = Object.fromEntries(rows.map(row => [String(row.id), row]));
+    document.querySelectorAll('#heatmapBody tr[data-ride-id]').forEach(tr => {
+      const row = byId[tr.dataset.rideId];
+      tr.querySelectorAll('.heatmap-cell').forEach((cell, i) => {
+        cell.title = days[i] + (days[i] === today ? ' · partial' : '') +
+          (row.cells[i] === null ? ' · no qualifying readings' : ` · ${row.cells[i]} min average · ${row.samples[i]} readings`);
+      });
+    });
+  }
+
+
   function renderHeatmap() {
     if (heatmapMode === "hour") renderHeatmapByHour();
+    else if (heatmapMode === "daily") renderHeatmapLast7Days();
     else renderHeatmapByWeekday();
   }
 
@@ -2186,26 +2609,36 @@
   }
 
   function renderHeatmapModalSparkline(points) {
-    const ctx = document.getElementById("hmModalSparkline").getContext("2d");
-    const labels = points.map(pt => new Date(pt[0]).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }));
-    const data = points.map(pt => pt[1]);
+    const ctx = document.getElementById('hmModalSparkline').getContext('2d');
+    const labels = points.map(p => new Date(p[0]).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }));
+    const data = points.map(p => p[1]);
+    const c = chartTheme();
+
     if (hmSparklineInstance) hmSparklineInstance.destroy();
+
     const gradient = ctx.createLinearGradient(0, 0, 0, 120);
-    gradient.addColorStop(0, "rgba(255, 209, 102, 0.3)");
-    gradient.addColorStop(1, "rgba(255, 209, 102, 0.02)");
+    gradient.addColorStop(0, c.fillTopSmall);
+    gradient.addColorStop(1, c.fillBottom);
+
     hmSparklineInstance = new Chart(ctx, {
-      type: "line",
-      data: { labels, datasets: [{ data, borderColor: "#ffd166", backgroundColor: gradient, borderWidth: 2, pointRadius: 0, pointHoverRadius: 4, tension: 0.3, fill: true }] },
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          data: data, borderColor: c.primary, backgroundColor: gradient,
+          borderWidth: 2, pointRadius: 0, pointHoverRadius: 4, tension: 0.3, fill: true
+        }]
+      },
       options: {
         responsive: true,
         plugins: { legend: { display: false }, tooltip: {
-          backgroundColor: "#0f2545", titleColor: "#ffd166", bodyColor: "#f5f8fc",
-          borderColor: "rgba(255,255,255,0.15)", borderWidth: 1, padding: 8, cornerRadius: 6,
-          callbacks: { label: (c) => `${c.parsed.y} min` }
+          backgroundColor: c.surface, titleColor: c.primary, bodyColor: c.text,
+          borderColor: c.border, borderWidth: 1, padding: 8, cornerRadius: 6,
+          callbacks: { label: (ctx) => `${ctx.parsed.y} min` }
         }},
         scales: {
-          y: { grid: { color: "rgba(255,255,255,0.06)" }, ticks: { color: "#a9bdd4", callback: v => v + "m" } },
-          x: { grid: { color: "transparent" }, ticks: { color: "#a9bdd4", maxTicksLimit: 6 } }
+          y: { grid: { color: c.grid }, ticks: { color: c.textColor, callback: v => v + 'm' } },
+          x: { grid: { color: 'transparent' }, ticks: { color: c.textColor, maxTicksLimit: 6 } }
         }
       }
     });
@@ -2217,7 +2650,7 @@
   });
 
   document.getElementById("rideSearch").addEventListener("input", renderDetails);
-  window.addEventListener("DOMContentLoaded", loadData);
+  window.addEventListener("DOMContentLoaded", () => { updateThemeButton(); loadData(); });
   document.addEventListener("keydown", (e) => { if (e.key === "Escape") { closeRideModal(); closeClosureModal(); closeHeatmapRideModal(); } });
   document.addEventListener("keydown", (e) => {
     if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
@@ -2225,6 +2658,260 @@
     if (document.getElementById("rideModalOverlay").classList.contains("active")) stepDay("ride", delta);
     else if (document.getElementById("hmModalOverlay").classList.contains("active")) stepDay("hm", delta);
   });
+</script>
+<script>
+// Card and weather additions; existing ride, archive, and theme code retained.
+const WEATHER_API='https://park-pulse-weather.jacocksr.workers.dev/api/weather';
+let weatherData=null,weatherBusy=false,weatherFailed=false,weatherLastAttempt=0;
+const wxN=v=>typeof v==='number'&&Number.isFinite(v),wxE=v=>escapeHtml(v);
+const wxF=v=>wxN(v)?Math.round(v*9/5+32)+'°F':'Unavailable';
+function wxAge(t){const n=Date.parse(t);return Number.isFinite(n)?Math.max(0,(Date.now()-n)/60000):Infinity;}
+function wxTime(t,short=false){if(!Number.isFinite(Date.parse(t)))return 'Unavailable';const opts=short?{hour:'numeric',minute:'2-digit',timeZoneName:'short'}:{month:'short',day:'numeric',hour:'numeric',minute:'2-digit',timeZoneName:'short'};if(selectedTz!=='local')opts.timeZone=selectedTz;return new Date(t).toLocaleString([],opts);}
+function wxIcon(text,night=false){const t=(text||'').toLowerCase();if(/thunder/.test(t))return '⛈️';if(/snow/.test(t))return '🌨️';if(/ice|freezing|sleet/.test(t))return '🧊';if(/rain|shower|drizzle/.test(t))return '🌧️';if(/fog|mist|haze|smoke/.test(t))return '🌫️';if(/mostly cloudy|overcast/.test(t))return '☁️';if(/partly|mostly sunny|few clouds/.test(t))return night?'☁️':'🌤️';if(/cloud/.test(t))return '☁️';if(/clear|sunny|fair/.test(t))return night?'🌙':'☀️';return '🌡️';}
+function wxFeel(o){return wxN(o?.heat_index_c)?{v:o.heat_index_c,label:'Heat index'}:wxN(o?.wind_chill_c)?{v:o.wind_chill_c,label:'Wind chill'}:null;}
+function pulseCrowd(score,phase){if(phase==='pre-open')return 'Not open yet';if(phase==='early-entry')return 'Early Entry';if(phase==='closed-for-day')return 'Closed for the day';if(!wxN(score))return 'Crowd level unavailable';return score<2?'Very light crowds':score<4?'Light crowds':score<6?'Moderate crowds':score<8?'Busy':'Very busy';}
+function pulseInsight(score,phase){if(phase!=='open')return {title:phase==='early-entry'?'Early Entry is underway':phase==='pre-open'?'Your park day is ahead':'That’s a wrap for today',text:phase==='early-entry'?'Resort guests only until general opening.':phase==='pre-open'?'Check back after opening for live waits.':'Explore the forecast and ride history for your next visit.'};return score<4?{title:'Great time to visit',text:'Short waits across most attractions.'}:score<7?{title:'Moderate crowds',text:'Check headliner waits before your next stop.'}:{title:'A busy park day',text:'Compare attractions to find your next opportunity.'};}
+function renderParkWeather(){document.querySelectorAll('.pulse-weather').forEach(el=>{const p=weatherData?.parks?.[el.dataset.parkKey],o=p?.observation,feel=wxFeel(o);if(!o){el.textContent=weatherFailed?'🌡️ Weather unavailable':'🌡️ Weather loading…';return;}
+ const stale=wxAge(o.observed_at)>90||wxAge(weatherData.updated_at)>20||p.collection?.errors?.observations;
+ el.innerHTML=wxIcon(o.description)+' '+wxF(o.temperature_c)+(feel?' · Feels '+wxF(feel.v):'')+'<small>'+wxE(stale?'Older/delayed reading · '+wxTime(o.observed_at):'Observed '+wxTime(o.observed_at,true)+' · nearby station')+(weatherFailed?' · refresh delayed':'')+'</small>';
+ el.title=(o.description||'Condition unavailable')+' · '+(o.station?.name||'nearby station')+(feel?' · Feels value uses '+feel.label.toLowerCase():'');});}
+renderCards=function(){const grid=document.getElementById('parkGrid');grid.innerHTML='';for(const [key,p]of Object.entries(parkData.parks)){
+ const phase=getParkPhase(key,p),closed=phase.phase==='pre-open'||phase.phase==='closed-for-day',stats=computeLiveStats(p),groups=closed?{temporary:[],extended:[],special:[]}:getClosureGroups(p),comp=getParkComparison(key,p),insight=pulseInsight(p.crowd_score,phase.phase);
+ const avg=closed||stats.avgWait===null?'—':stats.avgWait+' min',longest=closed||!stats.longest?'—':stats.longest.wait_time+' min',ride=closed?'':stats.longest?.name||'';
+ const extras=[];if(groups.extended.length)extras.push(groups.extended.length+' refurbishment/extended');if(groups.special.length)extras.push(groups.special.length+' scheduled experience'+(groups.special.length===1?'':'s'));
+ const card=document.createElement('div');card.className='park-card '+(key===activeParkKey?'active ':'')+(closed?'closed':'');card.dataset.parkKey=key;card.style.setProperty('--park-color',p.color||'linear-gradient(90deg,var(--gold),var(--pink))');card.onclick=()=>selectPark(key);
+ const badge=phase.phase==='closed-for-day'?'<span class="score-badge score-na">N/A</span>':getScoreBadge(p.crowd_score,phase);
+ card.innerHTML='<div class="pulse-header"><div class="pulse-identity"><img src="'+wxE(PARK_EMOJI_IMAGES[key]||'')+'" alt=""/><div><h3>'+wxE(p.name)+'</h3><div class="pulse-descriptor">'+wxE(pulseCrowd(p.crowd_score,phase.phase))+'</div></div></div>'+badge+'</div>'
+ +getStatusBanner(phase)+'<div class="pulse-waits"><div><div class="label">Average wait</div><div class="value">'+avg+'</div>'+(comp.status==='ready'?'<div class="pulse-ride">'+Math.abs(comp.pctDiff)+'% '+(comp.pctDiff<=0?'below':'above')+' typical for this time</div>':'')+'</div><div><div class="label">Longest wait</div><div class="value">'+longest+'</div><div class="pulse-ride" title="'+wxE(ride)+'">'+wxE(ride)+'</div></div></div>'
+ +(closed?'':'<div class="pulse-closures">'+(groups.temporary.length?'<button type="button" class="pulse-disclosure pulse-closure-main down" data-closure>⚠️ '+groups.temporary.length+' temporary closure'+(groups.temporary.length===1?'':'s')+' ›</button>':'<div class="pulse-closure-main">✓ No temporary closures</div>')+(extras.length?'<button type="button" class="pulse-disclosure" data-closure>'+wxE(extras.join(' · '))+' ›</button>':'')+'</div>')
+ +'<div class="pulse-insight"><span aria-hidden="true">💡</span><div><strong>'+wxE(insight.title)+'</strong><small>'+wxE(insight.text)+'</small></div></div><div class="pulse-footer"><div class="pulse-weather" data-park-key="'+key+'">🌡️ Weather loading…</div><button type="button" class="pulse-weather-details" aria-label="Weather details for '+wxE(p.name)+'">Details ›</button></div>';
+ card.querySelectorAll('[data-closure]').forEach(b=>b.onclick=e=>openClosureModal(e,key));card.querySelector('.pulse-weather-details').onclick=e=>{e.stopPropagation();selectPark(key);document.getElementById('weatherPanel').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});};grid.appendChild(card);
+ }renderParkWeather();};
+function renderWeather(){renderParkWeather();const el=document.getElementById('weatherContent'),p=weatherData?.parks?.[activeParkKey],name=p?.name||parkData.parks?.[activeParkKey]?.name||'Selected park';
+ document.getElementById('weatherTitle').innerHTML='<img src="'+wxE(PARK_EMOJI_IMAGES[activeParkKey]||'')+'" class="panel-title-emoji" alt=""/>'+wxE(name)+' · Nearby Weather';
+ if(!p){el.innerHTML='<p class="weather-status">'+(weatherFailed?'Weather unavailable; retrying automatically. Ride data remains available.':'Loading nearby weather…')+'</p>';return;}
+ const opened=new Set([...el.querySelectorAll('details[open]')].map(x=>x.dataset.id)),o=p.observation,f=p.forecast,a=p.alerts,errors=p.collection?.errors||{};let h='';
+ if(weatherFailed||wxAge(weatherData.updated_at)>20)h+='<p class="weather-status weather-warning">Refresh delayed; showing the last available snapshot.</p>';
+ if(o){const feel=wxFeel(o);h+='<div class="weather-current">'+wxIcon(o.description)+' '+wxF(o.temperature_c)+' · '+wxE(o.description||'Condition unavailable')+'</div><p class="weather-meta">'+(feel?feel.label+': '+wxF(feel.v):'Feels-like estimate unavailable')+' · Humidity '+(wxN(o.humidity_percent)?Math.round(o.humidity_percent)+'%':'unavailable')+' · Wind '+(wxN(o.wind_kmh)?Math.round(o.wind_kmh/1.609344)+' mph':'unavailable')+(wxN(o.gust_kmh)?' · Gusts '+Math.round(o.gust_kmh/1.609344)+' mph':'')+(wxN(o.precipitation_last_hour_mm)?' · Last-hour observed rain '+(o.precipitation_last_hour_mm/25.4).toFixed(2)+' in':'')+'</p><p class="weather-meta">Observed '+wxE(wxTime(o.observed_at))+' at '+wxE(o.station?.name||'nearby station')+' ('+wxE(o.station?.id||'unknown')+')'+(wxN(o.station?.distance_km)?' · '+(o.station.distance_km/1.609344).toFixed(1)+' miles from this park':'')+'. Conditions inside the park may differ.</p>';
+ if(wxAge(o.observed_at)>90||errors.observations)h+='<p class="weather-status weather-warning">Older or delayed station observation.</p>';}else h+='<p class="weather-status">Observations unavailable.</p>';
+ h+='<strong style="display:block;margin-top:1rem">Next hours · Forecast</strong>';const periods=Array.isArray(f?.periods)?f.periods.filter(x=>Number.isFinite(Date.parse(x.startTime))&&Date.parse(x.endTime)>Date.now()).slice(0,6):[];
+ if(f&&(wxAge(f.fetched_at)>120||wxAge(f.issued_at)>360||errors.forecast))h+='<p class="weather-status weather-warning">Forecast may be out of date.</p>';
+ if(periods.length)h+='<div class="weather-hours">'+periods.map(x=>'<div class="weather-hour">'+wxE(wxTime(x.startTime,true))+'<strong>'+wxIcon(x.shortForecast,x.isDaytime===false)+' '+(wxN(x.temperature)?x.temperatureUnit==='C'?wxF(x.temperature):x.temperatureUnit==='F'?Math.round(x.temperature)+'°F':'Unavailable':'Unavailable')+'</strong>'+wxE(x.shortForecast||'Unavailable')+'<p>'+(wxN(x.probabilityOfPrecipitation?.value)?Math.round(x.probabilityOfPrecipitation.value)+'% rain chance':'Rain chance unavailable')+'</p></div>').join('')+'</div>';else h+='<p class="weather-status">Forecast unavailable.</p>';
+ if(f)h+='<p class="weather-meta">Forecast issued '+wxE(wxTime(f.issued_at))+' · Retrieved '+wxE(wxTime(f.fetched_at))+'. Rain percentages are forecasts, not measured rainfall.</p>';
+ const fresh=a&&!errors.alerts&&wxAge(a.fetched_at)<=15,active=Array.isArray(a?.active)?a.active.filter(x=>!x.expires||Date.parse(x.expires)>Date.now()):[];
+ if(!fresh)h+='<p class="weather-status weather-warning">Alert checks unavailable or delayed. Consult official weather sources.</p>';else if(!active.length)h+='<p class="weather-status">No active NWS alerts returned · Checked '+wxE(wxTime(a.fetched_at))+'.</p>';
+ for(const x of active)h+='<details class="weather-alert" data-id="'+wxE(x.id)+'"'+(opened.has(x.id)?' open':'')+'><summary>⚠️ '+wxE(x.event||'Weather alert')+(fresh?'':' · Last available report')+'</summary><p>'+wxE(x.headline||'')+'</p><p>'+wxE(x.description||'')+'</p><p>'+wxE(x.instruction||'')+'</p><p>Expires '+wxE(wxTime(x.expires))+'</p></details>';
+ h+='<p class="weather-meta">Source: National Weather Service. Weather does not confirm attraction closure causes. This is not an emergency alert service. <a href="https://www.weather.gov/" target="_blank" rel="noopener" style="color:var(--gold)">Official weather information</a></p>';el.innerHTML=h;}
+async function fetchWeather(){if(weatherBusy||document.hidden)return;weatherBusy=true;weatherLastAttempt=Date.now();const c=new AbortController(),timer=setTimeout(()=>c.abort(),12000);try{const r=await fetch(WEATHER_API,{signal:c.signal});if(!r.ok)throw Error('Weather HTTP '+r.status);const d=await r.json();if(d.schema_version!==1||!d.parks||typeof d.parks!=='object'||!Number.isFinite(Date.parse(d.updated_at)))throw Error('Invalid weather response');weatherData=d;weatherFailed=false;}catch(e){weatherFailed=true;console.warn('Weather unavailable',e);}finally{clearTimeout(timer);weatherBusy=false;renderWeather();}}
+const pulseOriginalSelectPark=selectPark;selectPark=function(...args){pulseOriginalSelectPark(...args);renderWeather();};const pulseOriginalTimestamp=updateTimestamp;updateTimestamp=function(...args){pulseOriginalTimestamp(...args);renderWeather();};
+window.addEventListener('DOMContentLoaded',()=>{renderWeather();fetchWeather();setInterval(fetchWeather,300000);});document.addEventListener('visibilitychange',()=>{if(!document.hidden){renderWeather();if(Date.now()-weatherLastAttempt>=300000)fetchWeather();}});
+</script>
+
+<!-- Park Pulse compact-card refinement.
+Paste this entire block immediately before </body> in the compact-card HTML.
+This is an additive patch, NOT a replacement page. No fetches or backend changes.
+-->
+<style>
+.pulse-score-group{display:flex;flex-direction:column;align-items:center;gap:.25rem;flex-shrink:0}
+.pulse-score-group .pulse-descriptor{margin:0;text-align:center;font-size:.72rem;font-weight:600;line-height:1.3;max-width:110px}
+.pulse-score-group .score-badge{display:block}
+.pulse-closures{display:flex;flex-direction:column;gap:.3rem;margin:.65rem 0}
+.pulse-closures .pulse-closure-main{display:block;width:100%;padding:.42rem .6rem;border-radius:8px;border:1px solid rgba(53,208,138,.22);background:rgba(53,208,138,.08);color:var(--green);font-size:.78rem;font-weight:600;line-height:1.4}
+.pulse-closures .pulse-closure-main.down{background:rgba(255,93,122,.09);border-color:rgba(255,93,122,.25);color:var(--red)}
+.pulse-closures .pulse-secondary{display:block;width:100%;padding:.32rem .6rem;border-radius:8px;border:1px solid rgba(167,139,250,.20);background:rgba(167,139,250,.07);color:var(--purple);font-size:.70rem;font-weight:500;line-height:1.4}
+.pulse-closures button{cursor:pointer;text-align:left}
+.pulse-closures button:hover{filter:brightness(1.08)}
+.pulse-insight{padding:.5rem .65rem;border-radius:8px;border:1px solid rgba(76,214,192,.20);background:rgba(76,214,192,.08);margin:.7rem 0;color:var(--teal)}
+.pulse-insight small{color:var(--text-muted)}
+[data-theme="light"] .pulse-score-group .pulse-descriptor{color:var(--text-muted)}
+@media(max-width:450px){.pulse-score-group .pulse-descriptor{max-width:90px;font-size:.66rem}}
+</style>
+<script>
+(()=>{
+ function refinePulseCards(){
+  document.querySelectorAll('#parkGrid .park-card').forEach(card=>{
+   const header=card.querySelector('.pulse-header');
+   const descriptor=header?.querySelector('.pulse-descriptor');
+   const badge=header?.querySelector('.score-badge');
+   if(descriptor&&badge){
+    let group=header.querySelector('.pulse-score-group');
+    if(!group){group=document.createElement('div');group.className='pulse-score-group';badge.before(group);group.appendChild(badge);}
+    group.appendChild(descriptor);
+    descriptor.textContent=descriptor.textContent.replace(/ crowds$/i,'');
+   }
+   const status=card.querySelector('.pulse-closure-main');
+   if(status&&!status.classList.contains('down'))status.textContent=status.textContent.replace(/^✓\s*/,'✅ ');
+   const secondary=card.querySelector('.pulse-closures .pulse-disclosure:not(.pulse-closure-main)');
+   if(secondary){
+    secondary.classList.add('pulse-secondary');
+    let text=secondary.textContent;
+    if(!text.includes('🛠'))text=text.replace(/(\d+ refurbishment\/extended)/,'🛠 $1');
+    if(!text.includes('🎟'))text=text.replace(/(\d+ scheduled experiences?)/,'🎟️ $1');
+    secondary.textContent=text;
+   }
+   // One interpretation for both descriptor and insight; no changed score formula.
+   const park=parkData.parks[card.dataset.parkKey];
+   if(!park)return;
+   const phase=getParkPhase(card.dataset.parkKey,park);
+   if(phase.phase!=='open')return;
+   const score=park.crowd_score;
+   const heading=card.querySelector('.pulse-insight strong');
+   const detail=card.querySelector('.pulse-insight small');
+   if(!heading||!detail)return;
+   let title,text;
+   if(typeof score!=='number'||!Number.isFinite(score)){title='Check the latest waits';text='Crowd interpretation is unavailable.';}
+   else if(score<2){title='A very light park day';text='Compare current waits to make the most of it.';}
+   else if(score<4){title='Great time to visit';text='Short waits across most attractions.';}
+   else if(score<6){title='Moderate crowds';text='Check headliner waits before your next stop.';}
+   else if(score<8){title='A busy park day';text='Compare attractions to find your next opportunity.';}
+   else{title='Very busy right now';text='Use current waits to choose your next stop.';}
+   heading.textContent=title;detail.textContent=text;
+  });
+ }
+ const previousRenderCards=renderCards;
+ renderCards=function(...args){const result=previousRenderCards(...args);refinePulseCards();return result;};
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',refinePulseCards);
+ else refinePulseCards();
+})();
+</script>
+<!-- Park Pulse: equal closure pills + clickable weather pill.
+Paste this entire block AFTER the previous card-refinement patch,
+immediately before </body>. This is NOT a complete replacement page.
+-->
+<style>
+#parkGrid .pulse-closures .pulse-closure-main,
+#parkGrid .pulse-closures .pulse-secondary {
+  height: 40px;
+  min-height: 40px;
+  padding: 0 .65rem;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  box-sizing: border-box;
+  font-size: .73rem;
+  line-height: 1.3;
+}
+#parkGrid .pulse-secondary {
+  overflow: hidden;
+}
+#parkGrid .pulse-secondary .pulse-pill-label {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+#parkGrid .pulse-footer.pulse-weather-pill {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .6rem;
+  width: 100%;
+  min-height: 56px;
+  padding: .5rem .65rem;
+  margin-top: .7rem;
+  background: rgba(255,209,102,.075);
+  border: 1px solid rgba(255,209,102,.24);
+  border-radius: 8px;
+  color: var(--text);
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+  transition: background .2s ease, border-color .2s ease;
+}
+#parkGrid .pulse-weather-pill:hover {
+  background: rgba(255,209,102,.14);
+  border-color: var(--gold);
+}
+#parkGrid .pulse-weather-pill:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 3px;
+}
+#parkGrid .pulse-weather-pill .pulse-weather {
+  min-width: 0;
+  font-size: .8rem;
+  font-weight: 500;
+}
+#parkGrid .pulse-weather-pill .pulse-weather small {
+  font-size: .65rem;
+  font-weight: 400;
+}
+#parkGrid .pulse-weather-pill .pulse-weather-details {
+  padding: 0;
+  color: var(--gold);
+  font-size: .73rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+[data-theme="light"] #parkGrid .pulse-weather-pill {
+  background: rgba(201,130,0,.06);
+  border-color: rgba(201,130,0,.20);
+}
+[data-theme="light"] #parkGrid .pulse-weather-pill:hover {
+  background: rgba(201,130,0,.11);
+  border-color: var(--gold);
+}
+</style>
+<script>
+(() => {
+  function applyWeatherPills() {
+    document.querySelectorAll('#parkGrid .park-card').forEach(card => {
+      const secondary = card.querySelector('.pulse-secondary');
+      if (secondary && !secondary.querySelector('.pulse-pill-label')) {
+        const label = document.createElement('span');
+        label.className = 'pulse-pill-label';
+        label.textContent = secondary.textContent;
+        secondary.title = secondary.textContent;
+        secondary.replaceChildren(label);
+      }
+      const footer = card.querySelector('.pulse-footer');
+      if (!footer || footer.classList.contains('pulse-weather-pill')) return;
+      const weather = footer.querySelector('.pulse-weather');
+      if (!weather) return;
+      const key = card.dataset.parkKey;
+      const parkName = parkData.parks[key]?.name || 'this park';
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'pulse-footer pulse-weather-pill';
+      button.setAttribute('aria-label', 'View weather details for ' + parkName);
+      button.setAttribute('aria-controls', 'weatherPanel');
+      const reading = document.createElement('span');
+      reading.className = 'pulse-weather';
+      reading.dataset.parkKey = key;
+      reading.innerHTML = weather.innerHTML;
+      reading.title = weather.title;
+      const detail = document.createElement('span');
+      detail.className = 'pulse-weather-details';
+      detail.textContent = 'Details ›';
+      button.append(reading, detail);
+      button.onclick = event => {
+        event.stopPropagation();
+        selectPark(key);
+        const panel = document.getElementById('weatherPanel');
+        if (!panel) return;
+        panel.setAttribute('tabindex', '-1');
+        panel.focus({ preventScroll: true });
+        panel.scrollIntoView({
+          behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+          block: 'start'
+        });
+      };
+      footer.replaceWith(button);
+    });
+  }
+  const previousRenderCards = renderCards;
+  renderCards = function(...args) {
+    const result = previousRenderCards(...args);
+    applyWeatherPills();
+    return result;
+  };
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', applyWeatherPills);
+  } else {
+    applyWeatherPills();
+  }
+})();
 </script>
 </body>
 </html>

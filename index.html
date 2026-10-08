@@ -798,6 +798,53 @@
 @media(max-width:800px){.weather-hours{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:450px){.weather-hours{grid-template-columns:repeat(2,minmax(0,1fr))}.pulse-identity h3{font-size:1.2rem}.pulse-identity img{width:44px;height:44px}.park-card{padding:1.1rem}.score-badge{font-size:.95rem;padding:.35rem .5rem}}
 
 
+.curve-warning{color:var(--yellow);border-left-color:var(--yellow)}
+</style>
+
+<style>
+/* One consolidated presentation layer for the existing weather disclosure. */
+#weatherPanel{padding:0;overflow:hidden}
+#weatherPanel .weather-summary{display:block;list-style:none;cursor:pointer;padding:1.2rem 1.4rem}
+#weatherPanel .weather-summary::-webkit-details-marker{display:none}
+#weatherPanel .weather-summary:focus-visible{outline:3px solid var(--teal);outline-offset:-4px;border-radius:18px}
+#weatherPanel .weather-summary-header{display:flex;justify-content:space-between;align-items:center;gap:1rem}
+#weatherPanel .weather-summary-header h2{font:700 1.25rem/1.35 'Baloo 2',sans-serif;color:var(--text);display:flex;align-items:center;margin-top:.15rem}
+#weatherPanel .weather-expand-label{font-size:.75rem;font-weight:600;color:var(--gold);white-space:nowrap}
+#weatherPanel .ppwx-current{font-size:1.4rem;font-weight:700;line-height:1.35;color:var(--text);margin:.75rem 0 .15rem}
+#weatherPanel .ppwx-metadata{font-size:.8rem;line-height:1.5;color:var(--text-muted)}
+#weatherPanel .ppwx-trend{font-size:.85rem;font-weight:600;color:var(--teal);margin:.65rem 0 .25rem}
+#weatherPanel .ppwx-strip-label{font-size:.65rem;color:var(--text-muted);margin:.6rem 0 .15rem}
+#weatherPanel .ppwx-glance-forecast{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.4rem;margin:.3rem 0 .6rem;max-width:600px}
+#weatherPanel .ppwx-glance-hour{padding:.2rem .35rem;text-align:center;min-width:0;color:var(--text);border:0;background:none}
+#weatherPanel .ppwx-glance-hour time{display:block;font-size:.7rem;color:var(--text-muted)}
+#weatherPanel .ppwx-glance-hour strong{display:block;font-size:.95rem;margin:.2rem 0}
+#weatherPanel .ppwx-glance-hour small{font-size:.74rem;color:var(--teal)}
+#weatherPanel .ppwx-glance-source{font-size:.68rem;color:var(--text-muted);line-height:1.5}
+#weatherPanel .ppwx-warning{font-size:.76rem;color:var(--yellow);margin:.5rem 0 0}
+#weatherPanel .ppwx-alert-preview{font-size:.8rem;font-weight:600;color:var(--red);margin:.5rem 0 0}
+#weatherPanel .weather-expanded-content{border-top:1px solid var(--card-border);padding:1rem 1.4rem 1.2rem}
+#weatherPanel .ppwx-detail-heading{font-size:.95rem;font-weight:700;color:var(--text)}
+#weatherPanel .ppwx-provenance{font-size:.73rem;line-height:1.6;color:var(--text-muted);margin-top:.8rem}
+#weatherPanel .ppwx-provenance p{margin:.3rem 0}
+#weatherPanel .ppwx-no-alert{font-size:.73rem;color:var(--text-muted);margin:.65rem 0}
+#weatherPanel[open] .ppwx-glance-forecast,#weatherPanel[open] .ppwx-strip-label,#weatherPanel[open] .ppwx-glance-source{display:none}
+@media(max-width:600px){#weatherPanel .weather-summary{padding:1rem}#weatherPanel .weather-summary-header{gap:.5rem}#weatherPanel .weather-summary-header h2{font-size:1.05rem}#weatherPanel .weather-expand-label{font-size:.68rem}#weatherPanel .ppwx-current{font-size:1.18rem}#weatherPanel .ppwx-metadata{font-size:.73rem}#weatherPanel .weather-expanded-content{padding:.9rem 1rem 1rem}#weatherPanel .ppwx-glance-forecast{gap:.15rem}#weatherPanel .ppwx-glance-hour{padding:.2rem .05rem}#weatherPanel .ppwx-glance-hour strong{font-size:.83rem}}
+</style>
+<style>
+/* Weather park navigation and forecast browsing; all data fetching is unchanged. */
+#weatherPanel #weatherPanelParkStrip{margin:.8rem 0 .7rem;gap:.85rem;justify-content:center}
+#weatherPanel #weatherPanelParkStrip img{width:68px;height:68px}
+#weatherPanel .ppwx-glance-forecast{grid-template-columns:repeat(6,minmax(0,1fr));max-width:none;width:100%;gap:.5rem;overflow-x:auto}
+#weatherPanel .ppwx-glance-hour{text-align:center}
+#weatherPanel .ppwx-forecast-heading{display:flex;justify-content:space-between;align-items:center;gap:.75rem;flex-wrap:wrap}
+#weatherPanel .ppwx-forecast-hint{display:block;font-size:.68rem;font-weight:400;color:var(--text-muted);margin-top:.1rem}
+#weatherPanel .ppwx-forecast-controls{display:flex;gap:.4rem}
+#weatherPanel .ppwx-forecast-controls button{width:34px;height:34px;border:1px solid var(--card-border);border-radius:50%;background:var(--card-bg-solid);color:var(--gold);font:600 1.3rem/1 'Poppins',sans-serif;cursor:pointer}
+#weatherPanel .ppwx-forecast-controls button:disabled{opacity:.35;cursor:default}
+#weatherPanel .ppwx-forecast-controls button:focus-visible,#weatherPanel .ppwx-forecast-scroller:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
+#weatherPanel .ppwx-forecast-scroller{display:flex;gap:.6rem;overflow-x:auto;scroll-snap-type:x proximity;overscroll-behavior-x:contain;position:relative;padding:.25rem 0 .5rem;scrollbar-width:thin}
+#weatherPanel .ppwx-forecast-scroller .weather-hour{flex:0 0 calc((100% - 3rem)/6);min-width:155px;scroll-snap-align:start}
+@media(max-width:600px){#weatherPanel #weatherPanelParkStrip{gap:.5rem}#weatherPanel #weatherPanelParkStrip img{width:48px;height:48px}#weatherPanel .ppwx-glance-forecast{grid-template-columns:repeat(6,minmax(60px,1fr));gap:.15rem;padding-bottom:.2rem}#weatherPanel .ppwx-glance-hour strong{font-size:.8rem}#weatherPanel .ppwx-forecast-scroller .weather-hour{flex-basis:155px}}
 </style>
 </head>
 <body>
@@ -859,7 +906,15 @@
   <div class="best-park-banner" id="bestParkBanner"></div>
   <div class="park-grid" id="parkGrid"></div>
 
-<section class="panel weather-panel" id="weatherPanel" aria-labelledby="weatherTitle"><div class="panel-header"><div><div class="weather-meta">Park Weather at a Glance</div><h2 id="weatherTitle">Nearby Weather</h2></div><span class="weather-meta">National Weather Service</span></div><div id="weatherContent">Loading nearby weather…</div></section>
+<details class="panel weather-panel weather-expandable" id="weatherPanel" aria-labelledby="weatherTitle">
+  <summary class="weather-summary" aria-expanded="false" aria-controls="weatherDetails">
+    <div class="weather-summary-header"><div><div class="weather-meta">Park Weather at a Glance</div><h2 id="weatherTitle">Park Weather</h2></div><span class="weather-expand-label">Show details ↓</span></div>
+    <div class="panel-park-strip" id="weatherPanelParkStrip" aria-label="Select a park for weather"></div>
+    <div id="weatherGlance">Loading nearby weather…</div>
+    <div id="weatherGlanceWarnings" role="status" aria-live="polite"></div>
+  </summary>
+  <div class="weather-expanded-content" id="weatherDetails"><div id="weatherContent">Loading nearby weather…</div></div>
+</details>
 
   <div class="content-grid">
     <div class="panel" id="ridesPanel">
@@ -884,7 +939,7 @@
 
     <div class="panel">
       <div class="panel-header">
-        <h2>📈 Busyness Curve vs. Average</h2>
+        <h2>📈 Average Waits: Today vs. Typical</h2>
       </div>
       <div class="panel-park-strip" id="chartPanelParkStrip"></div>
       <div class="chart-wrap">
@@ -1606,20 +1661,29 @@
       console.log("No historical summary available yet.");
     }
 
+    let independentHistoryChanged = false;
+    if (nextHistory24h && nextHistory24h.rides && Number.isFinite(Date.parse(nextHistory24h.updated_at))) {
+      const oldTime = Date.parse(history24h?.updated_at), newTime = Date.parse(nextHistory24h.updated_at);
+      if (!Number.isFinite(oldTime) || newTime >= oldTime) { history24h = nextHistory24h; independentHistoryChanged = true; }
+    }
+    if (nextHistoricalSummary && nextHistoricalSummary.rides && Number.isFinite(Date.parse(nextHistoricalSummary.updated_at))) {
+      const oldTime = Date.parse(historicalSummary?.updated_at), newTime = Date.parse(nextHistoricalSummary.updated_at);
+      if (!Number.isFinite(oldTime) || newTime >= oldTime) { historicalSummary = nextHistoricalSummary; lastSummaryFetchAt = Date.now(); independentHistoryChanged = true; }
+    }
+
     if (fetchSucceeded && nextParkData) {
       const incomingTs = new Date(nextParkData.updated_at).getTime();
       const currentTs = new Date(parkData.updated_at).getTime();
       const incomingIsNewer = isNaN(currentTs) || (!isNaN(incomingTs) && incomingTs >= currentTs);
       if (isInitialLoad || incomingIsNewer) {
         parkData = nextParkData;
-        if (nextHistory24h) history24h = nextHistory24h;
-        if (nextHistoricalSummary) { historicalSummary = nextHistoricalSummary; lastSummaryFetchAt = Date.now(); }
         renderAll();
       } else {
         console.log("Fetched data was not newer than current snapshot; ignoring.");
       }
     }
 
+    if (independentHistoryChanged) renderAll();
     isRefreshing = false;
     updateTimestamp();
   }
@@ -1986,51 +2050,121 @@
     }
   }
 
+  const CURVE_ET_FORMAT = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/New_York', year: 'numeric', month: '2-digit',
+    day: '2-digit', weekday: 'short', hour: '2-digit', hourCycle: 'h23'
+  });
+
+  function curveET(date) {
+    const p = Object.fromEntries(CURVE_ET_FORMAT.formatToParts(date).map(x => [x.type, x.value]));
+    return {day: `${p.year}-${p.month}-${p.day}`, weekday: p.weekday.toLowerCase(), hour: Number(p.hour)};
+  }
+
+  function buildParkWaitCurve(park, now = new Date()) {
+    const current = curveET(now), nowMs = now.getTime();
+    const rides = getStandardRides(park); // Include currently closed rides with earlier readings.
+    const perRide = {};
+    let firstObserved = 24, lastObserved = -1;
+    for (const ride of rides) {
+      const hourly = {};
+      for (const point of history24h?.rides?.[String(ride.id)]?.points || []) {
+        if (!Array.isArray(point) || typeof point[1] !== 'number' || !Number.isFinite(point[1]) || point[1] <= 0) continue;
+        const ms = Date.parse(point[0]);
+        if (!Number.isFinite(ms) || ms > nowMs) continue;
+        const time = curveET(new Date(ms));
+        if (time.day !== current.day) continue;
+        const bucket = hourly[time.hour] ||= {sum: 0, samples: 0};
+        bucket.sum += point[1]; bucket.samples++;
+        firstObserved = Math.min(firstObserved, time.hour);
+        lastObserved = Math.max(lastObserved, time.hour);
+      }
+      perRide[String(ride.id)] = hourly;
+    }
+    const hoursConfig = park.hours || DEFAULT_HOURS[activeParkKey];
+    const parseHour = value => { const [h, m] = String(value || '').split(':').map(Number); return Number.isFinite(h) && Number.isFinite(m) ? h + m / 60 : null; };
+    const opening = parseHour(hoursConfig?.earlyEntry || hoursConfig?.open);
+    const closing = parseHour(hoursConfig?.close);
+    let start = opening === null ? 8 : Math.floor(opening);
+    let end = closing === null ? 22 : Math.ceil(closing) - 1;
+    if (firstObserved < 24) start = Math.min(start, firstObserved);
+    if (lastObserved >= 0) end = Math.max(end, lastObserved);
+    start = Math.max(0, Math.min(23, start)); end = Math.max(start, Math.min(23, end));
+    const hours = Array.from({length: end - start + 1}, (_, i) => start + i);
+    const today = [], typical = [], coverage = [];
+    for (const hour of hours) {
+      const key = `${current.weekday}_${String(hour).padStart(2, '0')}`;
+      const observed = [], historical = [], matched = [];
+      for (const ride of rides) {
+        const id = String(ride.id), o = perRide[id]?.[hour], b = historicalSummary?.rides?.[id]?.buckets?.[key];
+        const validBaseline = b && typeof b.avg_wait === 'number' && Number.isFinite(b.avg_wait) && b.avg_wait > 0 && b.samples > 0;
+        const observation = o ? {avg: o.sum / o.samples, samples: o.samples} : null;
+        if (observation && hour <= current.hour) observed.push({id, ...observation});
+        if (validBaseline) historical.push({id, avg: b.avg_wait, samples: b.samples});
+        if (observation && validBaseline && hour <= current.hour) matched.push({observed: observation, historical: b});
+      }
+      const mean = a => a.length ? Math.round(a.reduce((n, x) => n + x, 0) / a.length * 10) / 10 : null;
+      // Both lines use equal attraction weights. Where both exist, compare the SAME rides.
+      if (observed.length) {
+        today.push(mean(matched.length ? matched.map(x => x.observed.avg) : observed.map(x => x.avg)));
+        typical.push(mean(matched.map(x => x.historical.avg_wait)));
+      } else {
+        today.push(null);
+        typical.push(mean(historical.map(x => x.avg)));
+      }
+      coverage.push({observedRides: observed.length, matchedRides: matched.length,
+        historicalRides: observed.length ? matched.length : historical.length,
+        observedSamples: matched.length ? matched.reduce((n, x) => n + x.observed.samples, 0) : observed.reduce((n, x) => n + x.samples, 0),
+        historicalSamples: observed.length ? matched.reduce((n, x) => n + x.historical.samples, 0) : historical.reduce((n, x) => n + x.samples, 0),
+        partial: hour === current.hour});
+    }
+    return {day: current.day, weekday: current.weekday, currentHour: current.hour, hours, today, typical, coverage};
+  }
+
   function renderChart(park) {
-    const ctx = document.getElementById('trendChart').getContext('2d');
-    const hours = ['9a', '10a', '11a', '12p', '1p', '2p', '3p', '4p', '5p', '6p', '7p'];
-    const todayData = park.hourly_today || [20, 30, 45, 50, 48, 45, 50, 55, 45, 35, 20];
-    const histData = park.hourly_hist || [18, 25, 40, 45, 44, 42, 45, 48, 42, 30, 18];
-    const c = chartTheme();
-
+    const canvas = document.getElementById('trendChart'), ctx = canvas.getContext('2d');
+    const series = buildParkWaitCurve(park), c = chartTheme();
     if (chartInstance) chartInstance.destroy();
-
     const gradient = ctx.createLinearGradient(0, 0, 0, 195);
-    gradient.addColorStop(0, c.fillTop);
-    gradient.addColorStop(1, c.fillBottom);
-
+    gradient.addColorStop(0, c.fillTop); gradient.addColorStop(1, c.fillBottom);
+    const label = hour => `${hour % 12 || 12}${hour >= 12 ? 'p' : 'a'}`;
+    const sourceTime = iso => {
+      const ms = Date.parse(iso);
+      return Number.isFinite(ms) ? new Date(ms).toLocaleString('en-US', {month:'short', day:'numeric', hour:'numeric', minute:'2-digit', timeZone:'America/New_York', timeZoneName:'short'}) : 'Unavailable';
+    };
+    const hasToday = series.today.some(x => x !== null), hasTypical = series.typical.some(x => x !== null);
+    const warnings = [];
+    if (!hasToday) warnings.push('No qualifying observations for this park today yet.');
+    if (!hasTypical) warnings.push('No matching historical weekday/hour baseline available.');
+    const historyAge = Date.now() - Date.parse(history24h?.updated_at);
+    if (hasToday && (!Number.isFinite(historyAge) || historyAge > STALE_THRESHOLD_MINUTES * 60000)) warnings.push('Observed history may be out of date.');
+    const summaryAge = Date.now() - Date.parse(historicalSummary?.updated_at);
+    if (hasTypical && (!Number.isFinite(summaryAge) || summaryAge > 2 * 60 * 60 * 1000)) warnings.push('Historical summary has not refreshed recently.');
+    const insights = document.getElementById('insightsPanel');
+    insights.innerHTML = '<div class="insight-item"><strong>Actual data:</strong> ' + escapeHtml(series.day) +
+      ' · Eastern park time. Observed history: ' + escapeHtml(sourceTime(history24h?.updated_at)) +
+      ' · Historical summary: ' + escapeHtml(sourceTime(historicalSummary?.updated_at)) + '.</div>' +
+      '<div class="insight-item"><strong>How to read this:</strong> Positive standby waits for standard attractions only; zero waits and closed readings are excluded. Each attraction contributes equally after its hourly readings are averaged. Where both lines exist, they use the same available attractions; hover for coverage. The current observed hour is partial. Future observed hours stay blank.</div>' +
+      '<div class="insight-item"><strong>Preliminary baseline:</strong> Same-weekday historical averages are not a forecast or a crowd index. They can include today’s completed rollups; reading counts do not establish multiple weeks of history.</div>' +
+      (warnings.length ? '<div class="insight-item curve-warning" role="status">' + escapeHtml(warnings.join(' ')) + '</div>' : '');
+    canvas.setAttribute('aria-label', `${park.name}: observed and historical average positive standby waits on ${series.day}, Eastern time`);
+    canvas.setAttribute('role', 'img');
     chartInstance = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: hours,
-        datasets: [
-          {
-            label: 'Today (Observed)', data: todayData,
-            borderColor: c.primary, backgroundColor: gradient,
-            pointBackgroundColor: c.primary, pointBorderColor: c.pointBorder,
-            pointRadius: 3, pointHoverRadius: 5, borderWidth: 2.5, tension: 0.35, fill: true
-          },
-          {
-            label: 'Historical Avg for Today', data: histData,
-            borderColor: c.secondary, borderDash: [6, 5], borderWidth: 1.5,
-            pointRadius: 0, tension: 0.35, fill: false
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: { labels: { color: c.textColor, usePointStyle: true, padding: 10, boxWidth: 8, font: { size: 10 } } },
-          tooltip: {
-            backgroundColor: c.surface, titleColor: c.primary, bodyColor: c.text,
-            borderColor: c.border, borderWidth: 1, padding: 10, cornerRadius: 8
-          }
-        },
-        scales: {
-          y: { grid: { color: c.grid }, ticks: { color: c.textColor, callback: v => v + 'm', font: { size: 9 } } },
-          x: { grid: { color: 'transparent' }, ticks: { color: c.textColor, font: { size: 9 } } }
-        }
+      type:'line', data:{labels:series.hours.map(label), datasets:[
+        {label:'Today · observed', data:series.today, borderColor:c.primary, backgroundColor:gradient,
+         pointBackgroundColor:c.primary, pointBorderColor:c.pointBorder, pointRadius:3, pointHoverRadius:5,
+         borderWidth:2.5, tension:0, fill:true, spanGaps:false},
+        {label:'Same weekday · historical average', data:series.typical, borderColor:c.secondary,
+         borderDash:[6,5], borderWidth:1.5, pointRadius:2, tension:0, fill:false, spanGaps:false}
+      ]}, options:{responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{labels:{color:c.textColor,usePointStyle:true,padding:10,boxWidth:8,font:{size:10}}},
+          tooltip:{backgroundColor:c.surface,titleColor:c.primary,bodyColor:c.text,borderColor:c.border,borderWidth:1,padding:10,cornerRadius:8,
+            callbacks:{title:items => {const i=items[0]?.dataIndex;return i===undefined?'':`${series.day} · ${label(series.hours[i])}–${label(series.hours[i]+1)} Eastern${series.coverage[i].partial?' · current hour (partial)':''}`;},
+              label:item => `${item.dataset.label}: ${item.parsed.y} min`,
+              afterLabel:item => {const x=series.coverage[item.dataIndex];return item.datasetIndex===0 ?
+                `${x.matchedRides || x.observedRides} attractions · ${x.observedSamples} positive readings${x.matchedRides ? ` · matched ${x.matchedRides}/${x.observedRides} observed attractions` : ' · no historical match'}` :
+                `${x.historicalRides} attractions · ${x.historicalSamples} historical readings · preliminary`;}}}},
+        scales:{y:{beginAtZero:true,grid:{color:c.grid},ticks:{color:c.textColor,callback:v=>v+'m',font:{size:9}}},
+          x:{grid:{color:'transparent'},ticks:{color:c.textColor,font:{size:9}},title:{display:true,text:'Eastern park time · hourly buckets',color:c.textColor}}}
       }
     });
   }
@@ -2687,28 +2821,229 @@ renderCards=function(){const grid=document.getElementById('parkGrid');grid.inner
  +'<div class="pulse-insight"><span aria-hidden="true">💡</span><div><strong>'+wxE(insight.title)+'</strong><small>'+wxE(insight.text)+'</small></div></div><div class="pulse-footer"><div class="pulse-weather" data-park-key="'+key+'">🌡️ Weather loading…</div><button type="button" class="pulse-weather-details" aria-label="Weather details for '+wxE(p.name)+'">Details ›</button></div>';
  card.querySelectorAll('[data-closure]').forEach(b=>b.onclick=e=>openClosureModal(e,key));card.querySelector('.pulse-weather-details').onclick=e=>{e.stopPropagation();selectPark(key);document.getElementById('weatherPanel').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});};grid.appendChild(card);
  }renderParkWeather();};
-function renderWeather(){renderParkWeather();const el=document.getElementById('weatherContent'),p=weatherData?.parks?.[activeParkKey],name=p?.name||parkData.parks?.[activeParkKey]?.name||'Selected park';
- document.getElementById('weatherTitle').innerHTML='<img src="'+wxE(PARK_EMOJI_IMAGES[activeParkKey]||'')+'" class="panel-title-emoji" alt=""/>'+wxE(name)+' · Nearby Weather';
- if(!p){el.innerHTML='<p class="weather-status">'+(weatherFailed?'Weather unavailable; retrying automatically. Ride data remains available.':'Loading nearby weather…')+'</p>';return;}
- const opened=new Set([...el.querySelectorAll('details[open]')].map(x=>x.dataset.id)),o=p.observation,f=p.forecast,a=p.alerts,errors=p.collection?.errors||{};let h='';
- if(weatherFailed||wxAge(weatherData.updated_at)>20)h+='<p class="weather-status weather-warning">Refresh delayed; showing the last available snapshot.</p>';
- if(o){const feel=wxFeel(o);h+='<div class="weather-current">'+wxIcon(o.description)+' '+wxF(o.temperature_c)+' · '+wxE(o.description||'Condition unavailable')+'</div><p class="weather-meta">'+(feel?feel.label+': '+wxF(feel.v):'Feels-like estimate unavailable')+' · Humidity '+(wxN(o.humidity_percent)?Math.round(o.humidity_percent)+'%':'unavailable')+' · Wind '+(wxN(o.wind_kmh)?Math.round(o.wind_kmh/1.609344)+' mph':'unavailable')+(wxN(o.gust_kmh)?' · Gusts '+Math.round(o.gust_kmh/1.609344)+' mph':'')+(wxN(o.precipitation_last_hour_mm)?' · Last-hour observed rain '+(o.precipitation_last_hour_mm/25.4).toFixed(2)+' in':'')+'</p><p class="weather-meta">Observed '+wxE(wxTime(o.observed_at))+' at '+wxE(o.station?.name||'nearby station')+' ('+wxE(o.station?.id||'unknown')+')'+(wxN(o.station?.distance_km)?' · '+(o.station.distance_km/1.609344).toFixed(1)+' miles from this park':'')+'. Conditions inside the park may differ.</p>';
- if(wxAge(o.observed_at)>90||errors.observations)h+='<p class="weather-status weather-warning">Older or delayed station observation.</p>';}else h+='<p class="weather-status">Observations unavailable.</p>';
- h+='<strong style="display:block;margin-top:1rem">Next hours · Forecast</strong>';const periods=Array.isArray(f?.periods)?f.periods.filter(x=>Number.isFinite(Date.parse(x.startTime))&&Date.parse(x.endTime)>Date.now()).slice(0,6):[];
- if(f&&(wxAge(f.fetched_at)>120||wxAge(f.issued_at)>360||errors.forecast))h+='<p class="weather-status weather-warning">Forecast may be out of date.</p>';
- if(periods.length)h+='<div class="weather-hours">'+periods.map(x=>'<div class="weather-hour">'+wxE(wxTime(x.startTime,true))+'<strong>'+wxIcon(x.shortForecast,x.isDaytime===false)+' '+(wxN(x.temperature)?x.temperatureUnit==='C'?wxF(x.temperature):x.temperatureUnit==='F'?Math.round(x.temperature)+'°F':'Unavailable':'Unavailable')+'</strong>'+wxE(x.shortForecast||'Unavailable')+'<p>'+(wxN(x.probabilityOfPrecipitation?.value)?Math.round(x.probabilityOfPrecipitation.value)+'% rain chance':'Rain chance unavailable')+'</p></div>').join('')+'</div>';else h+='<p class="weather-status">Forecast unavailable.</p>';
- if(f)h+='<p class="weather-meta">Forecast issued '+wxE(wxTime(f.issued_at))+' · Retrieved '+wxE(wxTime(f.fetched_at))+'. Rain percentages are forecasts, not measured rainfall.</p>';
- const fresh=a&&!errors.alerts&&wxAge(a.fetched_at)<=15,active=Array.isArray(a?.active)?a.active.filter(x=>!x.expires||Date.parse(x.expires)>Date.now()):[];
- if(!fresh)h+='<p class="weather-status weather-warning">Alert checks unavailable or delayed. Consult official weather sources.</p>';else if(!active.length)h+='<p class="weather-status">No active NWS alerts returned · Checked '+wxE(wxTime(a.fetched_at))+'.</p>';
- for(const x of active)h+='<details class="weather-alert" data-id="'+wxE(x.id)+'"'+(opened.has(x.id)?' open':'')+'><summary>⚠️ '+wxE(x.event||'Weather alert')+(fresh?'':' · Last available report')+'</summary><p>'+wxE(x.headline||'')+'</p><p>'+wxE(x.description||'')+'</p><p>'+wxE(x.instruction||'')+'</p><p>Expires '+wxE(wxTime(x.expires))+'</p></details>';
- h+='<p class="weather-meta">Source: National Weather Service. Weather does not confirm attraction closure causes. This is not an emergency alert service. <a href="https://www.weather.gov/" target="_blank" rel="noopener" style="color:var(--gold)">Official weather information</a></p>';el.innerHTML=h;}
+
+// Presentation-only weather view model; provider, payload and fetch code unchanged.
+function weatherViewModel(park) {
+  const periods = (Array.isArray(park.forecast?.periods) ? park.forecast.periods : [])
+    .filter(p => Number.isFinite(Date.parse(p.startTime)) && Date.parse(p.endTime) > Date.now())
+    .sort((a,b) => Date.parse(a.startTime)-Date.parse(b.startTime));
+  const errors=park.collection?.errors||{}, o=park.observation, f=park.forecast, a=park.alerts;
+  const forecastFresh=!!f && !weatherFailed && wxAge(weatherData?.updated_at)<=20 &&
+    !errors.forecast && wxAge(f.fetched_at)<=120 && wxAge(f.issued_at)<=360;
+  const alertsFresh=!!a && !errors.alerts && wxAge(a.fetched_at)<=15;
+  const active=Array.isArray(a?.active)?a.active.filter(x=>!x.expires||Date.parse(x.expires)>Date.now()):[];
+  const warnings=[];
+  if(weatherFailed||wxAge(weatherData?.updated_at)>20)warnings.push('Weather refresh delayed — last available data.');
+  if(o&&(wxAge(o.observed_at)>90||errors.observations))warnings.push('Observation is older or delayed.');
+  if(!o)warnings.push('Current observations unavailable.');
+  if(f&&!forecastFresh)warnings.push('Forecast may be out of date.');
+  if(!alertsFresh)warnings.push('NWS alert checks are unavailable or delayed.');
+  return {park,o,f,a,periods,forecastFresh,alertsFresh,active,warnings};
+}
+function weatherTemp(p,compact=false){
+  if(!wxN(p?.temperature))return '—';
+  const value=p.temperatureUnit==='C'?p.temperature*9/5+32:p.temperatureUnit==='F'?p.temperature:null;
+  return value===null?'—':Math.round(value)+(compact?'°':'°F');
+}
+function weatherTimeOnly(iso,hourOnly=false){
+  if(!Number.isFinite(Date.parse(iso)))return 'Unavailable';
+  const options=hourOnly?{hour:'numeric'}:{hour:'numeric',minute:'2-digit'};
+  if(selectedTz!=='local')options.timeZone=selectedTz;
+  return new Date(iso).toLocaleTimeString([],options);
+}
+function weatherTrend(view){
+  const periods=view.periods.slice(0,6);
+  if(!view.forecastFresh||periods.length<3)return null;
+  // Avoid interpretations across gaps or sparse probability/temperature data.
+  if(periods.some((p,i)=>i&&Date.parse(p.startTime)-Date.parse(periods[i-1].startTime)>90*60000))return null;
+  const rain=periods.map(p=>p.probabilityOfPrecipitation?.value);
+  const completeRain=rain.every(x=>wxN(x)&&x>=0&&x<=100);
+  if(completeRain){
+    const early=(rain[0]+rain[1])/2,late=(rain.at(-1)+rain.at(-2))/2,change=late-early;
+    const lateStorm=periods.slice(-2).some(p=>/thunder/i.test(p.shortForecast||''));
+    if(change>=15&&late>=40)return lateStorm?
+      {icon:'⛈️',text:'Rain chances rise; storms are in the forecast'}:
+      {icon:'🌧️',text:'Rain chances rise over the next few hours'};
+    if(change<=-15&&early>=40)return {icon:'🌤️',text:'Rain chances ease over the next few hours'};
+  }
+  const temps=periods.map(p=>wxN(p.temperature)?p.temperatureUnit==='C'?p.temperature*9/5+32:p.temperatureUnit==='F'?p.temperature:null:null);
+  if(temps.every(wxN)&&temps.at(-1)-temps[0]>=5)return {icon:'🌡️',text:'Temperatures climb over the next few hours'};
+  // Stable is shown only for an unchanged forecast description and small swings.
+  const descriptions=periods.map(p=>String(p.shortForecast||'').trim().toLowerCase());
+  if(completeRain&&temps.every(wxN)&&descriptions[0]&&descriptions.every(x=>x===descriptions[0])&&
+     Math.max(...rain)-Math.min(...rain)<=10&&Math.max(...temps)-Math.min(...temps)<=3)
+    return {icon:wxIcon(periods[0].shortForecast,periods[0].isDaytime===false),text:'Mostly steady conditions over the next few hours'};
+  return null;
+}
+function renderWeatherGlance(view){
+  const {o,periods}=view, feel=wxFeel(o), trend=weatherTrend(view);
+  const metadata=[];
+  if(feel)metadata.push('Feels '+wxF(feel.v).replace('°F','°'));
+  if(wxN(o?.wind_kmh))metadata.push('Wind '+Math.round(o.wind_kmh/1.609344)+' mph');
+  if(wxN(o?.humidity_percent))metadata.push('Humidity '+Math.round(o.humidity_percent)+'%');
+  let html='<div class="ppwx-current">'+(o?'<span aria-hidden="true">'+wxIcon(o.description)+'</span> '+wxF(o.temperature_c)+' · '+wxE(o.description||'Conditions unavailable'):'Current conditions unavailable')+'</div>';
+  if(metadata.length)html+='<div class="ppwx-metadata"'+(feel?' title="Feels value uses '+wxE(feel.label.toLowerCase())+'"':'')+'>'+wxE(metadata.join(' · '))+'</div>';
+  if(trend)html+='<div class="ppwx-trend"><span aria-hidden="true">'+trend.icon+'</span> '+wxE(trend.text)+'</div>';
+  if(periods.length){
+    html+='<div class="ppwx-strip-label">Next hours · rain chance</div><div class="ppwx-glance-forecast" aria-label="Next six hourly forecast periods">'+periods.slice(0,6).map(p=>{
+      const rain=p.probabilityOfPrecipitation?.value;
+      const description=p.shortForecast||'Forecast description unavailable';
+      const accessible=weatherTimeOnly(p.startTime,true)+': '+weatherTemp(p)+', '+description+', '+(wxN(rain)?rain+' percent chance of precipitation':'precipitation probability unavailable');
+      return '<div class="ppwx-glance-hour" role="group" aria-label="'+wxE(accessible)+'" title="'+wxE(description+' · '+wxTime(p.startTime))+'"><time datetime="'+wxE(p.startTime)+'" aria-hidden="true">'+wxE(weatherTimeOnly(p.startTime,true))+'</time><strong aria-hidden="true">'+wxIcon(description,p.isDaytime===false)+' '+weatherTemp(p,true)+'</strong><small aria-hidden="true">'+(wxN(rain)?Math.round(rain)+'%':'—')+'</small></div>';
+    }).join('')+'</div>';
+  }
+  html+='<div class="ppwx-glance-source">'+(o?'Observed '+wxE(wxTime(o.observed_at,true))+' · Nearby station':'Observations unavailable')+' · NWS</div>';
+  document.getElementById('weatherGlance').innerHTML=html;
+  document.getElementById('weatherGlanceWarnings').innerHTML=view.active.map(a=>'<p class="ppwx-alert-preview">⚠️ '+wxE(a.event||'NWS weather alert')+(view.alertsFresh?'':' · Last available report')+' · Expand for details</p>').join('')+
+    (view.warnings.length?'<p class="ppwx-warning">'+wxE(view.warnings.join(' '))+'</p>':'');
+}
+
+function renderWeatherParkStrip(){
+  const strip=document.getElementById('weatherPanelParkStrip');
+  const signature=PARK_ORDER.map(key=>key+'|'+(weatherData?.parks?.[key]?.name||parkData.parks?.[key]?.name||key)+'|'+PARK_EMOJI_IMAGES[key]).join(';');
+  if(strip.dataset.signature!==signature){
+    strip.innerHTML=PARK_ORDER.map(key=>{
+      const name=weatherData?.parks?.[key]?.name||parkData.parks?.[key]?.name||key;
+      return '<button type="button" class="park-select-btn" data-park-key="'+wxE(key)+'" aria-label="View '+wxE(name)+' weather" aria-pressed="false"><img src="'+wxE(PARK_EMOJI_IMAGES[key]||'')+'" alt="" /></button>';
+    }).join('');
+    strip.dataset.signature=signature;
+  }
+  strip.querySelectorAll('button').forEach(button=>{
+    const active=button.dataset.parkKey===activeParkKey;
+    button.classList.toggle('active-park',active);button.setAttribute('aria-pressed',String(active));
+  });
+}
+function bindWeatherForecastScroll(scroller){
+  if(!scroller)return;
+  const previous=document.getElementById('weatherForecastPrev'),next=document.getElementById('weatherForecastNext');
+  const update=()=>{
+    const max=scroller.scrollWidth-scroller.clientWidth;
+    previous.disabled=scroller.scrollLeft<=2;
+    next.disabled=max<=2||scroller.scrollLeft>=max-2;
+  };
+  const move=direction=>{
+    const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+    scroller.scrollBy({left:direction*Math.max(150,scroller.clientWidth*.8),behavior:reduced?'auto':'smooth'});
+  };
+  previous.onclick=()=>move(-1);next.onclick=()=>move(1);
+  scroller.addEventListener('scroll',update,{passive:true});
+  scroller.addEventListener('keydown',event=>{
+    if(event.target!==scroller)return;
+    if(event.key==='ArrowLeft'||event.key==='ArrowRight'){event.preventDefault();move(event.key==='ArrowLeft'?-1:1);}
+    if(event.key==='Home'){event.preventDefault();scroller.scrollTo({left:0,behavior:'auto'});}
+    if(event.key==='End'){event.preventDefault();scroller.scrollTo({left:scroller.scrollWidth,behavior:'auto'});}
+  });
+  requestAnimationFrame(update);
+}
+
+function renderWeatherDetails(view){
+  const el=document.getElementById('weatherContent'),{o,f,a,active,alertsFresh,periods}=view;
+  const opened=new Set([...el.querySelectorAll('details[open]')].map(x=>x.dataset.id));
+  const focused=document.activeElement?.closest?.('.weather-alert');
+  const focusId=focused&&el.contains(focused)?focused.dataset.id:null;
+  const oldScroller=el.querySelector('#weatherForecastScroller');
+  const oldKey=oldScroller?.dataset.parkKey;
+  const oldLeft=oldScroller?.scrollLeft||0;
+  const oldWidth=oldScroller?.clientWidth||0;
+  const anchorCard=oldScroller?[...oldScroller.querySelectorAll('[data-period-start]')].find(card=>card.offsetLeft-oldScroller.offsetLeft+card.offsetWidth>oldLeft):null;
+  const anchorTime=anchorCard?.dataset.periodStart;
+  const wasForecastFocused=document.activeElement?.id==='weatherForecastScroller';
+  const forecastButtonFocus=['weatherForecastPrev','weatherForecastNext'].includes(document.activeElement?.id)?document.activeElement.id:null;
+  let html='<div class="ppwx-forecast-heading"><div class="ppwx-detail-heading">Hourly forecast <span class="ppwx-forecast-hint">Swipe or use arrows for more hours</span></div>'+(periods.length?'<div class="ppwx-forecast-controls"><button type="button" id="weatherForecastPrev" aria-label="Earlier forecast hours" aria-controls="weatherForecastScroller">‹</button><button type="button" id="weatherForecastNext" aria-label="Later forecast hours" aria-controls="weatherForecastScroller">›</button></div>':'')+'</div>';
+  if(periods.length)html+='<div class="weather-hours ppwx-forecast-scroller" id="weatherForecastScroller" data-park-key="'+wxE(activeParkKey)+'" role="region" aria-label="Hourly forecast; use left and right arrow keys to browse" tabindex="0">'+periods.map(p=>'<div class="weather-hour" data-period-start="'+wxE(p.startTime)+'"><time datetime="'+wxE(p.startTime)+'">'+wxE(wxTime(p.startTime,true))+'</time><strong><span aria-hidden="true">'+wxIcon(p.shortForecast,p.isDaytime===false)+'</span> '+weatherTemp(p)+'</strong><div>'+wxE(p.shortForecast||'Forecast unavailable')+'</div><p>'+(wxN(p.probabilityOfPrecipitation?.value)?Math.round(p.probabilityOfPrecipitation.value)+'% rain chance':'Rain probability unavailable')+'</p></div>').join('')+'</div>';
+  else html+='<p class="ppwx-provenance">Hourly forecast unavailable.</p>';
+  if(alertsFresh&&!active.length)html+='<p class="ppwx-no-alert">✓ No active NWS weather alerts returned</p>';
+  else if(!alertsFresh)html+='<p class="ppwx-warning">NWS alert status unavailable or delayed — check official weather information.</p>';
+  for(const x of active)html+='<details class="weather-alert" data-id="'+wxE(x.id)+'"'+(opened.has(x.id)?' open':'')+'><summary>⚠️ '+wxE(x.event||'Weather alert')+(alertsFresh?'':' · Last available report')+'</summary><p>'+wxE(x.headline||'')+'</p><p>'+wxE(x.description||'')+'</p>'+(x.instruction?'<p>'+wxE(x.instruction)+'</p>':'')+'<p>Expires '+wxE(wxTime(x.expires))+'</p></details>';
+  html+='<div class="ppwx-provenance"><p><strong>Data:</strong> National Weather Service'+(f?' · Forecast issued '+wxE(wxTime(f.issued_at))+' · Retrieved '+wxE(wxTime(f.fetched_at)):' · Forecast unavailable')+'.</p><p>Rain percentages are forecast probabilities, not measured rainfall.'+(a?' · NWS alerts checked '+wxE(wxTime(a.fetched_at))+'.':'')+'</p>';
+  if(o){
+    const feel=wxFeel(o),stats=[];
+    if(feel)stats.push(feel.label+': '+wxF(feel.v));
+    if(wxN(o.gust_kmh))stats.push('Gusts '+Math.round(o.gust_kmh/1.609344)+' mph');
+    // Preserve the optional observed-rain field already present in the old UI.
+    if(wxN(o.precipitation_last_hour_mm))stats.push('Last-hour observed rain '+(o.precipitation_last_hour_mm/25.4).toFixed(2)+' in');
+    if(stats.length)html+='<p>'+wxE(stats.join(' · '))+'.</p>';
+    html+='<p>Observed '+wxE(wxTime(o.observed_at))+' at '+wxE(o.station?.name||'nearby station')+' ('+wxE(o.station?.id||'unavailable')+')'+(wxN(o.station?.distance_km)?' · '+(o.station.distance_km/1.609344).toFixed(1)+' mi from this park':'')+'.'+(o.fetched_at?' Observation retrieved '+wxE(wxTime(o.fetched_at))+'.':'')+'</p>';
+  }
+  html+='<p>Nearby station conditions may differ within the park.</p><p>Weather does not confirm attraction closure causes. Not an emergency alert service. <a href="https://www.weather.gov/" target="_blank" rel="noopener" style="color:var(--gold)">Official weather information →</a></p></div>';
+  el.innerHTML=html;
+  const scroller=el.querySelector('#weatherForecastScroller');
+  if(scroller){
+    if(oldKey===activeParkKey){
+      // Keep the browsed hour when old forecast periods expire or a refresh occurs.
+      const anchor=anchorTime?[...scroller.querySelectorAll('[data-period-start]')].find(card=>card.dataset.periodStart===anchorTime):null;
+      scroller.scrollLeft=anchor?anchor.offsetLeft-scroller.offsetLeft:oldLeft;
+    }
+    bindWeatherForecastScroll(scroller);
+    if(wasForecastFocused)scroller.focus({preventScroll:true});
+    if(forecastButtonFocus)document.getElementById(forecastButtonFocus)?.focus({preventScroll:true});
+  }
+  if(focusId){const next=[...el.querySelectorAll('.weather-alert')].find(x=>x.dataset.id===focusId);next?.querySelector('summary')?.focus({preventScroll:true});}
+}
+function renderWeather(){
+  renderParkWeather();
+  renderWeatherParkStrip();
+  const park=weatherData?.parks?.[activeParkKey],name=park?.name||parkData.parks?.[activeParkKey]?.name||'Selected Park';
+  document.getElementById('weatherTitle').innerHTML='<img src="'+wxE(PARK_EMOJI_IMAGES[activeParkKey]||'')+'" class="panel-title-emoji" alt=""/>'+wxE(name)+' Weather';
+  if(!park){
+    const message=weatherFailed?'Weather temporarily unavailable — retrying automatically.':'Loading nearby weather…';
+    document.getElementById('weatherGlance').textContent=message;
+    document.getElementById('weatherGlanceWarnings').textContent='';
+    document.getElementById('weatherContent').innerHTML='<p class="ppwx-provenance">'+wxE(message)+'</p>';return;
+  }
+  const view=weatherViewModel(park);
+  renderWeatherGlance(view);
+  renderWeatherDetails(view);
+}
+function initWeatherDisclosure(){
+  const panel=document.getElementById('weatherPanel'),summary=panel.querySelector('.weather-summary');
+  const syncState=()=>{
+    summary.setAttribute('aria-expanded',String(panel.open));
+    panel.querySelector('.weather-expand-label').textContent=panel.open?'Hide details ↑':'Show details ↓';
+  };
+  panel.addEventListener('toggle',()=>{
+    syncState();
+    if(panel.open){requestAnimationFrame(()=>{
+      const scroller=document.getElementById('weatherForecastScroller');
+      if(scroller)scroller.dispatchEvent(new Event('scroll'));
+    });}
+  });syncState();
+  document.getElementById('weatherPanelParkStrip').addEventListener('click',event=>{
+    const button=event.target.closest('button[data-park-key]');if(!button)return;
+    event.preventDefault();event.stopPropagation();selectPark(button.dataset.parkKey);
+  });
+  document.addEventListener('click',event=>{
+    if(event.target.closest?.('.pulse-weather-pill')){panel.open=true;syncState();}
+  },true);
+}
 async function fetchWeather(){if(weatherBusy||document.hidden)return;weatherBusy=true;weatherLastAttempt=Date.now();const c=new AbortController(),timer=setTimeout(()=>c.abort(),12000);try{const r=await fetch(WEATHER_API,{signal:c.signal});if(!r.ok)throw Error('Weather HTTP '+r.status);const d=await r.json();if(d.schema_version!==1||!d.parks||typeof d.parks!=='object'||!Number.isFinite(Date.parse(d.updated_at)))throw Error('Invalid weather response');weatherData=d;weatherFailed=false;}catch(e){weatherFailed=true;console.warn('Weather unavailable',e);}finally{clearTimeout(timer);weatherBusy=false;renderWeather();}}
 const pulseOriginalSelectPark=selectPark;selectPark=function(...args){pulseOriginalSelectPark(...args);renderWeather();};const pulseOriginalTimestamp=updateTimestamp;updateTimestamp=function(...args){pulseOriginalTimestamp(...args);renderWeather();};
-window.addEventListener('DOMContentLoaded',()=>{renderWeather();fetchWeather();setInterval(fetchWeather,300000);});document.addEventListener('visibilitychange',()=>{if(!document.hidden){renderWeather();if(Date.now()-weatherLastAttempt>=300000)fetchWeather();}});
+window.addEventListener('DOMContentLoaded',()=>{initWeatherDisclosure();renderWeather();fetchWeather();setInterval(fetchWeather,300000);});document.addEventListener('visibilitychange',()=>{if(!document.hidden){renderWeather();if(Date.now()-weatherLastAttempt>=300000)fetchWeather();}});
 </script>
 
 <!-- Park Pulse compact-card refinement.
-Paste this entire block immediately before </body> in the compact-card HTML.
+Paste this entire block immediately before 
+<script>
+(() => {
+ let lastCurveClock = '';
+ const priorTimestamp = updateTimestamp;
+ updateTimestamp = function(...args) {
+   const result = priorTimestamp(...args);
+   const current = curveET(new Date());
+   const key = current.day + '#' + current.hour;
+   if (key !== lastCurveClock) {
+     lastCurveClock = key;
+     const park = parkData.parks[activeParkKey];
+     if (park) renderChart(park);
+   }
+   return result;
+ };
+})();
+</script>
+
+
+
+</body> in the compact-card HTML.
 This is an additive patch, NOT a replacement page. No fetches or backend changes.
 -->
 <style>
@@ -2911,6 +3246,146 @@ immediately before </body>. This is NOT a complete replacement page.
   } else {
     applyWeatherPills();
   }
+})();
+</script>
+<style>
+/* Heatmap: preserve full attraction names in every view. */
+.heatmap-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+}
+.heatmap-table {
+  table-layout: auto;
+  width: max-content;
+  min-width: 100%;
+}
+.heatmap-table th.ride-col,
+.heatmap-table td.ride-name {
+  min-width: 340px;
+  max-width: none;
+  width: auto;
+  white-space: nowrap;
+  overflow: visible;
+  text-overflow: clip;
+  padding-right: 1rem;
+}
+.heatmap-table th:not(.ride-col) {
+  min-width: 84px;
+  padding-left: .45rem;
+  padding-right: .45rem;
+}
+</style>
+<!-- Park Pulse weather-glance repair.
+Paste this entire block immediately before the FINAL </body> tag,
+after all existing scripts. This is an additive patch, not a replacement page.
+-->
+
+<!-- Park Pulse reusable smooth disclosures.
+Paste immediately before the FINAL </body>, after existing scripts.
+Applies to details.panel and details[data-smooth-expand]. No data/network changes.
+-->
+<style>
+details.pp-smooth-disclosure.pp-disclosure-animating { overflow: hidden; }
+@media (prefers-reduced-motion: reduce) {
+ details.pp-smooth-disclosure { scroll-behavior: auto; }
+}
+</style>
+<script>
+(() => {
+ const states=new WeakMap();
+ const selector='details.panel, details[data-smooth-expand]';
+ const reduced=()=>window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+ function contentOf(el){return el.querySelector(':scope > .weather-expanded-content, :scope > [data-disclosure-content]');}
+ function stop(state){
+  if(state.animation){state.animation.cancel();state.animation=null;}
+  if(state.fade){state.fade.cancel();state.fade=null;}
+ }
+ function clean(el,state){
+  el.style.height=state.savedHeight;
+  el.style.overflow=state.savedOverflow;
+  el.classList.remove('pp-disclosure-animating');
+  state.running=false;
+  state.settledOpen=el.open;
+  state.lastHeight=el.getBoundingClientRect().height;
+ }
+ function setOpen(el,open,startOverride){
+  bind(el);
+  const state=states.get(el);
+  if(!state.running && el.open===open && state.settledOpen===open)return;
+  const start=Number.isFinite(startOverride)?startOverride:el.getBoundingClientRect().height;
+  const token=++state.token;
+  stop(state);
+  if(reduced()||typeof el.animate!=='function'){
+   el.open=open;clean(el,state);return;
+  }
+  state.running=true;state.target=open;
+  el.classList.add('pp-disclosure-animating');
+  // Measure both complete layouts synchronously, before the browser paints.
+  el.style.height=state.savedHeight;
+  el.open=open;
+  const end=el.getBoundingClientRect().height;
+  // Closing keeps the content visible long enough to fade and slide out.
+  if(!open)el.open=true;
+  el.style.height=start+'px';el.style.overflow='hidden';
+  const duration=open?320:260;
+  const animation=el.animate([{height:start+'px'},{height:end+'px'}],{
+   duration,easing:'cubic-bezier(.22,1,.36,1)',fill:'forwards'
+  });
+  state.animation=animation;
+  const content=contentOf(el);
+  if(content)state.fade=content.animate(open?[
+   {opacity:0,transform:'translateY(-4px)'},{opacity:1,transform:'translateY(0)'}
+  ]:[{opacity:1,transform:'translateY(0)'},{opacity:0,transform:'translateY(-3px)'}],{
+   duration:open?240:180,easing:'ease-out',fill:'forwards'
+  });
+  animation.finished.then(()=>{
+   if(state.token!==token)return;
+   el.open=open;
+   stop(state);clean(el,state);
+  }).catch(()=>{});
+ }
+ function bind(el){
+  if(!el||!el.matches(selector)||states.has(el))return;
+  const summary=el.querySelector(':scope > summary');if(!summary)return;
+  const state={running:false,animation:null,fade:null,token:0,target:el.open,
+   settledOpen:el.open,lastHeight:el.getBoundingClientRect().height,
+   savedHeight:el.style.height,savedOverflow:el.style.overflow};
+  states.set(el,state);el.classList.add('pp-smooth-disclosure');
+  summary.addEventListener('click',event=>{
+   // Do not interfere with any future links/controls inside a summary.
+   if(event.target.closest('a,button,input,select,textarea'))return;
+   event.preventDefault();setOpen(el,state.running?!state.target:!el.open);
+  });
+  el.addEventListener('toggle',()=>{
+   if(state.running)return;
+   // Also animate direct .open assignments made by existing site handlers.
+   if(el.open!==state.settledOpen)setOpen(el,el.open,state.lastHeight);
+  });
+  const observer=new ResizeObserver(()=>{
+   if(!state.running){state.lastHeight=el.getBoundingClientRect().height;}
+  });
+  observer.observe(el);
+ }
+ function initialize(root=document){
+  if(root.matches?.(selector))bind(root);
+  root.querySelectorAll?.(selector).forEach(bind);
+ }
+ // Public helper for future cards; existing weather handlers need not change.
+ window.ParkPulseDisclosure={
+  setOpen:(el,open)=>setOpen(typeof el==='string'?document.querySelector(el):el,!!open),
+  initialize
+ };
+ document.addEventListener('click',event=>{
+  if(event.target.closest?.('.pulse-weather-pill')){
+   const panel=document.getElementById('weatherPanel');
+   if(panel){const state=states.get(panel);setOpen(panel,true,state&&!state.running?state.lastHeight:undefined);}
+  }
+ },true);
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>initialize());else initialize();
+ const added=new MutationObserver(records=>{
+  for(const record of records)for(const node of record.addedNodes)if(node.nodeType===1)initialize(node);
+ });
+ added.observe(document.documentElement,{childList:true,subtree:true});
 })();
 </script>
 </body>

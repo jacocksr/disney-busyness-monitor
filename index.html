@@ -15,7 +15,7 @@
   })();
 </script>
 <title>Disney World Park Pulse | Plan Your Magical Day</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -187,6 +187,12 @@
     gap: 0.6rem;
   }
   .stale-banner.visible { display: flex; }
+  .hours-note { font-size: .8rem; color: var(--text-muted, #c9c9e3); margin: .25rem 0 .75rem; }
+  .hours-note[hidden] { display: none; }
+  .data-unavailable { grid-column: 1 / -1; display: flex; gap: .75rem; align-items: flex-start; padding: 1.25rem; border-radius: 16px; border: 1px dashed rgba(255,209,102,.6); color: var(--text-muted, #c9c9e3); line-height: 1.5; }
+  .data-unavailable strong { color: #ffe4a3; }
+  .data-unavailable-icon { font-size: 1.4rem; }
+  [data-theme="light"] .data-unavailable strong { color: #8a5a00; }
   .stale-banner .stale-icon { font-size: 1.1rem; flex-shrink: 0; line-height: 1.4; }
   .stale-banner strong { color: #ffe4a3; }
   .section-label { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; margin: 0 0 1.1rem 0.2rem; color: var(--text); font-family: 'Baloo 2', sans-serif; font-size: 1.3rem; font-weight: 700; flex-wrap: wrap; }
@@ -846,6 +852,56 @@
 #weatherPanel .ppwx-forecast-scroller .weather-hour{flex:0 0 calc((100% - 3rem)/6);min-width:155px;scroll-snap-align:start}
 @media(max-width:600px){#weatherPanel #weatherPanelParkStrip{gap:.5rem}#weatherPanel #weatherPanelParkStrip img{width:48px;height:48px}#weatherPanel .ppwx-glance-forecast{grid-template-columns:repeat(6,minmax(60px,1fr));gap:.15rem;padding-bottom:.2rem}#weatherPanel .ppwx-glance-hour strong{font-size:.8rem}#weatherPanel .ppwx-forecast-scroller .weather-hour{flex-basis:155px}}
 </style>
+<style>
+/* Targeted mobile queue and heatmap layout; desktop remains unchanged. */
+.queue-mobile-land,.queue-mobile-sort,.queue-mobile-wait,.heatmap-mobile-nav{display:none}
+@media(max-width:600px){
+ #ridesPanel,.heatmap-panel{padding:1rem .75rem;min-width:0;max-width:100%}
+ #ridesPanel .panel-header{display:block;margin-bottom:.7rem}
+ #ridesPanel .panel-header h2{font-size:1.14rem;line-height:1.35;margin-bottom:.6rem}
+ #rideSearch{width:100%;max-width:100%;font-size:16px;padding:.55rem .85rem}
+ .queue-mobile-sort{display:flex;gap:.4rem;align-items:center;margin-bottom:.7rem;color:var(--text-muted);font-size:.75rem;flex-wrap:wrap}
+ .queue-mobile-sort select,.queue-mobile-sort button{border:1px solid var(--card-border);background:var(--card-bg-solid);color:var(--text);border-radius:8px;min-height:36px;padding:.35rem .5rem;font:inherit}
+ .queue-mobile-sort select{flex:1;min-width:85px}.queue-mobile-sort button{cursor:pointer}
+ .queue-mobile-sort select:focus-visible,.queue-mobile-sort button:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+ #ridesPanel .table-container{overflow-x:hidden;overflow-y:auto;max-height:65vh}
+ #ridesTable{table-layout:fixed;width:100%;min-width:0;font-size:.84rem}
+ #ridesTable th:nth-child(2),#ridesTable tr.ride-row td:nth-child(2){display:none}
+ #ridesTable th:first-child,#ridesTable tr.ride-row td:first-child{width:65%}
+ #ridesTable th:last-child,#ridesTable tr.ride-row td:last-child{width:35%}
+ #ridesTable th{padding:.6rem .4rem;font-size:.66rem;letter-spacing:.025em;white-space:normal}
+ #ridesTable td{padding:.6rem .4rem;vertical-align:middle;overflow-wrap:anywhere}
+ #ridesTable tr.ride-row td:first-child strong{display:block;font-size:.85rem;line-height:1.4}
+ #ridesTable .queue-mobile-land{display:block;font-size:.72rem;line-height:1.35;color:var(--text-muted);margin-top:.15rem}
+ .queue-desktop-wait{display:none}.queue-mobile-wait{display:inline}
+ #ridesTable .wait-pill{padding:.25rem .45rem;font-size:.78rem;white-space:nowrap}
+ #ridesTable .status-down,#ridesTable .status-refurb,#ridesTable .status-muted{font-size:.7rem;line-height:1.3}
+ .heatmap-panel .panel-header{display:block;margin-bottom:.6rem}
+ .heatmap-panel .panel-header h2{font-size:1.14rem;line-height:1.35;margin-bottom:.55rem}
+ .heatmap-tabs{flex-wrap:nowrap;overflow-x:auto;gap:.35rem;max-width:100%;margin-bottom:.65rem;padding:.1rem 0 .25rem}
+ .heatmap-tab{white-space:nowrap;flex:0 0 auto;font-size:.64rem;padding:.42rem .55rem}
+ .heatmap-panel .panel-park-strip,#ridesPanel .panel-park-strip{gap:.55rem;margin-bottom:.7rem;flex-wrap:nowrap}
+ .heatmap-panel .heatmap-caveat{font-size:.72rem;padding:.55rem .65rem;line-height:1.45;margin-bottom:.6rem}
+ .heatmap-mobile-nav{display:flex;justify-content:space-between;align-items:center;gap:.6rem;font-size:.7rem;color:var(--text-muted);margin:.4rem 0}
+ .heatmap-mobile-nav>div{display:flex;gap:.35rem}.heatmap-mobile-nav button{width:34px;height:34px;border:1px solid var(--card-border);border-radius:50%;background:var(--card-bg-solid);color:var(--gold);font-size:1.2rem;cursor:pointer}
+ .heatmap-mobile-nav button:disabled{opacity:.35;cursor:default}
+ .heatmap-mobile-nav button:focus-visible,.heatmap-scroll:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+ .heatmap-scroll{width:100%;max-width:100%;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:thin}
+ #heatmapTable{--heatmap-name-width:144px;--heatmap-data-width:52px;table-layout:fixed;width:calc(var(--heatmap-name-width) + var(--heatmap-columns,7)*var(--heatmap-data-width));min-width:0;max-width:none}
+ #heatmapTable col.heatmap-name-col{width:var(--heatmap-name-width)}
+ #heatmapTable col.heatmap-data-col{width:var(--heatmap-data-width)}
+ #heatmapTable th.ride-col,#heatmapTable td.ride-name{width:var(--heatmap-name-width);min-width:0;max-width:var(--heatmap-name-width);white-space:normal;overflow:visible;text-overflow:clip;overflow-wrap:anywhere;word-break:normal;padding:.4rem .4rem .4rem .1rem;line-height:1.35}
+ #heatmapTable td.ride-name{font-size:.74rem}
+ #heatmapTable th:not(.ride-col){width:var(--heatmap-data-width);min-width:0;max-width:var(--heatmap-data-width);padding:.3rem .1rem;font-size:.6rem;letter-spacing:0;white-space:normal;line-height:1.35}
+ #heatmapTable .heatmap-label-day,#heatmapTable .heatmap-label-date{display:block;white-space:nowrap}
+ #heatmapTable .heatmap-label-separator{display:none}
+ #heatmapTable th .sort-arrow{margin-left:.1rem;font-size:.55rem}
+ #heatmapTable td{vertical-align:middle}
+ #heatmapTable .heatmap-cell{width:34px;height:26px;font-size:.68rem}
+ .heatmap-legend{font-size:.68rem;gap:.35rem;margin-top:.65rem}.heatmap-legend-gradient{width:100px}
+}
+@media(max-width:350px){#heatmapTable{--heatmap-name-width:128px;--heatmap-data-width:48px}}
+</style>
 </head>
 <body>
 <button type="button" class="theme-toggle-btn" id="themeToggleBtn"
@@ -887,6 +943,8 @@
     </div>
   </div>
 
+  <div class="best-park-banner" id="bestParkBanner"></div>
+
   <div class="section-label">
     <div class="section-label-left">
       <span class="emoji">🎢</span> Choose Your Park
@@ -903,7 +961,7 @@
       </div>
     </div>
   </div>
-  <div class="best-park-banner" id="bestParkBanner"></div>
+  <div class="hours-note" id="hoursNote" hidden>⏱ Park hours are estimated and may differ on Extra Magic or special-event days.</div>
   <div class="park-grid" id="parkGrid"></div>
 
 <details class="panel weather-panel weather-expandable" id="weatherPanel" aria-labelledby="weatherTitle">
@@ -922,6 +980,7 @@
         <h2 id="selectedParkTitle">Attraction Wait Times</h2>
         <input type="text" id="rideSearch" placeholder="🔍 Filter rides or lands..." />
       </div>
+      <div class="queue-mobile-sort"><label for="queueMobileSort">Sort by</label><select id="queueMobileSort" onchange="setSortField(this.value)"><option value="wait_time">Wait time</option><option value="name">Attraction</option><option value="land">Land</option></select><button type="button" id="queueMobileDirection" onclick="setSortField(sortField)" aria-label="Reverse sort direction">Descending ↓</button></div>
       <div class="panel-park-strip" id="ridesPanelParkStrip"></div>
       <div class="table-container">
         <table id="ridesTable">
@@ -929,7 +988,7 @@
             <tr>
               <th class="sortable" id="thAttraction" onclick="setSortField('name')">Attraction <span class="sort-arrow">▾</span></th>
               <th class="sortable" id="thLand" onclick="setSortField('land')">Land <span class="sort-arrow">▾</span></th>
-              <th class="sortable" id="thWait" style="text-align: right;" onclick="setSortField('wait_time')">Standby Wait <span class="sort-arrow">▾</span></th>
+              <th class="sortable" id="thWait" style="text-align: right;" onclick="setSortField('wait_time')"><span class="queue-desktop-wait">Standby Wait</span><span class="queue-mobile-wait">Wait</span> <span class="sort-arrow">▾</span></th>
             </tr>
           </thead>
           <tbody id="ridesBody"></tbody>
@@ -966,7 +1025,8 @@
     </div>
     <div class="panel-park-strip" id="heatmapPanelParkStrip"></div>
     <div class="heatmap-caveat" id="heatmapCaveat"></div>
-    <div class="heatmap-scroll">
+    <div class="heatmap-mobile-nav"><span id="heatmapSwipeHint">Swipe to compare columns</span><div><button type="button" id="heatmapScrollPrev" aria-label="Earlier heatmap columns" aria-controls="heatmapScrollRegion">‹</button><button type="button" id="heatmapScrollNext" aria-label="Later heatmap columns" aria-controls="heatmapScrollRegion">›</button></div></div>
+    <div class="heatmap-scroll" id="heatmapScrollRegion" tabindex="0" role="region" aria-label="Ride wait heatmap; scroll horizontally to compare hours or dates">
       <table class="heatmap-table" id="heatmapTable">
         <thead id="heatmapHead"></thead>
         <tbody id="heatmapBody"></tbody>
@@ -1089,66 +1149,34 @@
   </div>
 </div>
 <script>
-  const fallbackData = {
-    updated_at: new Date().toISOString(),
-    parks: {
-      magic_kingdom: {
-        name: "Magic Kingdom", icon: "🏰", color: "linear-gradient(90deg, #ffd166, #ff6fb5)",
-        crowd_score: 6.8, avg_wait: 42, open_attractions: 28, down_attractions: 2,
-        hourly_today: [20, 28, 45, 52, 50, 48, 55, 60, 48, 38, 25],
-        hourly_hist: [18, 25, 40, 48, 46, 45, 48, 52, 45, 35, 20],
-        rides: [
-          { id: 138, name: "Space Mountain", land: "Tomorrowland", wait_time: 65, is_open: true },
-          { id: 129, name: "Seven Dwarfs Mine Train", land: "Fantasyland", wait_time: 85, is_open: true },
-          { id: 130, name: "Big Thunder Mountain Railroad", land: "Frontierland", wait_time: 45, is_open: true },
-          { id: 140, name: "Haunted Mansion", land: "Liberty Square", wait_time: 40, is_open: true },
-          { id: 137, name: "Pirates of the Caribbean", land: "Adventureland", wait_time: 35, is_open: true },
-          { id: 11527, name: "TRON Lightcycle / Run", land: "Tomorrowland", wait_time: 0, is_open: false }
-        ]
-      },
-      epcot: {
-        name: "EPCOT", icon: "🌐", color: "linear-gradient(90deg, #4cd6c0, #48cae4)",
-        crowd_score: 4.5, avg_wait: 30, open_attractions: 15, down_attractions: 1,
-        hourly_today: [15, 20, 32, 38, 36, 35, 34, 30, 28, 25, 15],
-        hourly_hist: [15, 22, 35, 40, 38, 36, 35, 32, 30, 25, 15],
-        rides: [
-          { id: 10916, name: "Guardians of the Galaxy: Cosmic Rewind", land: "World Discovery", wait_time: 75, is_open: true },
-          { id: 10914, name: "Remy's Ratatouille Adventure", land: "World Showcase", wait_time: 60, is_open: true },
-          { id: 2679, name: "Frozen Ever After", land: "World Showcase", wait_time: 55, is_open: true },
-          { id: 16467, name: "Soarin' Across America", land: "World Nature", wait_time: 25, is_open: true },
-          { id: 159, name: "Spaceship Earth", land: "World Celebration", wait_time: 10, is_open: true }
-        ]
-      },
-      hollywood_studios: {
-        name: "Hollywood Studios", icon: "🎬", color: "linear-gradient(90deg, #a78bfa, #ff6fb5)",
-        crowd_score: 8.2, avg_wait: 56, open_attractions: 16, down_attractions: 1,
-        hourly_today: [30, 45, 65, 70, 68, 62, 65, 68, 58, 45, 30],
-        hourly_hist: [25, 40, 58, 62, 60, 58, 60, 62, 52, 40, 25],
-        rides: [
-          { id: 1, name: "Star Wars: Rise of the Resistance", land: "Galaxy's Edge", wait_time: 95, is_open: true },
-          { id: 2, name: "Star Wars: Rise of the Resistance Single Rider", land: "Galaxy's Edge", wait_time: 0, is_open: true },
-          { id: 3, name: "Slinky Dog Dash", land: "Toy Story Land", wait_time: 80, is_open: true },
-          { id: 4, name: "Tower of Terror", land: "Sunset Boulevard", wait_time: 60, is_open: true },
-          { id: 5, name: "Millennium Falcon: Smugglers Run", land: "Galaxy's Edge", wait_time: 50, is_open: true },
-          { id: 6, name: "Millennium Falcon: Smugglers Run Single Rider", land: "Galaxy's Edge", wait_time: 0, is_open: true },
-          { id: 7, name: "Mickey & Minnie's Runaway Railway", land: "Hollywood Boulevard", wait_time: 45, is_open: true }
-        ]
-      },
-      animal_kingdom: {
-        name: "Animal Kingdom", icon: "🌴", color: "linear-gradient(90deg, #35d08a, #4cd6c0)",
-        crowd_score: 3.8, avg_wait: 24, open_attractions: 14, down_attractions: 0,
-        hourly_today: [20, 35, 40, 38, 30, 25, 20, 15, 10, 0, 0],
-        hourly_hist: [18, 30, 36, 35, 28, 22, 18, 12, 10, 0, 0],
-        rides: [
-          { id: 8, name: "Avatar Flight of Passage", land: "Pandora", wait_time: 70, is_open: true },
-          { id: 9, name: "Na'vi River Journey", land: "Pandora", wait_time: 35, is_open: true },
-          { id: 10, name: "Expedition Everest", land: "Asia", wait_time: 20, is_open: true },
-          { id: 11, name: "Kilimanjaro Safaris", land: "Africa", wait_time: 25, is_open: true },
-          { id: 12, name: "DINOSAUR", land: "DinoLand U.S.A.", wait_time: 15, is_open: true }
-        ]
-      }
-    }
-  };
+  // Shown only until the first successful live fetch. Contains NO invented numbers.
+  // updated_at is null on purpose so it can never look "fresh".
+  const fallbackData = { unavailable: true, updated_at: null, parks: {} };
+  let liveFetchAttempted = false;
+  function isDataUnavailable() { return !!(parkData && parkData.unavailable); }
+
+  // TEMPORARY stopgap: used only when the worker does not send valid park.hours for today.
+  // Worker v3.4 now supplies hours; set ALLOW_DEFAULT_HOURS = false once verified (then delete DEFAULT_HOURS).
+  const ALLOW_DEFAULT_HOURS = false;
+  const HHMM_RE = /^\d{1,2}:\d{2}$/;
+  // Accept worker hours only if well-formed and for today's Eastern date.
+  function normalizeHours(h) {
+    if (!h || !HHMM_RE.test(h.open || "") || !HHMM_RE.test(h.close || "")) return null;
+    if (h.day && h.day !== curveET(new Date()).day) return null;
+    return { ...h, earlyEntry: HHMM_RE.test(h.earlyEntry || "") ? h.earlyEntry : h.open };
+  }
+  function hoursAreEstimated(park) { return !normalizeHours(park && park.hours); }
+  function resolveHours(parkKey, park) {
+    const h = normalizeHours(park && park.hours);
+    if (h) return h;
+    return ALLOW_DEFAULT_HOURS ? (DEFAULT_HOURS[parkKey] || null) : null;
+  }
+  function updateHoursNote() {
+    const el = document.getElementById("hoursNote");
+    if (!el) return;
+    const parks = (parkData && parkData.parks) || {};
+    el.hidden = isDataUnavailable() || !ALLOW_DEFAULT_HOURS || !Object.values(parks).some(hoursAreEstimated);
+  }
 
   const DEFAULT_HOURS = {
     magic_kingdom:      { earlyEntry: "08:30", open: "09:00", close: "22:00" },
@@ -1302,7 +1330,13 @@
     { id: "America/Los_Angeles", label: "Pacific" },
     { id: "local", label: "My Device Time" }
   ];
-  let selectedTz = localStorage.getItem("wdw_tz_pref") || "America/New_York";
+  function readTzPref() {
+    try { return localStorage.getItem("wdw_tz_pref"); } catch (e) { return null; }
+  }
+  function saveTzPref(id) {
+    try { localStorage.setItem("wdw_tz_pref", id); } catch (e) { /* private mode / blocked storage */ }
+  }
+  let selectedTz = readTzPref() || "America/New_York";
 
   function isExcludedRide(name) {
     return EXCLUDED_NAME_PATTERNS.some(rx => rx.test(name || ""));
@@ -1326,7 +1360,7 @@
       opt.onclick = (e) => {
         e.stopPropagation();
         selectedTz = tz.id;
-        localStorage.setItem("wdw_tz_pref", tz.id);
+        saveTzPref(tz.id);
         updateTimestamp();
         renderTzOptions();
         document.getElementById("tzDropdown").classList.remove("open");
@@ -1353,12 +1387,27 @@
   });
 
   function getDataAgeMinutes() {
+    if (!parkData.updated_at) return 0;
     const ts = new Date(parkData.updated_at);
     if (isNaN(ts.getTime())) return 0;
     return Math.floor((Date.now() - ts.getTime()) / 60000);
   }
 
   function updateTimestamp() {
+    updateHoursNote();
+    if (isDataUnavailable()) {
+      const badge = document.getElementById("lastUpdated");
+      document.getElementById("lastUpdatedText").textContent = isRefreshing ? "Updating..." : "Live data unavailable";
+      badge.classList.toggle("is-stale", !isRefreshing);
+      badge.classList.toggle("is-refreshing", isRefreshing);
+      if (isRefreshing || !liveFetchAttempted) {
+        document.getElementById("staleBanner").classList.remove("visible");
+      } else {
+        document.getElementById("staleBannerText").innerHTML = `<strong>Can&rsquo;t reach live data</strong> &mdash; wait times and crowd scores are unavailable right now. We&rsquo;ll keep retrying about every 5 minutes and this page will update automatically once the connection is back.`;
+        document.getElementById("staleBanner").classList.add("visible");
+      }
+      return;
+    }
     const text = formatUpdatedTime(parkData.updated_at);
     document.getElementById("lastUpdatedText").textContent = isRefreshing ? "Updating..." : `Updated: ${text}`;
 
@@ -1383,7 +1432,7 @@
   }
 
   function getParkPhase(parkKey, park) {
-    const hours = (park && park.hours) || DEFAULT_HOURS[parkKey];
+    const hours = resolveHours(parkKey, park);
     if (!hours) return { phase: "open" };
 
     const nowET = new Date(new Date().toLocaleString("en-US", { timeZone: "America/New_York" }));
@@ -1470,7 +1519,7 @@
 
   // Epoch ms of today's earliest park opening (early entry, ET) for the given park.
   function getTodayParkOpenMs(parkKey, park) {
-    const hours = (park && park.hours) || DEFAULT_HOURS[parkKey];
+    const hours = resolveHours(parkKey, park);
     if (!hours) return null;
     const [h, m] = (hours.earlyEntry || hours.open).split(":").map(Number);
     const now = new Date();
@@ -1577,6 +1626,7 @@
 
   function renderBestParkBanner() {
     const banner = document.getElementById("bestParkBanner");
+    if (isDataUnavailable()) { banner.innerHTML = ""; return; }
     const comparisons = PARK_ORDER
       .map(key => ({ key, park: parkData.parks[key] }))
       .filter(x => x.park)
@@ -1612,7 +1662,21 @@
       </div>`;
   }
 
+  function renderUnavailableState() {
+    const loading = !liveFetchAttempted || isRefreshing;
+    const msg = loading
+      ? `<div class="data-unavailable" role="status"><span class="data-unavailable-icon">⏳</span><div><strong>Loading live data&hellip;</strong></div></div>`
+      : `<div class="data-unavailable" role="status"><span class="data-unavailable-icon">📡</span><div><strong>Live data unavailable</strong><br>We can&rsquo;t reach the wait-time feed right now, so no crowd scores or wait times are shown.</div></div>`;
+    document.getElementById("parkGrid").innerHTML = msg;
+    document.getElementById("bestParkBanner").innerHTML = "";
+    ["ridesPanelParkStrip", "chartPanelParkStrip", "heatmapPanelParkStrip"].forEach(id => { document.getElementById(id).innerHTML = ""; });
+    document.getElementById("ridesBody").innerHTML = "";
+    if (chartInstance) { chartInstance.destroy(); chartInstance = null; }
+    renderHeatmapEmpty(loading ? "Loading live data..." : "Live data unavailable.");
+  }
+
   function renderAll() {
+    if (isDataUnavailable()) { renderUnavailableState(); return; }
     renderPanelParkStrips();
     renderCards();
     renderDetails();
@@ -1673,7 +1737,7 @@
 
     if (fetchSucceeded && nextParkData) {
       const incomingTs = new Date(nextParkData.updated_at).getTime();
-      const currentTs = new Date(parkData.updated_at).getTime();
+      const currentTs = parkData.updated_at ? new Date(parkData.updated_at).getTime() : NaN;
       const incomingIsNewer = isNaN(currentTs) || (!isNaN(incomingTs) && incomingTs >= currentTs);
       if (isInitialLoad || incomingIsNewer) {
         parkData = nextParkData;
@@ -1683,8 +1747,9 @@
       }
     }
 
-    if (independentHistoryChanged) renderAll();
     isRefreshing = false;
+    liveFetchAttempted = true;
+    if (independentHistoryChanged || isDataUnavailable()) renderAll();
     updateTimestamp();
   }
 
@@ -1712,7 +1777,8 @@
 
   function getStatusBanner(phaseInfo) {
     if (phaseInfo.phase === "pre-open") {
-      return `<div class="park-status-banner pre-open">🌙 Not open yet &mdash; Early Entry starts ${formatHourLabel(phaseInfo.opensAt)}</div>`;
+      const noEarlyEntry = phaseInfo.opensAt === phaseInfo.generalAt;
+      return `<div class="park-status-banner pre-open">🌙 Not open yet &mdash; ${noEarlyEntry ? "Park opens" : "Early Entry starts"} ${formatHourLabel(phaseInfo.opensAt)}</div>`;
     }
     if (phaseInfo.phase === "early-entry") {
       return `<div class="park-status-banner early-entry">🔑 Early Entry only (resort guests)</div>`;
@@ -1724,7 +1790,7 @@
   }
 
   function getBestTimeTip(score, phaseInfo) {
-    if (phaseInfo.phase === "pre-open") return "Check back once Early Entry begins for live crowd data.";
+    if (phaseInfo.phase === "pre-open") return phaseInfo.opensAt === phaseInfo.generalAt ? "Check back once the park opens for live crowd data." : "Check back once Early Entry begins for live crowd data.";
     if (phaseInfo.phase === "early-entry") return "Resort guests only right now &mdash; full crowd score resumes at general open.";
     if (phaseInfo.phase === "closed-for-day") return "Park is closed. See you tomorrow!";
     if (score < 4.0) return "Great time to visit — short waits all around!";
@@ -1774,6 +1840,7 @@
   }
 
   function selectPark(key) {
+    if (isDataUnavailable()) { activeParkKey = key; return; }
     activeParkKey = key;
     renderCards();
     renderDetails();
@@ -1972,10 +2039,18 @@
         arrow.textContent = "▾";
       }
     });
+    const mobileSort = document.getElementById('queueMobileSort');
+    if (mobileSort) mobileSort.value = sortField;
+    const mobileDirection = document.getElementById('queueMobileDirection');
+    if (mobileDirection) {
+      mobileDirection.textContent = sortDir === 'asc' ? 'Ascending ↑' : 'Descending ↓';
+      mobileDirection.setAttribute('aria-label', 'Sort ' + (sortDir === 'asc' ? 'descending' : 'ascending'));
+    }
   }
 
   function renderDetails() {
     const park = parkData.parks[activeParkKey];
+    if (!park) return;
     const parkEmojiSrc = PARK_EMOJI_IMAGES[activeParkKey] || "";
     const titleEmojiImg = parkEmojiSrc ? `<img src="${parkEmojiSrc}" alt="${park.name} emoji" class="panel-title-emoji" />` : (park.icon ? `${park.icon} ` : '');
     document.getElementById("selectedParkTitle").innerHTML = `${titleEmojiImg}${park.name} Standby Queue`;
@@ -2026,7 +2101,7 @@
         ? `${SPECIAL_KIND_LABELS[kind] || "Special"} · ${r.land || ""}`
         : (r.land || "");
       row.innerHTML = `
-        <td><strong>${escapeHtml(r.name)}</strong></td>
+        <td><strong>${escapeHtml(r.name)}</strong><span class="queue-mobile-land">${escapeHtml(landText)}</span></td>
         <td><span class="land-tag">${escapeHtml(landText)}</span></td>
         <td style="text-align: right;">${waitDisplay}</td>
       `;
@@ -2080,7 +2155,7 @@
       }
       perRide[String(ride.id)] = hourly;
     }
-    const hoursConfig = park.hours || DEFAULT_HOURS[activeParkKey];
+    const hoursConfig = resolveHours(activeParkKey, park);
     const parseHour = value => { const [h, m] = String(value || '').split(':').map(Number); return Number.isFinite(h) && Number.isFinite(m) ? h + m / 60 : null; };
     const opening = parseHour(hoursConfig?.earlyEntry || hoursConfig?.open);
     const closing = parseHour(hoursConfig?.close);
@@ -2423,6 +2498,7 @@
     document.getElementById("heatmapTitle").textContent = "🔥 Ride Wait Heatmap — Today by Hour";
 
     const park = parkData.parks[activeParkKey];
+    if (!park) { renderHeatmapEmpty("Live data unavailable."); return; }
     const visibleRides = getStandardRides(park).filter(r => r.is_open).slice(0, 12);
 
     if (!history24h || !history24h.rides || visibleRides.length === 0) {
@@ -2485,6 +2561,7 @@
     document.getElementById("heatmapTitle").textContent = "🔥 Ride Wait Heatmap — By Day of Week";
 
     const park = parkData.parks[activeParkKey];
+    if (!park) { renderHeatmapEmpty("Live data unavailable."); return; }
     const visibleRides = getStandardRides(park).filter(r => r.is_open).slice(0, 12);
     const weekdayLabels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
     const weekdayKeys = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
@@ -2543,6 +2620,11 @@
   function renderHeatmapTable(colLabels, rows, maxWait, minSamples) {
     const head = document.getElementById("heatmapHead");
     const body = document.getElementById("heatmapBody");
+    const table = document.getElementById('heatmapTable');
+    table.style.setProperty('--heatmap-columns', colLabels.length);
+    let colgroup = table.querySelector('colgroup');
+    if (!colgroup) { colgroup = document.createElement('colgroup'); table.insertBefore(colgroup, table.firstChild); }
+    colgroup.innerHTML = '<col class="heatmap-name-col">' + colLabels.map(() => '<col class="heatmap-data-col">').join('');
 
     const sortedRows = rows.slice().sort((a, b) => {
       let av, bv;
@@ -2565,7 +2647,9 @@
     const colHeadersHtml = colLabels.map((l, i) => {
       const active = heatmapSortCol === i;
       const arrow = active ? (heatmapSortDir === "asc" ? "▲" : "▼") : "▾";
-      return `<th class="sortable ${active ? 'sort-active' : ''}" onclick="setHeatmapSort(${i})">${l} <span class="sort-arrow">${arrow}</span></th>`;
+      const parts = String(l).split(' · ');
+      const label = parts.length > 1 ? `<span class="heatmap-label-day">${escapeHtml(parts[0])}</span><span class="heatmap-label-separator"> · </span><span class="heatmap-label-date">${escapeHtml(parts.slice(1).join(' · '))}</span>` : escapeHtml(l);
+      return `<th class="sortable ${active ? 'sort-active' : ''}" onclick="setHeatmapSort(${i})">${label} <span class="sort-arrow">${arrow}</span></th>`;
     }).join('');
 
     head.innerHTML = `<tr><th class="ride-col sortable ${nameActive}" onclick="setHeatmapSort('name')">Attraction <span class="sort-arrow">${nameArrow}</span></th>${colHeadersHtml}</tr>`;
@@ -3021,31 +3105,7 @@ const pulseOriginalSelectPark=selectPark;selectPark=function(...args){pulseOrigi
 window.addEventListener('DOMContentLoaded',()=>{initWeatherDisclosure();renderWeather();fetchWeather();setInterval(fetchWeather,300000);});document.addEventListener('visibilitychange',()=>{if(!document.hidden){renderWeather();if(Date.now()-weatherLastAttempt>=300000)fetchWeather();}});
 </script>
 
-<!-- Park Pulse compact-card refinement.
-Paste this entire block immediately before 
-<script>
-(() => {
- let lastCurveClock = '';
- const priorTimestamp = updateTimestamp;
- updateTimestamp = function(...args) {
-   const result = priorTimestamp(...args);
-   const current = curveET(new Date());
-   const key = current.day + '#' + current.hour;
-   if (key !== lastCurveClock) {
-     lastCurveClock = key;
-     const park = parkData.parks[activeParkKey];
-     if (park) renderChart(park);
-   }
-   return result;
- };
-})();
-</script>
-
-
-
-</body> in the compact-card HTML.
-This is an additive patch, NOT a replacement page. No fetches or backend changes.
--->
+<!-- Park Pulse compact-card refinement (styles + scripts follow). -->
 <style>
 .pulse-score-group{display:flex;flex-direction:column;align-items:center;gap:.25rem;flex-shrink:0}
 .pulse-score-group .pulse-descriptor{margin:0;text-align:center;font-size:.72rem;font-weight:600;line-height:1.3;max-width:110px}
@@ -3388,5 +3448,142 @@ details.pp-smooth-disclosure.pp-disclosure-animating { overflow: hidden; }
  added.observe(document.documentElement,{childList:true,subtree:true});
 })();
 </script>
+
+<script>
+// Frontend-only table navigation, using existing data and event handlers.
+(() => {
+ function init(){
+  const region=document.getElementById('heatmapScrollRegion');
+  const prev=document.getElementById('heatmapScrollPrev'),next=document.getElementById('heatmapScrollNext');
+  const update=()=>{
+    const max=region.scrollWidth-region.clientWidth;
+    prev.disabled=region.scrollLeft<=2;next.disabled=max<=2||region.scrollLeft>=max-2;
+    document.getElementById('heatmapSwipeHint').textContent=max>2?'Swipe to compare columns':'All columns visible';
+  };
+  const move=direction=>region.scrollBy({left:direction*Math.max(48,region.clientWidth-144),behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
+  prev.onclick=()=>move(-1);next.onclick=()=>move(1);
+  region.addEventListener('scroll',update,{passive:true});
+  region.addEventListener('keydown',event=>{
+   if(event.target!==region)return;
+   if(event.key==='ArrowLeft'||event.key==='ArrowRight'){event.preventDefault();move(event.key==='ArrowLeft'?-1:1);}
+   if(event.key==='Home'){event.preventDefault();region.scrollTo({left:0,behavior:'auto'});}
+   if(event.key==='End'){event.preventDefault();region.scrollTo({left:region.scrollWidth,behavior:'auto'});}
+  });
+  new MutationObserver(()=>requestAnimationFrame(update)).observe(document.getElementById('heatmapTable'),{childList:true,subtree:true});
+  new ResizeObserver(update).observe(region);update();
+  // Add keyboard access to sortable headers without replacing sort behavior.
+  const enhance=()=>document.querySelectorAll('#ridesTable th.sortable,#heatmapTable th.sortable').forEach(th=>{
+    th.tabIndex=0;
+    if(!th.dataset.keyboardSort){th.dataset.keyboardSort='true';th.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();th.click();}});}
+  });
+  enhance();new MutationObserver(enhance).observe(document.getElementById('heatmapHead'),{childList:true});
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+<!-- Park Pulse positive-wait averages and compact secondary labels.
+Paste after all existing scripts, immediately before the FINAL </body>.
+Additive patch for the current compact/mobile implementation; not a replacement page.
+-->
+<style>
+#parkGrid .pulse-secondary .pulse-pill-label{white-space:normal;overflow:visible;text-overflow:clip}
+#parkGrid .pulse-closures .pulse-secondary{height:auto;min-height:40px;padding:.4rem .65rem;overflow:visible}
+</style>
+<script>
+(() => {
+ const validWait=ride=>ride.is_open&&typeof ride.wait_time==='number'&&Number.isFinite(ride.wait_time)&&ride.wait_time>0;
+ const qualifying=park=>getStandardRides(park).filter(validWait);
+ computeLiveStats=function(park){
+  const rides=qualifying(park);
+  if(!rides.length)return {avgWait:null,longest:null};
+  const mean=rides.reduce((sum,ride)=>sum+ride.wait_time,0)/rides.length;
+  const longest=rides.reduce((best,ride)=>!best||ride.wait_time>best.wait_time?ride:best,null);
+  return {avgWait:Math.round(mean),longest};
+ };
+ getParkBaseline=function(park){
+  if(!historicalSummary?.rides)return null;
+  const key=getCurrentBucketKey(),pairs=[];
+  for(const ride of qualifying(park)){
+   const b=historicalSummary.rides[String(ride.id)]?.buckets?.[key];
+   if(b&&typeof b.avg_wait==='number'&&Number.isFinite(b.avg_wait)&&b.avg_wait>0&&
+      typeof b.samples==='number'&&Number.isFinite(b.samples)&&b.samples>0)
+    pairs.push({current:ride.wait_time,historical:b.avg_wait,samples:b.samples});
+  }
+  if(!pairs.length)return null;
+  return {avgWait:pairs.reduce((n,p)=>n+p.historical,0)/pairs.length,
+   currentAvg:pairs.reduce((n,p)=>n+p.current,0)/pairs.length,
+   samples:pairs.reduce((n,p)=>n+p.samples,0),matchedRides:pairs.length,
+   eligibleRides:qualifying(park).length};
+ };
+ getParkComparison=function(key,park){
+  if(getParkPhase(key,park).phase!=='open')return {status:'closed'};
+  if(!qualifying(park).length)return {status:'no-data'};
+  const b=getParkBaseline(park),min=historicalSummary?.min_samples_for_reliable||MIN_SAMPLES_FOR_RELIABLE;
+  if(!b||b.samples<min)return {status:'insufficient-data'};
+  return {status:'ready',pctDiff:Math.round((b.currentAvg-b.avgWait)/b.avgWait*100),
+   matchedRides:b.matchedRides,eligibleRides:b.eligibleRides};
+ };
+ function shortenLabels(){
+  document.querySelectorAll('#parkGrid .park-card').forEach(card=>{
+   const park=parkData.parks[card.dataset.parkKey];if(!park)return;
+   const button=card.querySelector('.pulse-secondary');
+   if(button){
+    const groups=getClosureGroups(park),parts=[],full=[];
+    if(groups.extended.length){parts.push('🛠 '+groups.extended.length+' refurbishment'+(groups.extended.length===1?'':'s'));full.push(groups.extended.length+' refurbishment/long-term closure'+(groups.extended.length===1?'':'s'));}
+    if(groups.special.length){parts.push('🎟️ '+groups.special.length+' scheduled');full.push(groups.special.length+' scheduled experiences');}
+    let label=button.querySelector('.pulse-pill-label');
+    if(!label){label=document.createElement('span');label.className='pulse-pill-label';button.replaceChildren(label);}
+    label.textContent=parts.join(' · ')+' ›';button.title=full.join(' · ')+' — open for exact classifications';
+    button.setAttribute('aria-label',full.join(' and ')+'. Open details.');
+   }
+   const phase=getParkPhase(card.dataset.parkKey,park);
+   if(phase.phase==='open'&&!qualifying(park).length){
+    const heading=card.querySelector('.pulse-insight strong'),detail=card.querySelector('.pulse-insight small');
+    if(heading)heading.textContent='No positive waits reported';
+    if(detail)detail.textContent='Check individual attractions; zero readings are excluded from averages.';
+   }
+   const comp=getParkComparison(card.dataset.parkKey,park);
+   // Explain differing coverage if only some eligible rides have a baseline.
+   if(comp.status==='ready'){
+    const comparison=card.querySelector('.pulse-waits>div:first-child .pulse-ride');
+    if(comparison)comparison.title='Positive waits only. Compared '+comp.matchedRides+' of '+comp.eligibleRides+' qualifying attractions with matching weekday/hour history; each attraction weighted equally.';
+   }
+  });
+ }
+ const previousCards=renderCards;
+ renderCards=function(...args){const result=previousCards(...args);shortenLabels();return result;};
+ const refresh=()=>{renderCards();renderBestParkBanner();};
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',refresh);else refresh();
+})();
+</script>
+
+<script>
+/* Keep the unavailable card intact: guard the outermost renderCards wrapper. */
+(() => {
+  const priorRenderCards = renderCards;
+  renderCards = function(...args) {
+    if (isDataUnavailable()) { renderUnavailableState(); return; }
+    return priorRenderCards.apply(this, args);
+  };
+})();
+/* Curve clock: re-render the wait curve when the Eastern hour/day rolls over. */
+(() => {
+  let lastCurveClock = '';
+  const priorTimestamp = updateTimestamp;
+  updateTimestamp = function(...args) {
+    const result = priorTimestamp(...args);
+    if (isDataUnavailable()) return result;
+    const current = curveET(new Date());
+    const key = current.day + '#' + current.hour;
+    if (key !== lastCurveClock) {
+      lastCurveClock = key;
+      const park = parkData.parks[activeParkKey];
+      if (park) renderChart(park);
+    }
+    return result;
+  };
+})();
+</script>
+
 </body>
 </html>

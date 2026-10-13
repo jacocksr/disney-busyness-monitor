@@ -187,6 +187,16 @@
     gap: 0.6rem;
   }
   .stale-banner.visible { display: flex; }
+  .queue-closed-row td { padding: 2.25rem 1rem; text-align: center; color: var(--text-muted); line-height: 1.6; border-bottom: none; }
+  .queue-closed-row strong { display: block; color: var(--text, #fff); font-size: 1rem; margin-bottom: .2rem; }
+  .queue-closed-icon { font-size: 1.6rem; margin-bottom: .35rem; }
+  .pulse-hours { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem .5rem; margin: .65rem 0 .15rem; font-size: .8rem; }
+  .pulse-hours-main, .pulse-hours-ee { display: inline-flex; align-items: center; gap: .4rem; padding: .28rem .7rem; border-radius: 999px; border: 1px solid var(--card-border, rgba(255,255,255,.14)); background: rgba(255,255,255,.05); color: var(--text-muted); line-height: 1.3; }
+  .pulse-hours-main strong { color: var(--text, #fff); font-weight: 700; }
+  .pulse-hours-main small { opacity: .75; font-size: .68rem; }
+  .pulse-hours-dot { width: .55rem; height: .55rem; border-radius: 50%; background: var(--gray); flex-shrink: 0; }
+  .pulse-hours.is-open .pulse-hours-dot { background: var(--green); box-shadow: 0 0 0 3px rgba(53,208,138,.2); }
+  .pulse-hours.is-early .pulse-hours-dot { background: var(--yellow, #ffd166); box-shadow: 0 0 0 3px rgba(255,209,102,.2); }
   .hours-note { font-size: .8rem; color: var(--text-muted, #c9c9e3); margin: .25rem 0 .75rem; }
   .hours-note[hidden] { display: none; }
   .data-unavailable { grid-column: 1 / -1; display: flex; gap: .75rem; align-items: flex-start; padding: 1.25rem; border-radius: 16px; border: 1px dashed rgba(255,209,102,.6); color: var(--text-muted, #c9c9e3); line-height: 1.5; }
@@ -230,6 +240,9 @@
   .best-park-content { display: flex; align-items: flex-start; gap: 0.9rem; }
   .best-park-icon { font-size: 1.8rem; line-height: 1; }
   .best-park-title { font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 1.1rem; color: #fff; margin-bottom: 0.3rem; }
+  .best-park-eyebrow { font-size: .68rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--gold); margin-bottom: .15rem; }
+  [data-theme="light"] .best-park-eyebrow { color: #8a5a00; }
+  .best-park-note { font-size: .74rem; color: var(--text-muted); opacity: .85; margin-top: .3rem; line-height: 1.4; }
   .best-park-sub { font-size: 0.88rem; color: var(--text-muted); line-height: 1.5; }
 
   .vs-normal-pill {
@@ -238,7 +251,11 @@
     border-radius: 999px; margin-top: 0.6rem;
   }
   .vs-normal-pill.below { background: rgba(53,208,138,0.15); color: var(--green); }
-  .vs-normal-pill.above { background: rgba(255,93,122,0.15); color: var(--red); }
+  .vs-normal-pill.typical { background: rgba(88,166,255,0.15); color: #6cb4ff; }
+  [data-theme="light"] .vs-normal-pill.typical { color: #1f64b5; }
+  .vs-normal-pill.above { background: rgba(255,170,60,0.16); color: #ffb24d; }
+  [data-theme="light"] .vs-normal-pill.above { color: #a8620a; }
+  .footer-tagline { display: inline-block; margin-bottom: .4rem; font-weight: 600; }
 
 .average-wait-row {
   display: flex;
@@ -952,7 +969,7 @@
         <div class="info-btn" id="crowdInfoBtn" onclick="toggleInfoPopover(event)">?</div>
         <div class="info-popover" id="crowdInfoPopover">
           <strong>What is the Crowd Index?</strong>
-          A 1&ndash;10 score comparing right-now wait times across the park to typical levels for this time of day. Lower means shorter lines than usual; higher means busier than usual.
+          A 1&ndash;10 score comparing right-now wait times across the park to typical levels for this time of day. Lower means shorter lines than usual; higher means busier than usual. Within 10% of normal counts as typical. These comparisons are relative to usual conditions and are not a guarantee of short waits.
           <div class="legend-row"><span class="legend-dot" style="background:var(--green)"></span> 1&ndash;3.9: Low crowds</div>
           <div class="legend-row"><span class="legend-dot" style="background:var(--yellow)"></span> 4&ndash;6.9: Moderate crowds</div>
           <div class="legend-row"><span class="legend-dot" style="background:var(--red)"></span> 7&ndash;10: High crowds</div>
@@ -1046,8 +1063,9 @@
   </div>
 
   <footer>
+    <span class="footer-tagline">Every Disney day is different. We&rsquo;ll help you make the most of yours.</span><br>
     Made with <span class="heart">♥</span> for Disney World planners &mdash; data refreshes automatically.<br>
-    Wait time data powered by <a href="https://queue-times.com" target="_blank" rel="noopener" style="color:var(--gold); text-decoration:underline;">Queue-Times.com</a>.
+    Wait time data powered by <a href="https://queue-times.com" target="_blank" rel="noopener" style="color:var(--gold); text-decoration:underline;">Queue-Times.com</a>. Park hours powered by <a href="https://themeparks.wiki" target="_blank" rel="noopener" style="color:var(--gold); text-decoration:underline;">ThemeParks.wiki</a>.
   </footer>
 </div>
 <div class="modal-overlay" id="rideModalOverlay" onclick="if(event.target===this) closeRideModal()">
@@ -1424,7 +1442,11 @@
       const hours = Math.floor(ageMinutes / 60);
       const mins = ageMinutes % 60;
       const ageLabel = hours > 0 ? `${hours}h ${mins}m` : `${mins} min`;
-      bannerText.innerHTML = `<strong>Data may be out of date</strong> &mdash; last refreshed ${ageLabel} ago. Wait times shown below could differ from the park right now. We refresh roughly every 5 minutes; this page will update automatically once new data arrives.`;
+      if (allParksAwaitingData()) {
+        bannerText.innerHTML = `<strong>Showing last night&rsquo;s final update</strong> &mdash; live wait times appear once today&rsquo;s first readings arrive. This page updates automatically.`;
+      } else {
+        bannerText.innerHTML = `<strong>Data may be out of date</strong> &mdash; last refreshed ${ageLabel} ago. Wait times shown below could differ from the park right now. We refresh roughly every 5 minutes, and this page will update automatically once new wait times arrive.`;
+      }
       banner.classList.add("visible");
     } else {
       banner.classList.remove("visible");
@@ -1433,7 +1455,12 @@
 
   function getParkPhase(parkKey, park) {
     const hours = resolveHours(parkKey, park);
-    if (!hours) return { phase: "open" };
+    if (!hours) {
+      // No usable hours for today. If the newest snapshot is from a previous day, no park has
+      // reported today yet, so show "not open yet" instead of last night's waits.
+      if (snapshotIsFromPreviousDay()) return { phase: "pre-open", awaiting: true };
+      return { phase: "open" };
+    }
 
     const nowET = new Date(new Date().toLocaleString("en-US", { timeZone: "America/New_York" }));
     const [eeH, eeM] = hours.earlyEntry.split(":").map(Number);
@@ -1448,6 +1475,8 @@
     if (nowMins < earlyEntryMins) return { phase: "pre-open", opensAt: hours.earlyEntry, generalAt: hours.open };
     if (nowMins < openMins) return { phase: "early-entry", generalAt: hours.open };
     if (nowMins >= closeMins) return { phase: "closed-for-day" };
+    // Park is open, but if the newest snapshot is from a previous day there are no live waits yet.
+    if (snapshotIsFromPreviousDay()) return { phase: "pre-open", awaiting: true, openNow: true };
     return { phase: "open" };
   }
 
@@ -1624,6 +1653,41 @@
     return { status: "ready", pctDiff };
   }
 
+  // Comparison vs. typical conditions. Within +/-TYPICAL_BAND_PCT counts as "typical" everywhere
+  // (banner, park cards). These are relative to normal, not a promise of short waits.
+  const TYPICAL_BAND_PCT = 10;
+  function vsTypicalTier(pctDiff) {
+    if (pctDiff < -TYPICAL_BAND_PCT) return "better";
+    if (pctDiff > TYPICAL_BAND_PCT) return "busier";
+    return "typical";
+  }
+  function vsTypicalText(pctDiff) {
+    const tier = vsTypicalTier(pctDiff), n = Math.abs(pctDiff);
+    if (tier === "typical") return "Typical for this time";
+    return `${n}% ${tier === "better" ? "below" : "above"} typical for this time`;
+  }
+
+  function hhmmToMins(v) { const [h, m] = String(v).split(":").map(Number); return h * 60 + m; }
+  // "09:00" -> "9:00 AM"; "24:00" -> "12:00 AM"
+  function fmtClock(hhmm) {
+    const [h, m] = String(hhmm).split(":").map(Number);
+    const hh = h % 24, period = hh >= 12 ? "PM" : "AM", h12 = hh % 12 === 0 ? 12 : hh % 12;
+    return `${h12}:${String(m).padStart(2, "0")} ${period}`;
+  }
+
+  // True when the newest snapshot is from a previous Eastern day (overnight gap before the first scrape).
+  function snapshotIsFromPreviousDay() {
+    if (!parkData || !parkData.updated_at) return false;
+    const ts = new Date(parkData.updated_at);
+    if (isNaN(ts.getTime())) return false;
+    return curveET(ts).day !== curveET(new Date()).day;
+  }
+  // Every park is waiting on today's first readings (no park can show live waits yet).
+  function allParksAwaitingData() {
+    const keys = Object.keys((parkData && parkData.parks) || {});
+    return keys.length > 0 && snapshotIsFromPreviousDay();
+  }
+
   function renderBestParkBanner() {
     const banner = document.getElementById("bestParkBanner");
     if (isDataUnavailable()) { banner.innerHTML = ""; return; }
@@ -1635,10 +1699,43 @@
     const ready = comparisons.filter(x => x.comp.status === "ready");
 
     if (ready.length === 0) {
+      const phases = PARK_ORDER.filter(k => parkData.parks[k]).map(k => getParkPhase(k, parkData.parks[k]));
+      const notOpen = p => p.phase === "pre-open" || p.phase === "early-entry" || p.phase === "closed-for-day";
+      if (phases.length && phases.every(notOpen)) {
+        let icon = "🌙", title, sub;
+        const upcoming = phases.filter(p => p.phase !== "closed-for-day");
+        const g = upcoming.filter(p => p.generalAt && !p.openNow).map(p => p.generalAt).sort((x, y) => hhmmToMins(x) - hhmmToMins(y))[0];
+        if (upcoming.length === 0) {
+          title = "Parks Are Closed for the Day";
+          sub = "Rankings return tomorrow, once the parks open and wait times start coming in.";
+        } else if (phases.some(p => p.openNow)) {
+          icon = "⏳";
+          title = "Waiting for Today’s First Update";
+          sub = "Some parks are already open. Rankings begin as soon as today’s first wait times arrive.";
+        } else if (upcoming.some(p => p.phase === "early-entry")) {
+          icon = "🔑";
+          title = "Early Entry Is Underway";
+          sub = g ? `Rankings begin once the parks open to everyone, starting at ${formatHourLabel(g)}.` : "Rankings begin once the parks open to everyone.";
+        } else {
+          title = "Parks Aren’t Open Yet";
+          sub = g ? `Rankings begin once the parks open. The first park opens at ${formatHourLabel(g)}.` : "Rankings begin once the parks open and today’s first wait times come in.";
+        }
+        banner.innerHTML = `
+          <div class="best-park-content">
+            <span class="best-park-icon">${icon}</span>
+            <div>
+              <div class="best-park-eyebrow">Best Park Right Now</div>
+              <div class="best-park-title">${title}</div>
+              <div class="best-park-sub">${sub}</div>
+            </div>
+          </div>`;
+        return;
+      }
       banner.innerHTML = `
         <div class="best-park-content">
           <span class="best-park-icon">📊</span>
           <div>
+            <div class="best-park-eyebrow">Best Park Right Now</div>
             <div class="best-park-title">Gathering baseline data</div>
             <div class="best-park-sub">We need a few weeks of history at this time of day before we can reliably say which park is running below normal. Check back soon!</div>
           </div>
@@ -1648,16 +1745,32 @@
 
     ready.sort((a, b) => a.comp.pctDiff - b.comp.pctDiff);
     const best = ready[0];
-    const direction = best.comp.pctDiff <= 0 ? "below" : "above";
-    const icon = best.comp.pctDiff <= 0 ? "🟢" : "🔴";
+    const tier = vsTypicalTier(best.comp.pctDiff);
     const magnitude = Math.abs(best.comp.pctDiff);
+    const name = escapeHtml(best.park.name);
+    let icon, dot, title, sub;
+    if (tier === "better") {
+      icon = "🏆"; dot = "🟢";
+      title = `A Great Day for ${name}!`;
+      sub = `Waits are about ${magnitude}% shorter than usual for this time of day.`;
+    } else if (tier === "typical") {
+      icon = "🧭"; dot = "🔵";
+      title = `${name} Is Right on Track!`;
+      sub = `Typical for this time of day.`;
+    } else {
+      icon = "🧭"; dot = "🟠";
+      title = `${name} Is Your Best Bet`;
+      sub = `Every park is busier than usual right now, but ${name} is running closest to normal.`;
+    }
 
     banner.innerHTML = `
       <div class="best-park-content">
-        <span class="best-park-icon">🏆</span>
+        <span class="best-park-icon">${icon}</span>
         <div>
-          <div class="best-park-title">Best Park Right Now: ${best.park.name}</div>
-          <div class="best-park-sub">${icon} Current wait times are approximately ${magnitude}% ${direction} typical levels for this time of day.</div>
+          <div class="best-park-eyebrow">Best Park Right Now</div>
+          <div class="best-park-title">${title}</div>
+          <div class="best-park-sub">${dot} ${sub}</div>
+          <div class="best-park-note">Ranked among open parks by current waits vs. a typical day at this hour.</div>
         </div>
       </div>`;
   }
@@ -1776,6 +1889,12 @@
   }
 
   function getStatusBanner(phaseInfo) {
+    if (phaseInfo.phase === "pre-open" && phaseInfo.awaiting && phaseInfo.openNow) {
+      return `<div class="park-status-banner pre-open">☀️ Open now &mdash; live waits appear with today&rsquo;s first update</div>`;
+    }
+    if (phaseInfo.phase === "pre-open" && phaseInfo.awaiting) {
+      return `<div class="park-status-banner pre-open">🌙 Not open yet &mdash; live waits appear once the park opens</div>`;
+    }
     if (phaseInfo.phase === "pre-open") {
       const noEarlyEntry = phaseInfo.opensAt === phaseInfo.generalAt;
       return `<div class="park-status-banner pre-open">🌙 Not open yet &mdash; ${noEarlyEntry ? "Park opens" : "Early Entry starts"} ${formatHourLabel(phaseInfo.opensAt)}</div>`;
@@ -1790,6 +1909,7 @@
   }
 
   function getBestTimeTip(score, phaseInfo) {
+    if (phaseInfo.phase === "pre-open" && phaseInfo.awaiting) return phaseInfo.openNow ? "Live waits will appear with today’s first update." : "Check back once the park opens for live crowd data.";
     if (phaseInfo.phase === "pre-open") return phaseInfo.opensAt === phaseInfo.generalAt ? "Check back once the park opens for live crowd data." : "Check back once Early Entry begins for live crowd data.";
     if (phaseInfo.phase === "early-entry") return "Resort guests only right now &mdash; full crowd score resumes at general open.";
     if (phaseInfo.phase === "closed-for-day") return "Park is closed. See you tomorrow!";
@@ -1866,7 +1986,7 @@
       const longestName = (!isClosed && stats.longest) ? stats.longest.name : "";
       const comp = getParkComparison(key, p);
       const vsNormalPill = comp.status === "ready"
-        ? `<span class="vs-normal-pill ${comp.pctDiff <= 0 ? 'below' : 'above'}">${comp.pctDiff <= 0 ? '🟢' : '🔴'} ${Math.abs(comp.pctDiff)}% ${comp.pctDiff <= 0 ? 'below' : 'above'} normal</span>`
+        ? `<span class="vs-normal-pill ${({better:'below',typical:'typical',busier:'above'})[vsTypicalTier(comp.pctDiff)]}">${({better:'🟢',typical:'🔵',busier:'🟠'})[vsTypicalTier(comp.pctDiff)]} ${vsTypicalText(comp.pctDiff)}</span>`
         : '';
 
       // Only genuine short-term downtime on standard attractions drives the
@@ -2064,6 +2184,30 @@
     const searchVal = document.getElementById("rideSearch").value.toLowerCase();
     const body = document.getElementById("ridesBody");
     body.innerHTML = "";
+
+    // Don't show stale queue rows before the park opens or after it closes.
+    const parkKeyForPhase = Object.keys(parkData.parks).find(k => parkData.parks[k] === park) || activeParkKey;
+    const queuePhase = getParkPhase(parkKeyForPhase, park);
+    if (queuePhase.phase === "pre-open" || queuePhase.phase === "closed-for-day") {
+      let headline, detail, icon = "🌙";
+      if (queuePhase.phase === "closed-for-day") {
+        headline = "Closed for the day";
+        detail = "See you tomorrow! Live standby waits return when the park opens.";
+      } else if (queuePhase.openNow) {
+        icon = "☀️";
+        headline = "Open now &mdash; waiting for today&rsquo;s first update";
+        detail = "Live standby waits will appear here in a few minutes.";
+      } else if (queuePhase.awaiting || !queuePhase.opensAt) {
+        headline = "Not open yet";
+        detail = "Live standby waits will appear here once the park opens.";
+      } else {
+        const noEarlyEntry = queuePhase.opensAt === queuePhase.generalAt;
+        headline = `Not open yet &mdash; ${noEarlyEntry ? "Park opens" : "Early Entry starts"} ${formatHourLabel(queuePhase.opensAt)}`;
+        detail = "Live standby waits will appear here once the park opens.";
+      }
+      body.innerHTML = `<tr class="queue-closed-row"><td colspan="3"><div class="queue-closed-icon">${icon}</div><strong>${headline}</strong><div>${detail}</div></td></tr>`;
+      return;
+    }
 
     const matchesSearch = r => (r.name || "").toLowerCase().includes(searchVal) || (r.land || "").toLowerCase().includes(searchVal);
 
@@ -2900,7 +3044,7 @@ renderCards=function(){const grid=document.getElementById('parkGrid');grid.inner
  const card=document.createElement('div');card.className='park-card '+(key===activeParkKey?'active ':'')+(closed?'closed':'');card.dataset.parkKey=key;card.style.setProperty('--park-color',p.color||'linear-gradient(90deg,var(--gold),var(--pink))');card.onclick=()=>selectPark(key);
  const badge=phase.phase==='closed-for-day'?'<span class="score-badge score-na">N/A</span>':getScoreBadge(p.crowd_score,phase);
  card.innerHTML='<div class="pulse-header"><div class="pulse-identity"><img src="'+wxE(PARK_EMOJI_IMAGES[key]||'')+'" alt=""/><div><h3>'+wxE(p.name)+'</h3><div class="pulse-descriptor">'+wxE(pulseCrowd(p.crowd_score,phase.phase))+'</div></div></div>'+badge+'</div>'
- +getStatusBanner(phase)+'<div class="pulse-waits"><div><div class="label">Average wait</div><div class="value">'+avg+'</div>'+(comp.status==='ready'?'<div class="pulse-ride">'+Math.abs(comp.pctDiff)+'% '+(comp.pctDiff<=0?'below':'above')+' typical for this time</div>':'')+'</div><div><div class="label">Longest wait</div><div class="value">'+longest+'</div><div class="pulse-ride" title="'+wxE(ride)+'">'+wxE(ride)+'</div></div></div>'
+ +getStatusBanner(phase)+'<div class="pulse-waits"><div><div class="label">Average wait</div><div class="value">'+avg+'</div>'+(comp.status==='ready'?'<div class="pulse-ride">'+vsTypicalText(comp.pctDiff)+'</div>':'')+'</div><div><div class="label">Longest wait</div><div class="value">'+longest+'</div><div class="pulse-ride" title="'+wxE(ride)+'">'+wxE(ride)+'</div></div></div>'
  +(closed?'':'<div class="pulse-closures">'+(groups.temporary.length?'<button type="button" class="pulse-disclosure pulse-closure-main down" data-closure>⚠️ '+groups.temporary.length+' temporary closure'+(groups.temporary.length===1?'':'s')+' ›</button>':'<div class="pulse-closure-main">✓ No temporary closures</div>')+(extras.length?'<button type="button" class="pulse-disclosure" data-closure>'+wxE(extras.join(' · '))+' ›</button>':'')+'</div>')
  +'<div class="pulse-insight"><span aria-hidden="true">💡</span><div><strong>'+wxE(insight.title)+'</strong><small>'+wxE(insight.text)+'</small></div></div><div class="pulse-footer"><div class="pulse-weather" data-park-key="'+key+'">🌡️ Weather loading…</div><button type="button" class="pulse-weather-details" aria-label="Weather details for '+wxE(p.name)+'">Details ›</button></div>';
  card.querySelectorAll('[data-closure]').forEach(b=>b.onclick=e=>openClosureModal(e,key));card.querySelector('.pulse-weather-details').onclick=e=>{e.stopPropagation();selectPark(key);document.getElementById('weatherPanel').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});};grid.appendChild(card);
@@ -3558,6 +3702,38 @@ Additive patch for the current compact/mobile implementation; not a replacement 
 </script>
 
 <script>
+/* Today's park hours strip on each card (only when the worker supplied valid hours for today). */
+(() => {
+  function addHoursStrips() {
+    document.querySelectorAll('#parkGrid .park-card').forEach(card => {
+      const key = card.dataset.parkKey, park = parkData.parks[key];
+      if (!park) return;
+      const ph = getParkPhase(key, park);
+      if (ph.awaiting && ph.openNow) {
+        const d = card.querySelector('.pulse-descriptor');
+        if (d) d.textContent = 'Open · awaiting first update';
+      }
+      if (card.querySelector('.pulse-hours')) return;
+      const h = normalizeHours(park.hours);
+      if (!h) return;
+      const phase = ph.phase === 'open' || ph.openNow ? 'open' : ph.phase;
+      const cls = phase === 'open' ? 'is-open' : phase === 'early-entry' ? 'is-early' : '';
+      const hasEE = hhmmToMins(h.earlyEntry) < hhmmToMins(h.open);
+      const html = '<div class="pulse-hours ' + cls + '" title="Today\u2019s park hours (Eastern Time)">'
+        + '<span class="pulse-hours-main"><span class="pulse-hours-dot" aria-hidden="true"></span>Today <strong>' + fmtClock(h.open) + ' \u2013 ' + fmtClock(h.close) + '</strong> <small>ET</small></span>'
+        + (hasEE ? '<span class="pulse-hours-ee">\ud83d\udd11 Early Entry ' + fmtClock(h.earlyEntry) + '</span>' : '')
+        + '</div>';
+      const header = card.querySelector('.pulse-header');
+      if (header) header.insertAdjacentHTML('afterend', html);
+    });
+  }
+  const priorRenderCards = renderCards;
+  renderCards = function(...args) {
+    const result = priorRenderCards.apply(this, args);
+    if (!isDataUnavailable()) addHoursStrips();
+    return result;
+  };
+})();
 /* Keep the unavailable card intact: guard the outermost renderCards wrapper. */
 (() => {
   const priorRenderCards = renderCards;
@@ -3569,10 +3745,20 @@ Additive patch for the current compact/mobile implementation; not a replacement 
 /* Curve clock: re-render the wait curve when the Eastern hour/day rolls over. */
 (() => {
   let lastCurveClock = '';
+  let lastPhaseSig = null;
   const priorTimestamp = updateTimestamp;
   updateTimestamp = function(...args) {
     const result = priorTimestamp(...args);
     if (isDataUnavailable()) return result;
+    // Re-render when a park's phase changes (e.g. it opens) instead of waiting for the next data refresh.
+    const phaseSig = PARK_ORDER.map(k => {
+      if (!parkData.parks[k]) return "-";
+      const p = getParkPhase(k, parkData.parks[k]);
+      return p.phase + (p.awaiting ? "*" : "") + (p.openNow ? "+" : "");
+    }).join("|");
+    const phaseChanged = lastPhaseSig !== null && phaseSig !== lastPhaseSig;
+    lastPhaseSig = phaseSig;
+    if (phaseChanged) renderAll();
     const current = curveET(new Date());
     const key = current.day + '#' + current.hour;
     if (key !== lastCurveClock) {

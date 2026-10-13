@@ -190,7 +190,7 @@
   .queue-closed-row td { padding: 2.25rem 1rem; text-align: center; color: var(--text-muted); line-height: 1.6; border-bottom: none; }
   .queue-closed-row strong { display: block; color: var(--text, #fff); font-size: 1rem; margin-bottom: .2rem; }
   .queue-closed-icon { font-size: 1.6rem; margin-bottom: .35rem; }
-  .pulse-hours { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem .5rem; margin: .65rem 0 .15rem; font-size: .8rem; }
+  .pulse-hours { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem .5rem; margin: .65rem 0 .6rem; font-size: .8rem; }
   .pulse-hours-main, .pulse-hours-ee { display: inline-flex; align-items: center; gap: .4rem; padding: .28rem .7rem; border-radius: 999px; border: 1px solid var(--card-border, rgba(255,255,255,.14)); background: rgba(255,255,255,.05); color: var(--text-muted); line-height: 1.3; }
   .pulse-hours-main strong { color: var(--text, #fff); font-weight: 700; }
   .pulse-hours-main small { opacity: .75; font-size: .68rem; }
@@ -502,8 +502,49 @@
   .status-down { color: var(--red); font-weight: 600; font-size: 0.82rem; }
   .land-tag { font-size: 0.76rem; color: var(--text-muted); display: block; }
 
-  .insights-panel { margin-top: 1.1rem; font-size: 0.88rem; color: var(--text-muted); line-height: 1.6; }
-  .insight-item { margin-bottom: 0.8rem; padding: 0.7rem 0.9rem; border-left: 3px solid var(--gold); background: rgba(255,209,102,0.05); border-radius: 0 10px 10px 0; }
+  .insights-panel { margin-top: 1rem; font-size: 0.88rem; color: var(--text-muted); line-height: 1.6; }
+  .chart-notes-disclosure {
+    margin-top: 0.85rem;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border);
+  }
+  .chart-notes-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.65rem 0.9rem;
+    cursor: pointer;
+    user-select: none;
+    font-size: 0.84rem;
+    font-weight: 600;
+    color: var(--text);
+    list-style: none;
+  }
+  .chart-notes-summary::-webkit-details-marker { display: none; }
+  .chart-notes-summary:focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: -2px;
+    border-radius: 10px;
+  }
+  .chart-notes-summary-text {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+  }
+  .chart-notes-summary-chevron {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    transition: transform 0.2s ease;
+  }
+  details[open].chart-notes-disclosure .chart-notes-summary-chevron {
+    transform: rotate(180deg);
+  }
+  .chart-notes-body {
+    padding: 0.2rem 0.85rem 0.85rem;
+  }
+  .insight-item { margin-bottom: 0.65rem; padding: 0.65rem 0.85rem; border-left: 3px solid var(--gold); background: rgba(255,209,102,0.05); border-radius: 0 8px 8px 0; font-size: 0.84rem; }
+  .insight-item:last-child { margin-bottom: 0; }
   .insight-item strong { color: var(--gold); }
 
   .chart-wrap { position: relative; height: 195px; width: 100%; }
@@ -807,9 +848,69 @@
 .park-card{padding:1.35rem}.pulse-header{display:flex;justify-content:space-between;align-items:flex-start;gap:.7rem;margin-bottom:1rem}
 .pulse-identity{display:flex;align-items:center;gap:.65rem;min-width:0}.pulse-identity img{width:52px;height:52px;object-fit:contain;flex-shrink:0}
 .pulse-identity h3{font:700 1.35rem/1.2 'Baloo 2',sans-serif;color:var(--text)}.pulse-descriptor{font-size:.76rem;color:var(--text-muted);margin-top:.2rem}
-.pulse-waits{display:grid;grid-template-columns:1fr 1fr;gap:1rem;border-top:1px solid var(--card-border);padding-top:.85rem;margin-bottom:.8rem}
-.pulse-waits .label{font-size:.68rem;color:var(--text-muted);letter-spacing:.05em;text-transform:uppercase}.pulse-waits .value{font-size:1.35rem;font-weight:700;color:var(--text)}
-.pulse-ride{font-size:.73rem;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.pulse-waits{
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0.75rem;
+  border-top: 1px solid var(--card-border);
+  padding-top: 0.75rem;
+  margin-top: 0.4rem;
+  margin-bottom: 0.5rem;
+  align-items: start;
+}
+.pulse-waits.pulse-waits-clickable {
+  cursor: pointer;
+  border-radius: 10px;
+  padding: 0.55rem 0.65rem;
+  margin: 0.35rem 0 0.5rem;
+  border: 1px solid rgba(255, 209, 102, 0.12);
+  background: rgba(255, 209, 102, 0.03);
+  transition: background 0.18s ease, border-color 0.18s ease;
+}
+.pulse-waits.pulse-waits-clickable:hover {
+  background: rgba(255, 209, 102, 0.08);
+  border-color: rgba(255, 209, 102, 0.3);
+}
+.pulse-waits.pulse-waits-clickable:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+.pulse-waits > div{min-width:0}
+.pulse-waits .label{font-size:.68rem;color:var(--text-muted);letter-spacing:.05em;text-transform:uppercase}
+.pulse-waits .value{font-size:1.35rem;font-weight:700;color:var(--text);line-height:1.2;margin-bottom:0.25rem}
+.pulse-ride{
+  font-size: .73rem;
+  color: var(--text-muted);
+  line-height: 1.35;
+  min-height: 2.7em;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  word-break: normal;
+  overflow-wrap: break-word;
+}
+/* Encapsulated Pill for Tap for Hourly Wait Trend */
+.pulse-waits-pill-btn {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 0.5rem;
+  padding: 0.42rem 0.75rem;
+  background: rgba(255, 209, 102, 0.08);
+  border: 1px solid rgba(255, 209, 102, 0.28);
+  border-radius: 8px;
+  color: var(--gold);
+  font-size: 0.76rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+.pulse-waits.pulse-waits-clickable:hover .pulse-waits-pill-btn {
+  background: rgba(255, 209, 102, 0.16);
+  border-color: var(--gold);
+}
 .pulse-closures{font-size:.8rem;margin:.7rem 0}.pulse-closure-main{color:var(--green)}.pulse-closure-main.down{color:var(--red)}
 .pulse-disclosure{display:block;background:none;border:0;padding:.25rem 0;color:var(--text-muted);font:inherit;font-size:.72rem;text-align:left;cursor:pointer}
 .pulse-disclosure:hover{color:var(--gold)}.pulse-insight{display:flex;gap:.4rem;margin:.85rem 0;color:var(--teal);font-size:.8rem}.pulse-insight strong{display:block}.pulse-insight small{display:block;font-size:.73rem;color:var(--text-muted);margin-top:.12rem}
@@ -832,7 +933,24 @@
 #weatherPanel .weather-summary:focus-visible{outline:3px solid var(--teal);outline-offset:-4px;border-radius:18px}
 #weatherPanel .weather-summary-header{display:flex;justify-content:space-between;align-items:center;gap:1rem}
 #weatherPanel .weather-summary-header h2{font:700 1.25rem/1.35 'Baloo 2',sans-serif;color:var(--text);display:flex;align-items:center;margin-top:.15rem}
-#weatherPanel .weather-expand-label{font-size:.75rem;font-weight:600;color:var(--gold);white-space:nowrap}
+#weatherPanel .weather-expand-label{
+  font-size: .75rem;
+  font-weight: 600;
+  color: var(--gold);
+  white-space: nowrap;
+  background: rgba(255,209,102,.08);
+  border: 1px solid rgba(255,209,102,.28);
+  border-radius: 999px;
+  padding: 0.3rem 0.65rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  transition: all .2s ease;
+}
+#weatherPanel .weather-summary:hover .weather-expand-label {
+  background: rgba(255,209,102,.16);
+  border-color: var(--gold);
+}
 #weatherPanel .ppwx-current{font-size:1.4rem;font-weight:700;line-height:1.35;color:var(--text);margin:.75rem 0 .15rem}
 #weatherPanel .ppwx-metadata{font-size:.8rem;line-height:1.5;color:var(--text-muted)}
 #weatherPanel .ppwx-trend{font-size:.85rem;font-weight:600;color:var(--teal);margin:.65rem 0 .25rem}
@@ -851,7 +969,7 @@
 #weatherPanel .ppwx-provenance p{margin:.3rem 0}
 #weatherPanel .ppwx-no-alert{font-size:.73rem;color:var(--text-muted);margin:.65rem 0}
 #weatherPanel[open] .ppwx-glance-forecast,#weatherPanel[open] .ppwx-strip-label,#weatherPanel[open] .ppwx-glance-source{display:none}
-@media(max-width:600px){#weatherPanel .weather-summary{padding:1rem}#weatherPanel .weather-summary-header{gap:.5rem}#weatherPanel .weather-summary-header h2{font-size:1.05rem}#weatherPanel .weather-expand-label{font-size:.68rem}#weatherPanel .ppwx-current{font-size:1.18rem}#weatherPanel .ppwx-metadata{font-size:.73rem}#weatherPanel .weather-expanded-content{padding:.9rem 1rem 1rem}#weatherPanel .ppwx-glance-forecast{gap:.15rem}#weatherPanel .ppwx-glance-hour{padding:.2rem .05rem}#weatherPanel .ppwx-glance-hour strong{font-size:.83rem}}
+@media(max-width:600px){#weatherPanel .weather-summary{padding:1rem}#weatherPanel .weather-summary-header{gap:.5rem}#weatherPanel .weather-summary-header h2{font-size:1.05rem}#weatherPanel .weather-expand-label{font-size:.7rem;padding:0.25rem 0.55rem}#weatherPanel .ppwx-current{font-size:1.18rem}#weatherPanel .ppwx-metadata{font-size:.73rem}#weatherPanel .weather-expanded-content{padding:.9rem 1rem 1rem}#weatherPanel .ppwx-glance-forecast{gap:.15rem}#weatherPanel .ppwx-glance-hour{padding:.2rem .05rem}#weatherPanel .ppwx-glance-hour strong{font-size:.83rem}}
 </style>
 <style>
 /* Weather park navigation and forecast browsing; all data fetching is unchanged. */
@@ -1022,12 +1140,20 @@
         <canvas id="trendChart"></canvas>
       </div>
       <div class="insights-panel" id="insightsPanel">
-        <div class="insight-item">
-          <strong>Optimal Strategy:</strong> Rope-drop high-demand headliners during the first 60 minutes after opening or during evening fireworks.
-        </div>
-        <div class="insight-item">
-          <strong>Crowd Index:</strong> Standardized 1-10 index measuring current park-wide queue load against historical baselines. Only meaningful once the park is open for the day.
-        </div>
+        <details class="chart-notes-disclosure" data-smooth-expand>
+          <summary class="chart-notes-summary">
+            <span class="chart-notes-summary-text">📊 Methodology & Timestamps</span>
+            <span class="chart-notes-summary-chevron">▾</span>
+          </summary>
+          <div class="chart-notes-body" data-disclosure-content>
+            <div class="insight-item">
+              <strong>Optimal Strategy:</strong> Rope-drop high-demand headliners during the first 60 minutes after opening or during evening fireworks.
+            </div>
+            <div class="insight-item">
+              <strong>Crowd Index:</strong> Standardized 1-10 index measuring current park-wide queue load against historical baselines. Only meaningful once the park is open for the day.
+            </div>
+          </div>
+        </details>
       </div>
     </div>
   </div>
@@ -1655,16 +1781,21 @@
 
   // Comparison vs. typical conditions. Within +/-TYPICAL_BAND_PCT counts as "typical" everywhere
   // (banner, park cards). These are relative to normal, not a promise of short waits.
-  const TYPICAL_BAND_PCT = 10;
   function vsTypicalTier(pctDiff) {
-    if (pctDiff < -TYPICAL_BAND_PCT) return "better";
-    if (pctDiff > TYPICAL_BAND_PCT) return "busier";
+    if (typeof pctDiff !== 'number' || !Number.isFinite(pctDiff)) return "unknown";
+    if (pctDiff < -40) return "much-better";
+    if (pctDiff < -10) return "better";
+    if (pctDiff > 40) return "much-busier";
+    if (pctDiff > 10) return "busier";
     return "typical";
   }
   function vsTypicalText(pctDiff) {
-    const tier = vsTypicalTier(pctDiff), n = Math.abs(pctDiff);
-    if (tier === "typical") return "Typical for this time";
-    return `${n}% ${tier === "better" ? "below" : "above"} typical for this time`;
+    if (typeof pctDiff !== 'number' || !Number.isFinite(pctDiff)) return "Typical crowds unknown";
+    if (pctDiff < -40) return "Much quieter than usual";
+    if (pctDiff < -10) return "Quieter than usual";
+    if (pctDiff > 40) return "Much busier than usual";
+    if (pctDiff > 10) return "Busier than usual";
+    return "Typical for this time";
   }
 
   function hhmmToMins(v) { const [h, m] = String(v).split(":").map(Number); return h * 60 + m; }
@@ -2359,12 +2490,22 @@
     const summaryAge = Date.now() - Date.parse(historicalSummary?.updated_at);
     if (hasTypical && (!Number.isFinite(summaryAge) || summaryAge > 2 * 60 * 60 * 1000)) warnings.push('Historical summary has not refreshed recently.');
     const insights = document.getElementById('insightsPanel');
-    insights.innerHTML = '<div class="insight-item"><strong>Actual data:</strong> ' + escapeHtml(series.day) +
-      ' · Eastern park time. Observed history: ' + escapeHtml(sourceTime(history24h?.updated_at)) +
-      ' · Historical summary: ' + escapeHtml(sourceTime(historicalSummary?.updated_at)) + '.</div>' +
-      '<div class="insight-item"><strong>How to read this:</strong> Positive standby waits for standard attractions only; zero waits and closed readings are excluded. Each attraction contributes equally after its hourly readings are averaged. Where both lines exist, they use the same available attractions; hover for coverage. The current observed hour is partial. Future observed hours stay blank.</div>' +
-      '<div class="insight-item"><strong>Preliminary baseline:</strong> Same-weekday historical averages are not a forecast or a crowd index. They can include today’s completed rollups; reading counts do not establish multiple weeks of history.</div>' +
-      (warnings.length ? '<div class="insight-item curve-warning" role="status">' + escapeHtml(warnings.join(' ')) + '</div>' : '');
+    const warningHtml = warnings.length ? '<div class="insight-item curve-warning" role="status" style="margin-bottom:0.75rem;">' + escapeHtml(warnings.join(' ')) + '</div>' : '';
+    insights.innerHTML = warningHtml +
+      '<details class="chart-notes-disclosure" data-smooth-expand>' +
+        '<summary class="chart-notes-summary">' +
+          '<span class="chart-notes-summary-text">📊 Methodology & Timestamps</span>' +
+          '<span class="chart-notes-summary-chevron">▾</span>' +
+        '</summary>' +
+        '<div class="chart-notes-body" data-disclosure-content>' +
+          '<div class="insight-item"><strong>Actual data:</strong> ' + escapeHtml(series.day) +
+          ' · Eastern park time. Observed history: ' + escapeHtml(sourceTime(history24h?.updated_at)) +
+          ' · Historical summary: ' + escapeHtml(sourceTime(historicalSummary?.updated_at)) + '.</div>' +
+          '<div class="insight-item"><strong>How to read this:</strong> Positive standby waits for standard attractions only; zero waits and closed readings are excluded. Each attraction contributes equally after its hourly readings are averaged. Where both lines exist, they use the same available attractions; hover for coverage. The current observed hour is partial. Future observed hours stay blank.</div>' +
+          '<div class="insight-item"><strong>Preliminary baseline:</strong> Same-weekday historical averages are not a forecast or a crowd index. They can include today’s completed rollups; reading counts do not establish multiple weeks of history.</div>' +
+        '</div>' +
+      '</details>';
+    if (window.ParkPulseDisclosure?.initialize) window.ParkPulseDisclosure.initialize(insights);
     canvas.setAttribute('aria-label', `${park.name}: observed and historical average positive standby waits on ${series.day}, Eastern time`);
     canvas.setAttribute('role', 'img');
     chartInstance = new Chart(ctx, {
@@ -3044,7 +3185,7 @@ renderCards=function(){const grid=document.getElementById('parkGrid');grid.inner
  const card=document.createElement('div');card.className='park-card '+(key===activeParkKey?'active ':'')+(closed?'closed':'');card.dataset.parkKey=key;card.style.setProperty('--park-color',p.color||'linear-gradient(90deg,var(--gold),var(--pink))');card.onclick=()=>selectPark(key);
  const badge=phase.phase==='closed-for-day'?'<span class="score-badge score-na">N/A</span>':getScoreBadge(p.crowd_score,phase);
  card.innerHTML='<div class="pulse-header"><div class="pulse-identity"><img src="'+wxE(PARK_EMOJI_IMAGES[key]||'')+'" alt=""/><div><h3>'+wxE(p.name)+'</h3><div class="pulse-descriptor">'+wxE(pulseCrowd(p.crowd_score,phase.phase))+'</div></div></div>'+badge+'</div>'
- +getStatusBanner(phase)+'<div class="pulse-waits"><div><div class="label">Average wait</div><div class="value">'+avg+'</div>'+(comp.status==='ready'?'<div class="pulse-ride">'+vsTypicalText(comp.pctDiff)+'</div>':'')+'</div><div><div class="label">Longest wait</div><div class="value">'+longest+'</div><div class="pulse-ride" title="'+wxE(ride)+'">'+wxE(ride)+'</div></div></div>'
+ +getStatusBanner(phase)+'<div class="pulse-waits pulse-waits-clickable" role="button" tabindex="0" onclick="openParkWaitModal(event, \''+key+'\')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();openParkWaitModal(event, \''+key+'\');}" title="Tap to view hourly wait trend for '+wxE(p.name)+'"><div><div class="label">Average wait</div><div class="value">'+avg+'</div><div class="pulse-ride" title="'+(comp.status==='ready'?(comp.pctDiff>0?'+':'')+comp.pctDiff+'% vs typical for this time':'No historical baseline')+'">'+(comp.status==='ready'?vsTypicalText(comp.pctDiff):'Typical crowds unknown')+'</div></div><div><div class="label">Longest wait</div><div class="value">'+longest+'</div><div class="pulse-ride" title="'+wxE(ride)+'">'+wxE(ride)+'</div></div><div class="pulse-waits-pill-btn"><span>📈 Tap for hourly wait trend</span><span>›</span></div></div>'
  +(closed?'':'<div class="pulse-closures">'+(groups.temporary.length?'<button type="button" class="pulse-disclosure pulse-closure-main down" data-closure>⚠️ '+groups.temporary.length+' temporary closure'+(groups.temporary.length===1?'':'s')+' ›</button>':'<div class="pulse-closure-main">✓ No temporary closures</div>')+(extras.length?'<button type="button" class="pulse-disclosure" data-closure>'+wxE(extras.join(' · '))+' ›</button>':'')+'</div>')
  +'<div class="pulse-insight"><span aria-hidden="true">💡</span><div><strong>'+wxE(insight.title)+'</strong><small>'+wxE(insight.text)+'</small></div></div><div class="pulse-footer"><div class="pulse-weather" data-park-key="'+key+'">🌡️ Weather loading…</div><button type="button" class="pulse-weather-details" aria-label="Weather details for '+wxE(p.name)+'">Details ›</button></div>';
  card.querySelectorAll('[data-closure]').forEach(b=>b.onclick=e=>openClosureModal(e,key));card.querySelector('.pulse-weather-details').onclick=e=>{e.stopPropagation();selectPark(key);document.getElementById('weatherPanel').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});};grid.appendChild(card);
@@ -3254,13 +3395,13 @@ window.addEventListener('DOMContentLoaded',()=>{initWeatherDisclosure();renderWe
 .pulse-score-group{display:flex;flex-direction:column;align-items:center;gap:.25rem;flex-shrink:0}
 .pulse-score-group .pulse-descriptor{margin:0;text-align:center;font-size:.72rem;font-weight:600;line-height:1.3;max-width:110px}
 .pulse-score-group .score-badge{display:block}
-.pulse-closures{display:flex;flex-direction:column;gap:.3rem;margin:.65rem 0}
+.pulse-closures{display:flex;flex-direction:column;gap:.5rem;margin:.5rem 0 0}
 .pulse-closures .pulse-closure-main{display:block;width:100%;padding:.42rem .6rem;border-radius:8px;border:1px solid rgba(53,208,138,.22);background:rgba(53,208,138,.08);color:var(--green);font-size:.78rem;font-weight:600;line-height:1.4}
 .pulse-closures .pulse-closure-main.down{background:rgba(255,93,122,.09);border-color:rgba(255,93,122,.25);color:var(--red)}
 .pulse-closures .pulse-secondary{display:block;width:100%;padding:.32rem .6rem;border-radius:8px;border:1px solid rgba(167,139,250,.20);background:rgba(167,139,250,.07);color:var(--purple);font-size:.70rem;font-weight:500;line-height:1.4}
 .pulse-closures button{cursor:pointer;text-align:left}
 .pulse-closures button:hover{filter:brightness(1.08)}
-.pulse-insight{padding:.5rem .65rem;border-radius:8px;border:1px solid rgba(76,214,192,.20);background:rgba(76,214,192,.08);margin:.7rem 0;color:var(--teal)}
+.pulse-insight{padding:.5rem .65rem;border-radius:8px;border:1px solid rgba(76,214,192,.20);background:rgba(76,214,192,.08);margin:.5rem 0 0;color:var(--teal)}
 .pulse-insight small{color:var(--text-muted)}
 [data-theme="light"] .pulse-score-group .pulse-descriptor{color:var(--text-muted)}
 @media(max-width:450px){.pulse-score-group .pulse-descriptor{max-width:90px;font-size:.66rem}}
@@ -3349,7 +3490,7 @@ immediately before </body>. This is NOT a complete replacement page.
   width: 100%;
   min-height: 56px;
   padding: .5rem .65rem;
-  margin-top: .7rem;
+  margin-top: .5rem;
   background: rgba(255,209,102,.075);
   border: 1px solid rgba(255,209,102,.24);
   border-radius: 8px;
@@ -3670,15 +3811,40 @@ Additive patch for the current compact/mobile implementation; not a replacement 
  function shortenLabels(){
   document.querySelectorAll('#parkGrid .park-card').forEach(card=>{
    const park=parkData.parks[card.dataset.parkKey];if(!park)return;
-   const button=card.querySelector('.pulse-secondary');
-   if(button){
-    const groups=getClosureGroups(park),parts=[],full=[];
-    if(groups.extended.length){parts.push('🛠 '+groups.extended.length+' refurbishment'+(groups.extended.length===1?'':'s'));full.push(groups.extended.length+' refurbishment/long-term closure'+(groups.extended.length===1?'':'s'));}
-    if(groups.special.length){parts.push('🎟️ '+groups.special.length+' scheduled');full.push(groups.special.length+' scheduled experiences');}
-    let label=button.querySelector('.pulse-pill-label');
-    if(!label){label=document.createElement('span');label.className='pulse-pill-label';button.replaceChildren(label);}
-    label.textContent=parts.join(' · ')+' ›';button.title=full.join(' · ')+' — open for exact classifications';
-    button.setAttribute('aria-label',full.join(' and ')+'. Open details.');
+   const closuresContainer=card.querySelector('.pulse-closures');
+   if(closuresContainer){
+    closuresContainer.querySelectorAll('.pulse-secondary').forEach(b=>b.remove());
+    const groups=getClosureGroups(park);
+    if(groups.extended.length){
+      const btn=document.createElement('button');
+      btn.type='button';
+      btn.className='pulse-disclosure pulse-secondary';
+      btn.setAttribute('data-closure','');
+      const count=groups.extended.length;
+      btn.title=count+' refurbishment/long-term closure'+(count===1?'':'s')+' — open for exact classifications';
+      btn.setAttribute('aria-label',btn.title);
+      btn.onclick=e=>openClosureModal(e,card.dataset.parkKey);
+      const label=document.createElement('span');
+      label.className='pulse-pill-label';
+      label.textContent='🛠 '+count+' refurbishment'+(count===1?'':'s')+' ›';
+      btn.appendChild(label);
+      closuresContainer.appendChild(btn);
+    }
+    if(groups.special.length){
+      const btn=document.createElement('button');
+      btn.type='button';
+      btn.className='pulse-disclosure pulse-secondary';
+      btn.setAttribute('data-closure','');
+      const count=groups.special.length;
+      btn.title=count+' scheduled events/shows — open for exact classifications';
+      btn.setAttribute('aria-label',btn.title);
+      btn.onclick=e=>openClosureModal(e,card.dataset.parkKey);
+      const label=document.createElement('span');
+      label.className='pulse-pill-label';
+      label.textContent='🎟️ '+count+' scheduled events/shows ›';
+      btn.appendChild(label);
+      closuresContainer.appendChild(btn);
+    }
    }
    const phase=getParkPhase(card.dataset.parkKey,park);
    if(phase.phase==='open'&&!qualifying(park).length){
@@ -3769,7 +3935,207 @@ Additive patch for the current compact/mobile implementation; not a replacement 
     return result;
   };
 })();
+
+
+  let parkWaitTrendModalChartInstance = null;
+
+  function closeParkWaitModal() {
+    const overlay = document.getElementById('parkWaitModalOverlay');
+    if (overlay) overlay.classList.remove('active');
+    document.body.style.overflow = '';
+    if (parkWaitTrendModalChartInstance) {
+      parkWaitTrendModalChartInstance.destroy();
+      parkWaitTrendModalChartInstance = null;
+    }
+  }
+
+  function openParkWaitModal(event, parkKey) {
+    if (event) {
+      event.stopPropagation();
+      event.preventDefault();
+    }
+    const park = parkData && parkData.parks && parkData.parks[parkKey];
+    if (!park) return;
+    const overlay = document.getElementById('parkWaitModalOverlay');
+    if (!overlay) return;
+
+    const emojiImg = document.getElementById('parkWaitModalEmoji');
+    if (emojiImg) {
+      emojiImg.src = (typeof PARK_EMOJI_IMAGES !== 'undefined' && PARK_EMOJI_IMAGES[parkKey]) || '';
+      emojiImg.alt = park.name || '';
+    }
+    const titleEl = document.getElementById('parkWaitModalTitle');
+    if (titleEl) titleEl.textContent = park.name || 'Park Waits';
+
+    const stats = computeLiveStats(park);
+    const comp = getParkComparison(parkKey, park);
+    const phase = getParkPhase(parkKey, park);
+    const isClosed = phase.phase === 'pre-open' || phase.phase === 'closed-for-day';
+
+    const avgEl = document.getElementById('parkWaitModalAvg');
+    if (avgEl) avgEl.textContent = isClosed || stats.avgWait === null ? '—' : stats.avgWait + ' min';
+
+    const longestEl = document.getElementById('parkWaitModalLongest');
+    if (longestEl) longestEl.textContent = isClosed || !stats.longest ? '—' : stats.longest.wait_time + ' min';
+
+    const longestRideEl = document.getElementById('parkWaitModalLongestRide');
+    if (longestRideEl) {
+      const rideName = (!isClosed && stats.longest && stats.longest.name) ? stats.longest.name : '';
+      longestRideEl.textContent = rideName;
+      longestRideEl.title = rideName;
+    }
+
+    const statusEl = document.getElementById('parkWaitModalStatus');
+    if (statusEl) {
+      if (comp.status === 'ready') {
+        const text = vsTypicalText(comp.pctDiff);
+        const sign = comp.pctDiff > 0 ? '+' : '';
+        statusEl.innerHTML = `<strong>${escapeHtml(text)}</strong><br><small style="color:var(--text-muted);font-weight:400;">(${sign}${comp.pctDiff}% vs typical)</small>`;
+      } else {
+        statusEl.textContent = 'Typical crowds unknown';
+      }
+    }
+
+    const series = buildParkWaitCurve(park);
+    const noteEl = document.getElementById('parkWaitModalNote');
+    if (noteEl) {
+      const validPoints = (series.today || []).filter(x => typeof x === 'number' && Number.isFinite(x));
+      if (validPoints.length) {
+        const peakVal = Math.max(...validPoints);
+        const peakIdx = series.today.indexOf(peakVal);
+        const peakHour = series.hours[peakIdx];
+        const peakLabel = `${peakHour % 12 || 12}${peakHour >= 12 ? ' PM' : ' AM'}`;
+        noteEl.innerHTML = `Waits peaked at <strong>~${Math.round(peakVal)} min</strong> around <strong>${peakLabel}</strong> today. Tap or hover points for details.`;
+      } else {
+        noteEl.textContent = 'Hourly trend updates dynamically as live attraction wait times are observed.';
+      }
+    }
+
+    overlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+
+    const canvas = document.getElementById('parkWaitTrendModalChart');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (parkWaitTrendModalChartInstance) parkWaitTrendModalChartInstance.destroy();
+
+    const c = chartTheme();
+    const label = hour => `${hour % 12 || 12}${hour >= 12 ? 'p' : 'a'}`;
+    const gradient = ctx.createLinearGradient(0, 0, 0, 205);
+    gradient.addColorStop(0, c.fillTop);
+    gradient.addColorStop(1, c.fillBottom);
+
+    parkWaitTrendModalChartInstance = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: series.hours.map(label),
+        datasets: [
+          {
+            label: 'Today',
+            data: series.today,
+            borderColor: c.primary,
+            backgroundColor: gradient,
+            pointBackgroundColor: c.primary,
+            pointBorderColor: c.pointBorder,
+            pointRadius: 3.5,
+            pointHoverRadius: 6,
+            borderWidth: 2.5,
+            tension: 0.15,
+            fill: true,
+            spanGaps: false
+          },
+          {
+            label: 'Typical',
+            data: series.typical,
+            borderColor: c.secondary,
+            borderDash: [5, 4],
+            borderWidth: 1.5,
+            pointRadius: 2,
+            tension: 0.15,
+            fill: false,
+            spanGaps: false
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: c.surface,
+            titleColor: c.primary,
+            bodyColor: c.text,
+            borderColor: c.border,
+            borderWidth: 1,
+            padding: 8,
+            cornerRadius: 6,
+            callbacks: {
+              title: items => {
+                const i = items[0]?.dataIndex;
+                return i !== undefined ? `${series.day} · ${label(series.hours[i])} ET` : '';
+              },
+              label: item => `${item.dataset.label}: ${item.parsed.y} min`
+            }
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            grid: { color: c.grid },
+            ticks: { color: c.textColor, callback: v => v + 'm', font: { size: 9 }, maxTicksLimit: 5 }
+          },
+          x: {
+            grid: { color: 'transparent' },
+            ticks: { color: c.textColor, font: { size: 9 }, maxRotation: 0 }
+          }
+        }
+      }
+    });
+  }
+
 </script>
 
+
+<!-- Centered Modal: Simplified Park Wait Trend Curve -->
+<div class="modal-overlay" id="parkWaitModalOverlay" onclick="if(event.target===this) closeParkWaitModal()">
+  <div class="ride-modal" style="max-width: 520px;">
+    <div class="ride-modal-header">
+      <div style="display:flex;align-items:center;gap:0.75rem;">
+        <img id="parkWaitModalEmoji" src="" alt="" style="width:34px;height:34px;object-fit:contain;" />
+        <div>
+          <div class="ride-modal-eyebrow" id="parkWaitModalSubtitle">Hourly Wait Trend</div>
+          <div class="ride-modal-title" id="parkWaitModalTitle">Park Name</div>
+        </div>
+      </div>
+      <button class="ride-modal-close" onclick="closeParkWaitModal()" aria-label="Close modal">✕</button>
+    </div>
+    <div class="ride-modal-body">
+      <div class="ride-modal-stats">
+        <div class="ride-modal-stat">
+          <div class="ride-modal-stat-label">Average Wait</div>
+          <div class="ride-modal-stat-value" id="parkWaitModalAvg">–</div>
+        </div>
+        <div class="ride-modal-stat">
+          <div class="ride-modal-stat-label">Crowd Status</div>
+          <div class="ride-modal-stat-value" id="parkWaitModalStatus" style="font-size:0.92rem;line-height:1.25;">–</div>
+        </div>
+        <div class="ride-modal-stat">
+          <div class="ride-modal-stat-label">Longest Wait</div>
+          <div class="ride-modal-stat-value" id="parkWaitModalLongest">–</div>
+          <div id="parkWaitModalLongestRide" style="font-size:0.74rem;color:var(--text-muted);margin:0.3rem auto 0;line-height:1.25;text-align:center;width:100%;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
+        </div>
+      </div>
+      <div class="chart-title-row" style="margin-top:0.75rem;margin-bottom:0.4rem;display:flex;justify-content:space-between;align-items:center;">
+        <div class="ride-modal-chart-title" style="font-size:0.88rem;font-weight:600;color:var(--text);">Today vs. Typical Hourly Waits</div>
+        <div style="font-size:0.72rem;color:var(--text-muted);"><span style="color:var(--gold);">●</span> Today &nbsp;<span style="color:var(--teal);">┄</span> Typical</div>
+      </div>
+      <div style="position:relative;height:205px;width:100%;">
+        <canvas id="parkWaitTrendModalChart"></canvas>
+      </div>
+      <div id="parkWaitModalNote" style="margin-top:0.75rem;font-size:0.78rem;color:var(--text-muted);line-height:1.45;text-align:center;"></div>
+    </div>
+  </div>
+</div>
 </body>
 </html>

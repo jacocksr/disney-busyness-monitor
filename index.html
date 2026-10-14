@@ -191,6 +191,29 @@
   .queue-closed-row strong { display: block; color: var(--text, #fff); font-size: 1rem; margin-bottom: .2rem; }
   .queue-closed-icon { font-size: 1.6rem; margin-bottom: .35rem; }
   .pulse-hours { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem .5rem; margin: .65rem 0 .6rem; font-size: .8rem; }
+    .pulse-hours-event, .pulse-hours-festival {
+    display: inline-flex; align-items: center; gap: .4rem; padding: .28rem .7rem;
+    border-radius: 999px; font-size: .76rem; line-height: 1.3;
+  }
+  .pulse-hours-event {
+    border: 1px solid rgba(255,140,0,.35); background: rgba(255,140,0,.10); color: #ffaa44;
+  }
+  .pulse-hours-event strong { color: var(--text, #fff); font-weight: 700; }
+  .pulse-hours-event small { opacity: .85; font-size: .68rem; }
+
+  .pulse-hours-festival {
+    border: 1px solid rgba(235,87,142,.32); background: rgba(235,87,142,.09); color: #f472b6;
+  }
+  .pulse-hours-festival strong { color: var(--text, #fff); font-weight: 700; }
+  .pulse-hours-festival small { opacity: .85; font-size: .68rem; }
+
+  [data-theme="light"] .pulse-hours-event {
+    border-color: rgba(217,119,6,.35); background: rgba(217,119,6,.08); color: #b45309;
+  }
+  [data-theme="light"] .pulse-hours-festival {
+    border-color: rgba(219,39,119,.32); background: rgba(219,39,119,.08); color: #9d174d;
+  }
+
   .pulse-hours-main, .pulse-hours-ee { display: inline-flex; align-items: center; gap: .4rem; padding: .28rem .7rem; border-radius: 999px; border: 1px solid var(--card-border, rgba(255,255,255,.14)); background: rgba(255,255,255,.05); color: var(--text-muted); line-height: 1.3; }
   .pulse-hours-main strong { color: var(--text, #fff); font-weight: 700; }
   .pulse-hours-main small { opacity: .75; font-size: .68rem; }
@@ -308,6 +331,22 @@
     display: flex; align-items: center; gap: 0.4rem;
     font-size: 0.85rem; font-weight: 700; padding: 0.5rem 0.7rem;
     border-radius: 8px; margin-bottom: 1rem;
+  }
+    .park-status-banner.special-event {
+    background: rgba(255, 111, 181, 0.14);
+    border: 1px solid rgba(255, 111, 181, 0.35);
+    color: var(--pink, #ff6fb5);
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.55rem 0.75rem;
+    border-radius: 8px;
+    margin-bottom: 0.85rem;
+  }
+  [data-theme="light"] .park-status-banner.special-event {
+    background: rgba(255, 111, 181, 0.10);
+    border-color: rgba(214, 51, 132, 0.35);
+    color: #b01a64;
   }
   .park-status-banner.pre-open { background: rgba(255,200,87,0.15); color: var(--yellow); border: 1px solid rgba(255,200,87,0.3); }
   .park-status-banner.early-entry { background: rgba(76,214,192,0.15); color: var(--teal); border: 1px solid rgba(76,214,192,0.3); }
@@ -975,8 +1014,9 @@
 /* Weather park navigation and forecast browsing; all data fetching is unchanged. */
 #weatherPanel #weatherPanelParkStrip{margin:.8rem 0 .7rem;gap:.85rem;justify-content:center}
 #weatherPanel #weatherPanelParkStrip img{width:68px;height:68px}
-#weatherPanel .ppwx-glance-forecast{grid-template-columns:repeat(6,minmax(0,1fr));max-width:none;width:100%;gap:.5rem;overflow-x:auto}
-#weatherPanel .ppwx-glance-hour{text-align:center}
+#weatherPanel .ppwx-glance-forecast{grid-template-columns:repeat(5,minmax(0,1fr));max-width:none;width:100%;gap:.5rem;overflow-x:auto}
+#weatherPanel .ppwx-glance-hour{text-align:center;box-sizing:border-box;border:1px solid var(--card-border);border-radius:10px;background:rgba(255,255,255,.035);padding:.35rem .12rem}
+[data-theme="light"] #weatherPanel .ppwx-glance-hour{background:rgba(15,35,55,.025)}
 #weatherPanel .ppwx-forecast-heading{display:flex;justify-content:space-between;align-items:center;gap:.75rem;flex-wrap:wrap}
 #weatherPanel .ppwx-forecast-hint{display:block;font-size:.68rem;font-weight:400;color:var(--text-muted);margin-top:.1rem}
 #weatherPanel .ppwx-forecast-controls{display:flex;gap:.4rem}
@@ -985,7 +1025,7 @@
 #weatherPanel .ppwx-forecast-controls button:focus-visible,#weatherPanel .ppwx-forecast-scroller:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
 #weatherPanel .ppwx-forecast-scroller{display:flex;gap:.6rem;overflow-x:auto;scroll-snap-type:x proximity;overscroll-behavior-x:contain;position:relative;padding:.25rem 0 .5rem;scrollbar-width:thin}
 #weatherPanel .ppwx-forecast-scroller .weather-hour{flex:0 0 calc((100% - 3rem)/6);min-width:155px;scroll-snap-align:start}
-@media(max-width:600px){#weatherPanel #weatherPanelParkStrip{gap:.5rem}#weatherPanel #weatherPanelParkStrip img{width:48px;height:48px}#weatherPanel .ppwx-glance-forecast{grid-template-columns:repeat(6,minmax(60px,1fr));gap:.15rem;padding-bottom:.2rem}#weatherPanel .ppwx-glance-hour strong{font-size:.8rem}#weatherPanel .ppwx-forecast-scroller .weather-hour{flex-basis:155px}}
+@media(max-width:600px){#weatherPanel #weatherPanelParkStrip{gap:.5rem}#weatherPanel #weatherPanelParkStrip img{width:48px;height:48px}#weatherPanel .ppwx-glance-forecast{grid-template-columns:repeat(5,minmax(0,1fr));gap:.15rem;padding-bottom:.2rem}#weatherPanel .ppwx-glance-hour strong{font-size:.8rem}#weatherPanel .ppwx-forecast-scroller .weather-hour{flex-basis:155px}}
 </style>
 <style>
 /* Targeted mobile queue and heatmap layout; desktop remains unchanged. */
@@ -1036,6 +1076,39 @@
  .heatmap-legend{font-size:.68rem;gap:.35rem;margin-top:.65rem}.heatmap-legend-gradient{width:100px}
 }
 @media(max-width:350px){#heatmapTable{--heatmap-name-width:128px;--heatmap-data-width:48px}}
+</style>
+
+<style id="light-mode-wait-panel-contrast">
+[data-theme="light"] .park-card .pulse-waits.pulse-waits-clickable {
+  background: #fff4de;
+  border-color: #b7791f;
+  box-shadow: 0 1px 3px rgba(80, 54, 15, 0.08);
+}
+[data-theme="light"] .park-card .pulse-waits.pulse-waits-clickable:hover {
+  background: #ffedc9;
+  border-color: #95601b;
+}
+[data-theme="light"] .park-card .pulse-waits.pulse-waits-clickable:focus-visible {
+  outline: 2px solid #805000;
+  outline-offset: 3px;
+}
+[data-theme="light"] .park-card .pulse-waits .label,
+[data-theme="light"] .park-card .pulse-waits .pulse-ride {
+  color: #475569;
+}
+[data-theme="light"] .park-card .pulse-waits .value {
+  color: #18324f;
+}
+[data-theme="light"] .park-card .pulse-waits .pulse-waits-pill-btn {
+  background: #f6dfb3;
+  border-color: #ac701b;
+  color: #754600;
+}
+[data-theme="light"] .park-card .pulse-waits.pulse-waits-clickable:hover .pulse-waits-pill-btn {
+  background: #efd29a;
+  border-color: #95601b;
+  color: #633a00;
+}
 </style>
 </head>
 <body>
@@ -1579,11 +1652,84 @@
     }
   }
 
+  
+  function getParkScheduledEvent(parkKey, park, nowET = new Date()) {
+    const event = normalizeHours(park?.hours)?.specialEvent;
+    if (!event || typeof event !== 'object') return null;
+    const name = String(event.name || '').trim();
+    const category = [name, event.type, event.category, event.description]
+      .filter(Boolean).join(' ').replace(/[_-]+/g, ' ');
+    // Resort access benefits are not separately ticketed events.
+    if (/early\s*(?:(?:theme\s*)?park\s*)?entry|early\s*access|extended\s*(?:evening\s*)?(?:theme\s*)?(?:park\s*)?hours|extra\s*magic\s*hours/i.test(category)) return null;
+    const ticketed = event.isTicketed === true || event.ticketed === true || event.separatelyTicketed === true;
+    const explicitlyNotTicketed = event.isTicketed === false || event.ticketed === false || event.separatelyTicketed === false;
+    if (!name || explicitlyNotTicketed || (!ticketed && !EVENT_NAME_PATTERNS.some(pattern => pattern.test(name)))) return null;
+    // Do not infer a party or its hours solely from an early park closing.
+    const eventHours = String(event.eventHours || event.hours || '').trim()
+      .replace(/^(?:tonight|today)\s*[·:]?\s*/i, '');
+    return {
+      ...event,
+      name,
+      icon: event.icon || '🎟️',
+      eventHours,
+      hours: eventHours ? 'Today · ' + eventHours : 'Today · Separately ticketed event'
+    };
+  }
+
+  function getParkFestival(parkKey, park, nowET = new Date()) {
+    if (park?.hours?.festival) return park.hours.festival;
+    if (parkKey !== 'epcot') return null;
+    const y = nowET.getFullYear(), m = nowET.getMonth() + 1, d = nowET.getDate();
+    const dateStr = `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    if (dateStr >= `${y}-08-25` && dateStr <= `${y}-11-22`) {
+      return { name: "Food & Wine Festival", icon: "🍷", sub: "Global Marketplaces Open" };
+    }
+    if (dateStr >= `${y}-11-27` && dateStr <= `${y}-12-30`) {
+      return { name: "Festival of the Holidays", icon: "🎄", sub: "Holiday Kitchens Open" };
+    }
+    if ((m === 1 && d >= 12) || (m === 2 && d <= 23)) {
+      return { name: "Festival of the Arts", icon: "🎨", sub: "Art & Culinary Studios Open" };
+    }
+    if (m >= 3 && m <= 5) {
+      return { name: "Flower & Garden Festival", icon: "🌸", sub: "Outdoor Kitchens Open" };
+    }
+    return null;
+  }
+
+  function detectSpecialEvent(parkKey, park, nowET = new Date()) {
+    const month = nowET.getMonth(); // 7=Aug, 8=Sep, 9=Oct, 10=Nov, 11=Dec
+    const hours = resolveHours(parkKey, park);
+    const [clH] = (hours?.close || "22:00").split(":").map(Number);
+    const rides = (park && park.rides) ? park.rides : [];
+    const openRides = rides.filter(r => r && r.is_open && typeof r.wait_time === 'number' && r.wait_time > 0);
+    const isEarlyClose = clH <= 18;
+
+    if (parkKey === 'magic_kingdom') {
+      if ((month >= 7 && month <= 9) && (isEarlyClose || openRides.length >= 2)) {
+        return { name: "Mickey’s Not-So-Scary Halloween Party", icon: "🎃", hours: "7:00 PM – 12:00 AM", liveRidesCount: openRides.length };
+      }
+      if ((month >= 10 && month <= 11) && (isEarlyClose || openRides.length >= 2)) {
+        return { name: "Mickey’s Very Merry Christmas Party", icon: "🎄", hours: "7:00 PM – 12:00 AM", liveRidesCount: openRides.length };
+      }
+      if (openRides.length >= 3) {
+        return { name: "Disney After Hours", icon: "✨", hours: "Special event in progress", liveRidesCount: openRides.length };
+      }
+    } else if (parkKey === 'hollywood_studios') {
+      if ((month >= 10 && month <= 11) && (isEarlyClose || openRides.length >= 2)) {
+        return { name: "Disney Jollywood Nights", icon: "✨", hours: "7:30 PM – 12:30 AM", liveRidesCount: openRides.length };
+      }
+      if (openRides.length >= 3) {
+        return { name: "Disney After Hours", icon: "✨", hours: "Special event in progress", liveRidesCount: openRides.length };
+      }
+    } else if (openRides.length >= 3) {
+      return { name: "Special Ticketed Event", icon: "🎟️", hours: "Special event in progress", liveRidesCount: openRides.length };
+    }
+    return null;
+  }
+
   function getParkPhase(parkKey, park) {
     const hours = resolveHours(parkKey, park);
     if (!hours) {
-      // No usable hours for today. If the newest snapshot is from a previous day, no park has
-      // reported today yet, so show "not open yet" instead of last night's waits.
       if (snapshotIsFromPreviousDay()) return { phase: "pre-open", awaiting: true };
       return { phase: "open" };
     }
@@ -1600,8 +1746,24 @@
 
     if (nowMins < earlyEntryMins) return { phase: "pre-open", opensAt: hours.earlyEntry, generalAt: hours.open };
     if (nowMins < openMins) return { phase: "early-entry", generalAt: hours.open };
-    if (nowMins >= closeMins) return { phase: "closed-for-day" };
-    // Park is open, but if the newest snapshot is from a previous day there are no live waits yet.
+
+    if (nowMins >= closeMins) {
+      // 1. Check if special ticketed event is active
+      const specialEvent = detectSpecialEvent(parkKey, park, nowET);
+      if (specialEvent) {
+        return { phase: "open", isSpecialEvent: true, specialEvent, openNow: true };
+      }
+
+      // 2. Check if guests are still clearing queues after normal close (up to 75m post-close)
+      const rides = (park && park.rides) ? park.rides : [];
+      const openRides = rides.filter(r => r && r.is_open && typeof r.wait_time === 'number' && r.wait_time > 0);
+      if (openRides.length > 0 && nowMins < closeMins + 75) {
+        return { phase: "open", clearingQueues: true, closedAt: hours.close, openNow: true };
+      }
+
+      return { phase: "closed-for-day" };
+    }
+
     if (snapshotIsFromPreviousDay()) return { phase: "pre-open", awaiting: true, openNow: true };
     return { phase: "open" };
   }
@@ -2032,6 +2194,24 @@
     }
     if (phaseInfo.phase === "early-entry") {
       return `<div class="park-status-banner early-entry">🔑 Early Entry only (resort guests)</div>`;
+    }
+    if (phaseInfo.specialEvent) {
+      return `<div class="park-status-banner special-event">
+        <span style="font-size:1.15rem;">${phaseInfo.specialEvent.icon}</span>
+        <div style="min-width:0;">
+          <div style="font-weight:700;font-size:0.84rem;line-height:1.2;">${escapeHtml(phaseInfo.specialEvent.name)}</div>
+          <div style="font-size:0.7rem;opacity:0.85;font-weight:500;">Special event in progress · ${escapeHtml(phaseInfo.specialEvent.hours)}</div>
+        </div>
+      </div>`;
+    }
+    if (phaseInfo.clearingQueues) {
+      return `<div class="park-status-banner pre-open">
+        <span>🌙</span>
+        <div style="min-width:0;">
+          <div style="font-weight:700;font-size:0.82rem;">Park Closed (${formatHourLabel(phaseInfo.closedAt)})</div>
+          <div style="font-size:0.7rem;opacity:0.85;">Final queues actively clearing</div>
+        </div>
+      </div>`;
     }
     if (phaseInfo.phase === "closed-for-day") {
       return `<div class="park-status-banner pre-open">🌙 Closed for the day</div>`;
@@ -2784,19 +2964,28 @@
 
     const park = parkData.parks[activeParkKey];
     if (!park) { renderHeatmapEmpty("Live data unavailable."); return; }
-    const visibleRides = getStandardRides(park).filter(r => r.is_open).slice(0, 12);
+    const etDateFmt = { timeZone: "America/New_York" };
+    const todayET = new Date().toLocaleDateString("en-CA", etDateFmt);
+    const standardRides = getStandardRides(park);
+
+    // Keep all standard attractions that recorded wait times today in history24h, or are open
+    const ridesWithHistoryToday = standardRides.filter(r => {
+      const pts = history24h?.rides?.[String(r.id)]?.points || [];
+      return pts.some(([iso, wait]) => new Date(iso).toLocaleDateString("en-CA", etDateFmt) === todayET && wait > 0);
+    });
+    const candidateRides = ridesWithHistoryToday.length ? ridesWithHistoryToday : standardRides.filter(r => r.is_open);
+    const finalRides = candidateRides.length ? candidateRides : standardRides;
+    finalRides.sort((a, b) => (b.wait_time || 0) - (a.wait_time || 0));
+    const visibleRides = finalRides.slice(0, 14);
 
     if (!history24h || !history24h.rides || visibleRides.length === 0) {
       renderHeatmapEmpty("Collecting today's data — the heatmap will populate as more scrapes come in throughout the day.");
       return;
     }
 
-    const nowHour = new Date(new Date().toLocaleString("en-US", { timeZone: "America/New_York" })).getHours();
+    const nowHour = new Date(new Date().toLocaleString("en-US", etDateFmt)).getHours();
     const hours = [];
     for (let h = 8; h <= Math.min(23, nowHour); h++) hours.push(h);
-
-    const etDateFmt = { timeZone: "America/New_York" };
-    const todayET = new Date().toLocaleDateString("en-CA", etDateFmt);
 
     const rideRows = visibleRides.map(ride => {
       const entry = history24h.rides[String(ride.id)];
@@ -3173,13 +3362,12 @@ function wxTime(t,short=false){if(!Number.isFinite(Date.parse(t)))return 'Unavai
 function wxIcon(text,night=false){const t=(text||'').toLowerCase();if(/thunder/.test(t))return '⛈️';if(/snow/.test(t))return '🌨️';if(/ice|freezing|sleet/.test(t))return '🧊';if(/rain|shower|drizzle/.test(t))return '🌧️';if(/fog|mist|haze|smoke/.test(t))return '🌫️';if(/mostly cloudy|overcast/.test(t))return '☁️';if(/partly|mostly sunny|few clouds/.test(t))return night?'☁️':'🌤️';if(/cloud/.test(t))return '☁️';if(/clear|sunny|fair/.test(t))return night?'🌙':'☀️';return '🌡️';}
 function wxFeel(o){return wxN(o?.heat_index_c)?{v:o.heat_index_c,label:'Heat index'}:wxN(o?.wind_chill_c)?{v:o.wind_chill_c,label:'Wind chill'}:null;}
 function pulseCrowd(score,phase){if(phase==='pre-open')return 'Not open yet';if(phase==='early-entry')return 'Early Entry';if(phase==='closed-for-day')return 'Closed for the day';if(!wxN(score))return 'Crowd level unavailable';return score<2?'Very light crowds':score<4?'Light crowds':score<6?'Moderate crowds':score<8?'Busy':'Very busy';}
-function pulseInsight(score,phase){if(phase!=='open')return {title:phase==='early-entry'?'Early Entry is underway':phase==='pre-open'?'Your park day is ahead':'That’s a wrap for today',text:phase==='early-entry'?'Resort guests only until general opening.':phase==='pre-open'?'Check back after opening for live waits.':'Explore the forecast and ride history for your next visit.'};return score<4?{title:'Great time to visit',text:'Short waits across most attractions.'}:score<7?{title:'Moderate crowds',text:'Check headliner waits before your next stop.'}:{title:'A busy park day',text:'Compare attractions to find your next opportunity.'};}
 function renderParkWeather(){document.querySelectorAll('.pulse-weather').forEach(el=>{const p=weatherData?.parks?.[el.dataset.parkKey],o=p?.observation,feel=wxFeel(o);if(!o){el.textContent=weatherFailed?'🌡️ Weather unavailable':'🌡️ Weather loading…';return;}
  const stale=wxAge(o.observed_at)>90||wxAge(weatherData.updated_at)>20||p.collection?.errors?.observations;
  el.innerHTML=wxIcon(o.description)+' '+wxF(o.temperature_c)+(feel?' · Feels '+wxF(feel.v):'')+'<small>'+wxE(stale?'Older/delayed reading · '+wxTime(o.observed_at):'Observed '+wxTime(o.observed_at,true)+' · nearby station')+(weatherFailed?' · refresh delayed':'')+'</small>';
  el.title=(o.description||'Condition unavailable')+' · '+(o.station?.name||'nearby station')+(feel?' · Feels value uses '+feel.label.toLowerCase():'');});}
 renderCards=function(){const grid=document.getElementById('parkGrid');grid.innerHTML='';for(const [key,p]of Object.entries(parkData.parks)){
- const phase=getParkPhase(key,p),closed=phase.phase==='pre-open'||phase.phase==='closed-for-day',stats=computeLiveStats(p),groups=closed?{temporary:[],extended:[],special:[]}:getClosureGroups(p),comp=getParkComparison(key,p),insight=pulseInsight(p.crowd_score,phase.phase);
+ const phase=getParkPhase(key,p),closed=phase.phase==='pre-open'||phase.phase==='closed-for-day',stats=computeLiveStats(p),groups=closed?{temporary:[],extended:[],special:[]}:getClosureGroups(p),comp=getParkComparison(key,p);
  const avg=closed||stats.avgWait===null?'—':stats.avgWait+' min',longest=closed||!stats.longest?'—':stats.longest.wait_time+' min',ride=closed?'':stats.longest?.name||'';
  const extras=[];if(groups.extended.length)extras.push(groups.extended.length+' refurbishment/extended');if(groups.special.length)extras.push(groups.special.length+' scheduled experience'+(groups.special.length===1?'':'s'));
  const card=document.createElement('div');card.className='park-card '+(key===activeParkKey?'active ':'')+(closed?'closed':'');card.dataset.parkKey=key;card.style.setProperty('--park-color',p.color||'linear-gradient(90deg,var(--gold),var(--pink))');card.onclick=()=>selectPark(key);
@@ -3187,7 +3375,7 @@ renderCards=function(){const grid=document.getElementById('parkGrid');grid.inner
  card.innerHTML='<div class="pulse-header"><div class="pulse-identity"><img src="'+wxE(PARK_EMOJI_IMAGES[key]||'')+'" alt=""/><div><h3>'+wxE(p.name)+'</h3><div class="pulse-descriptor">'+wxE(pulseCrowd(p.crowd_score,phase.phase))+'</div></div></div>'+badge+'</div>'
  +getStatusBanner(phase)+'<div class="pulse-waits pulse-waits-clickable" role="button" tabindex="0" onclick="openParkWaitModal(event, \''+key+'\')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();openParkWaitModal(event, \''+key+'\');}" title="Tap to view hourly wait trend for '+wxE(p.name)+'"><div><div class="label">Average wait</div><div class="value">'+avg+'</div><div class="pulse-ride" title="'+(comp.status==='ready'?(comp.pctDiff>0?'+':'')+comp.pctDiff+'% vs typical for this time':'No historical baseline')+'">'+(comp.status==='ready'?vsTypicalText(comp.pctDiff):'Typical crowds unknown')+'</div></div><div><div class="label">Longest wait</div><div class="value">'+longest+'</div><div class="pulse-ride" title="'+wxE(ride)+'">'+wxE(ride)+'</div></div><div class="pulse-waits-pill-btn"><span>📈 Tap for hourly wait trend</span><span>›</span></div></div>'
  +(closed?'':'<div class="pulse-closures">'+(groups.temporary.length?'<button type="button" class="pulse-disclosure pulse-closure-main down" data-closure>⚠️ '+groups.temporary.length+' temporary closure'+(groups.temporary.length===1?'':'s')+' ›</button>':'<div class="pulse-closure-main">✓ No temporary closures</div>')+(extras.length?'<button type="button" class="pulse-disclosure" data-closure>'+wxE(extras.join(' · '))+' ›</button>':'')+'</div>')
- +'<div class="pulse-insight"><span aria-hidden="true">💡</span><div><strong>'+wxE(insight.title)+'</strong><small>'+wxE(insight.text)+'</small></div></div><div class="pulse-footer"><div class="pulse-weather" data-park-key="'+key+'">🌡️ Weather loading…</div><button type="button" class="pulse-weather-details" aria-label="Weather details for '+wxE(p.name)+'">Details ›</button></div>';
+ +'<div class="pulse-footer"><div class="pulse-weather" data-park-key="'+key+'">🌡️ Weather loading…</div><button type="button" class="pulse-weather-details" aria-label="Weather details for '+wxE(p.name)+'">Details ›</button></div>';
  card.querySelectorAll('[data-closure]').forEach(b=>b.onclick=e=>openClosureModal(e,key));card.querySelector('.pulse-weather-details').onclick=e=>{e.stopPropagation();selectPark(key);document.getElementById('weatherPanel').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});};grid.appendChild(card);
  }renderParkWeather();};
 
@@ -3254,7 +3442,7 @@ function renderWeatherGlance(view){
   if(metadata.length)html+='<div class="ppwx-metadata"'+(feel?' title="Feels value uses '+wxE(feel.label.toLowerCase())+'"':'')+'>'+wxE(metadata.join(' · '))+'</div>';
   if(trend)html+='<div class="ppwx-trend"><span aria-hidden="true">'+trend.icon+'</span> '+wxE(trend.text)+'</div>';
   if(periods.length){
-    html+='<div class="ppwx-strip-label">Next hours · rain chance</div><div class="ppwx-glance-forecast" aria-label="Next six hourly forecast periods">'+periods.slice(0,6).map(p=>{
+    html+='<div class="ppwx-strip-label">Next hours · rain chance</div><div class="ppwx-glance-forecast" aria-label="Next five hourly forecast periods">'+periods.slice(0,5).map(p=>{
       const rain=p.probabilityOfPrecipitation?.value;
       const description=p.shortForecast||'Forecast description unavailable';
       const accessible=weatherTimeOnly(p.startTime,true)+': '+weatherTemp(p)+', '+description+', '+(wxN(rain)?rain+' percent chance of precipitation':'precipitation probability unavailable');
@@ -3885,9 +4073,28 @@ Additive patch for the current compact/mobile implementation; not a replacement 
       const phase = ph.phase === 'open' || ph.openNow ? 'open' : ph.phase;
       const cls = phase === 'open' ? 'is-open' : phase === 'early-entry' ? 'is-early' : '';
       const hasEE = hhmmToMins(h.earlyEntry) < hhmmToMins(h.open);
+      const nowET = new Date(new Date().toLocaleString("en-US", { timeZone: "America/New_York" }));
+
+      const nowMins = nowET.getHours() * 60 + nowET.getMinutes();
+      const showEarlyEntry = hasEE && nowMins < hhmmToMins(h.open);
+
+      const schedEvent = getParkScheduledEvent(key, park, nowET);
+      const festival = getParkFestival(key, park, nowET);
+
+      let eventPill = '';
+      if (schedEvent && !ph.isSpecialEvent) {
+        eventPill = '<span class="pulse-hours-event" title="' + escapeHtml(schedEvent.name) + '"><span aria-hidden="true">' + schedEvent.icon + '</span><strong>' + escapeHtml(schedEvent.name) + '</strong> <small>' + escapeHtml(schedEvent.hours) + '</small></span>';
+      }
+      let festPill = '';
+      if (festival) {
+        festPill = '<span class="pulse-hours-festival" title="' + escapeHtml(festival.name) + ' · ' + escapeHtml(festival.sub) + '"><span aria-hidden="true">' + festival.icon + '</span><strong>' + escapeHtml(festival.name) + '</strong> <small>' + escapeHtml(festival.sub) + '</small></span>';
+      }
+
       const html = '<div class="pulse-hours ' + cls + '" title="Today\u2019s park hours (Eastern Time)">'
         + '<span class="pulse-hours-main"><span class="pulse-hours-dot" aria-hidden="true"></span>Today <strong>' + fmtClock(h.open) + ' \u2013 ' + fmtClock(h.close) + '</strong> <small>ET</small></span>'
-        + (hasEE ? '<span class="pulse-hours-ee">\ud83d\udd11 Early Entry ' + fmtClock(h.earlyEntry) + '</span>' : '')
+        + (showEarlyEntry ? '<span class="pulse-hours-ee">\ud83d\udd11 Early Entry ' + fmtClock(h.earlyEntry) + '</span>' : '')
+        + eventPill
+        + festPill
         + '</div>';
       const header = card.querySelector('.pulse-header');
       if (header) header.insertAdjacentHTML('afterend', html);

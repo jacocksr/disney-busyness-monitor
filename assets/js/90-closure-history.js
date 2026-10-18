@@ -203,7 +203,7 @@
   if(!note){note=document.createElement('div');note.id=canvas.id+'ClosureNote';note.className='pc-chart-note';canvas.parentElement.insertAdjacentElement('afterend',note);}
   const unavailable=payload?.tracking_started_at&&day<et(ms(payload.tracking_started_at)).day;
   const grouped=new Map();for(const e of events){const id=String(e.ride_id),g=grouped.get(id)||{id,name:e.ride_name};grouped.set(id,g);}
-  note.innerHTML='<div class="pc-chart-controls">'+(events.length?'<label class="pc-chart-toggle"><input type="checkbox" '+(showGraphClosures?'checked':'')+'> '+(rideId==null?'Show grouped markers':'Show closure shading')+'</label>':'')+'<button type="button" class="pc-text-action" data-pc-info>About closure data ⓘ</button></div>'+
+  note.innerHTML='<div class="pc-chart-controls">'+(events.length?'<label class="pc-chart-toggle"><input type="checkbox" '+(showGraphClosures?'checked':'')+'> '+(rideId==null?'Show Closures':'Show closure shading')+'</label>':'')+'<button type="button" class="pc-text-action" data-pc-info>About closure data ⓘ</button></div>'+
    (rideId==null&&events.length?'<details class="pc-chart-rides"><summary>View affected rides ▾</summary><div>'+[...grouped.values()].map(g=>'<button type="button" class="pc-action" data-pc-ride="'+esc(g.id)+'">'+esc(g.name)+' · wait history →</button>').join('')+'</div></details>':'')+
    (unavailable?'<small>Closure history is not available for this date.</small>':'');
   note.querySelector('[data-pc-info]').onclick=showDataInfo;
@@ -215,26 +215,32 @@
   if(info.rideId==null){const groups=new Map();for(const e of sorted){const t=ms(e.first_closed_at),p=et(t),key=p.day+':'+p.hour;let g=groups.get(key);if(!g){g={start:t,end:eventEnd(e),events:[]};groups.set(key,g);}g.events.push(e);g.end=Math.max(g.end,eventEnd(e));}return [...groups.values()];}
   const groups=[];for(const e of sorted){const a=ms(e.first_closed_at),b=eventEnd(e),last=groups.at(-1);if(last&&a<=last.end){last.end=Math.max(last.end,b);last.events.push(e);}else groups.push({start:a,end:b,events:[e]});}return groups;
  }
+ // Park-wide closure dots: canvas pixels; individual ride shading is unchanged.
+ const PARK_CLOSURE_MARKER={radius:6,offset:9,edgePadding:8,hitPadding:11,hitHeight:22};
  const drawingPlugin={
   id:'parkClosureEvents',
   beforeDatasetsDraw(chart){
    chart.$pcHits=[];const info=chart.$pc;if(!showGraphClosures||!info||!chart.chartArea||!chart.scales.x)return;
    const {ctx,chartArea:a}=chart,light=document.documentElement.dataset.theme==='light';ctx.save();ctx.beginPath();ctx.rect(a.left,a.top,a.right-a.left,a.bottom-a.top);ctx.clip();
    for(const group of chartGroups(info)){const x=info.pixel(group.start),x2=info.pixel(group.end);if(!Number.isFinite(x)||!Number.isFinite(x2)||x2<a.left||x>a.right)continue;
-    const left=Math.max(a.left,x),right=Math.min(a.right,Math.max(x+2,x2)),px=Math.min(a.right-5,Math.max(a.left+5,x));
+    const left=Math.max(a.left,x),right=Math.min(a.right,Math.max(x+2,x2)),px=Math.min(a.right-PARK_CLOSURE_MARKER.edgePadding,Math.max(a.left+PARK_CLOSURE_MARKER.edgePadding,x));
     if(info.rideId!=null){const uncertain=group.events.every(e=>e.category==='unknown');
      ctx.fillStyle=uncertain?(light?'rgba(160,110,0,.13)':'rgba(255,200,87,.16)'):(light?'rgba(190,30,55,.19)':'rgba(255,65,90,.22)');
      ctx.fillRect(left,a.top,right-left,a.bottom-a.top);
      ctx.strokeStyle=uncertain?(light?'rgba(140,90,0,.55)':'rgba(255,200,87,.65)'):(light?'rgba(165,20,45,.75)':'rgba(255,75,100,.8)');ctx.lineWidth=1;
      ctx.beginPath();ctx.moveTo(left+.5,a.top);ctx.lineTo(left+.5,a.bottom);ctx.stroke();
      if(right-left>3){ctx.beginPath();ctx.moveTo(right-.5,a.top);ctx.lineTo(right-.5,a.bottom);ctx.stroke();}}
-    chart.$pcHits.push({left:info.rideId==null?px-9:left,right:info.rideId==null?px+9:Math.max(left+9,right),top:info.rideId==null?a.bottom-17:a.top,bottom:a.bottom,markerX:px,events:group.events});
+    chart.$pcHits.push({left:info.rideId==null?px-PARK_CLOSURE_MARKER.hitPadding:left,right:info.rideId==null?px+PARK_CLOSURE_MARKER.hitPadding:Math.max(left+9,right),top:info.rideId==null?a.bottom-PARK_CLOSURE_MARKER.hitHeight:a.top,bottom:a.bottom,markerX:px,events:group.events});
    }ctx.restore();
   },
   afterDatasetsDraw(chart){
    if(!showGraphClosures||!chart.$pc||chart.$pc.rideId!=null||!chart.chartArea)return;
    const {ctx,chartArea:a}=chart,light=document.documentElement.dataset.theme==='light';ctx.save();
-   for(const hit of chart.$pcHits||[]){ctx.fillStyle=light?'#a91e36':'#ff8199';ctx.beginPath();ctx.arc(hit.markerX,a.bottom-5,3,0,Math.PI*2);ctx.fill();}ctx.restore();
+   for(const hit of chart.$pcHits||[]){
+    ctx.fillStyle=light?'#a91e36':'#ff5d7a';
+    ctx.strokeStyle=light?'#ffffff':'#0f2545';ctx.lineWidth=2;
+    ctx.beginPath();ctx.arc(hit.markerX,a.bottom-PARK_CLOSURE_MARKER.offset,PARK_CLOSURE_MARKER.radius,0,Math.PI*2);ctx.fill();ctx.stroke();
+   }ctx.restore();
   },
   afterEvent(chart,args){
    // Closure overlays never add hover text. Ordinary Chart.js wait-point tooltips are unchanged.

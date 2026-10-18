@@ -1,0 +1,31 @@
+
+[data-theme="light"] .park-card .pulse-waits.pulse-waits-clickable {
+  background: #fff4de;
+  border-color: #b7791f;
+  box-shadow: 0 1px 3px rgba(80, 54, 15, 0.08);
+}
+[data-theme="light"] .park-card .pulse-waits.pulse-waits-clickable:hover {
+  background: #ffedc9;
+  border-color: #95601b;
+}
+[data-theme="light"] .park-card .pulse-waits.pulse-waits-clickable:focus-visible {
+  outline: 2px solid #805000;
+  outline-offset: 3px;
+}
+[data-theme="light"] .park-card .pulse-waits .label,
+[data-theme="light"] .park-card .pulse-waits .pulse-ride {
+  color: #475569;
+}
+[data-theme="light"] .park-card .pulse-waits .value {
+  color: #18324f;
+}
+[data-theme="light"] .park-card .pulse-waits .pulse-waits-pill-btn {
+  background: #f6dfb3;
+  border-color: #ac701b;
+  color: #754600;
+}
+[data-theme="light"] .park-card .pulse-waits.pulse-waits-clickable:hover .pulse-waits-pill-btn {
+  background: #efd29a;
+  border-color: #95601b;
+  color: #633a00;
+}

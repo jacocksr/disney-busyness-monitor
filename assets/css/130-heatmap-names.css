@@ -1,0 +1,26 @@
+
+/* Heatmap: preserve full attraction names in every view. */
+.heatmap-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+}
+.heatmap-table {
+  table-layout: auto;
+  width: max-content;
+  min-width: 100%;
+}
+.heatmap-table th.ride-col,
+.heatmap-table td.ride-name {
+  min-width: 340px;
+  max-width: none;
+  width: auto;
+  white-space: nowrap;
+  overflow: visible;
+  text-overflow: clip;
+  padding-right: 1rem;
+}
+.heatmap-table th:not(.ride-col) {
+  min-width: 84px;
+  padding-left: .45rem;
+  padding-right: .45rem;
+}

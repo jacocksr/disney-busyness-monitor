@@ -1,0 +1,6 @@
+
+#pcClosureSummary .pc-closure-park-strip .park-select-btn{box-sizing:border-box;flex:0 0 64px;width:64px;min-width:64px;max-width:64px;height:64px;min-height:64px;max-height:64px;padding:6px}
+#pcClosureSummary .pc-closure-park-strip .park-select-btn img{display:block;flex:0 0 52px;width:52px!important;min-width:52px;max-width:52px;height:52px!important;min-height:52px;max-height:52px;aspect-ratio:1;object-fit:contain;object-position:center}
+.pc-chart-rides{font-size:.72rem;margin-top:.25rem;color:var(--text-muted)}.pc-chart-rides>summary{cursor:pointer;min-height:32px;display:flex;align-items:center;color:var(--teal)}.pc-chart-rides>div{display:flex;flex-wrap:wrap;gap:.35rem}.pc-chart-rides .pc-action{font-size:.72rem}
+.pc-current-ride{flex-wrap:wrap}.pc-current-ride span:first-child{min-width:0;overflow-wrap:anywhere}
+@media(max-width:500px){#pcClosureSummary .pc-closure-park-strip .park-select-btn{flex-basis:50px;width:50px;min-width:50px;max-width:50px;height:50px;min-height:50px;max-height:50px;padding:4px}#pcClosureSummary .pc-closure-park-strip .park-select-btn img{flex-basis:42px;width:42px!important;min-width:42px;max-width:42px;height:42px!important;min-height:42px;max-height:42px}}

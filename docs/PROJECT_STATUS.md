@@ -8,16 +8,20 @@ This document is the continuity entry point for new development conversations. I
 ## Source of truth and release state
 - Repository: jacocksr/disney-busyness-monitor.
 - Current production source: main, repository root.
-- Main commit checked on 2026-10-18: 1c1e016a9f66ace98c5230743d8cd2a576f5aafd.
+- Main commit checked during PR review: 4552f0b5561c244c49a185d5fce573594ab7e868.
+- Original extraction/rollback comparison reference: 1c1e016a9f66ace98c5230743d8cd2a576f5aafd. Two subsequent main commits added then removed the same stylesheet; reviewed current root file/tree hashes returned to the original baseline.
 - Original index.html Git blob: 2bd7b961f6a02efabe4b7ec0d76b80372062d3e5.
 - Original index.html size: 286,870 bytes.
 - Live URL: https://jacocksr.github.io/disney-busyness-monitor/ .
 - Pages setting supplied by owner: Deploy from a branch, main, / (root).
-- Multi-file candidate: delivered and reviewed locally; NOT committed, merged or deployed when this document was written.
-- Proposed working branch: refactor/frontend-organization. Not yet created at this checkpoint.
-- Candidate repository commit: pending. Use actual branch contents after upload; do not invent a commit or treat the old main commit as the candidate commit.
+- Multi-file candidate: committed on the development branch and manually reviewed locally; NOT merged or deployed at the latest check.
+- Working branch: refactor/frontend-organization.
+- Reviewed branch snapshot: 12c2bf99fe12038816c30e2df152ab67d63a05d3.
+- Pull request: https://github.com/jacocksr/disney-busyness-monitor/pull/1 — open draft, source refactor/frontend-organization into main, not merged.
+- GitHub reports no merge conflict at that snapshot; this is not a functional test result.
+- This documentation revision was prepared against that snapshot. Its future commit SHA is not known in advance; inspect the actual latest branch before further work.
 
-After upload, replace the pending fields and record the implementation commit in a follow-up documentation commit or link to it. Keep the original rollback reference above.
+Keep the original extraction reference for comparison. Update merge/deployment fields only after those actions actually occur.
 
 ## Current candidate scope
 Structural extraction only. Root index.html references 12 JavaScript files and 16 CSS files in assets/. Source blocks were extracted verbatim at their original HTML positions. Candidate index.html is 20,743 bytes. The total application code was relocated, not substantially reduced. No frontend build step is required.
@@ -33,6 +37,15 @@ Existing render wrappers, layered CSS overrides, calculations, labels, queue fil
 - The shipped suite compares displayed text, selected styles/dimensions, park/mode/theme, modal state, chart data and canvas hashes.
 - HAR contains five main API bodies, Chart.js and font resources. It was captured from the local reference connected to deployed services.
 - The broader earlier working-environment run reported 88 matching checkpoints, including explicit failure/retry recovery. Distinguish it from the delivered reproducible 56-checkpoint suite; do not add the counts together.
+
+### Uploaded-branch review
+- PR #1 at the reviewed snapshot contains 40 changed files: 39 additions and one modified root index.html; no deleted files in the PR file list.
+- Git blob hashes of all 28 uploaded application assets match the corresponding blocks from original source.
+- Uploaded index.html matches the expected extraction entry: a4cc16daaaaf34f6b8b3fc9c46d44fbc4b1883d1.
+- Images/data/workflow tree and scraper_collector.py hashes retain baseline values.
+- All four continuity document names are correctly capitalized.
+- GitHub reported zero check runs for the reviewed PR head. Prior local test results are not automatic CI results.
+- No browser suite was rerun on a downloaded branch checkout during this hash review.
 
 ### Owner review
 On 2026-10-18, the owner reported that the candidate looks clean locally with original images, that the ride popup is functional, and that other functionality appears to work as intended. This is manual acceptance evidence, not an automated or exhaustive certification.
@@ -66,11 +79,11 @@ Owner-supplied references, not independently verified deployed byte copies:
 Do not fix these silently during extraction or count them as regressions introduced by file separation.
 
 ## Next task
-1. Upload candidate sources, reviewed tests and these documents to an isolated branch.
-2. Verify root paths and unchanged backend/collector files in the pull request.
-3. Update the existing README before merge to describe multi-file development.
-4. Review and approve before merging into main; verify live deployment afterward.
-5. Only after accepting this structural milestone, consolidate internal rendering/style ownership in small tested changes.
+1. Apply and review the documentation-only README/status/changelog/architecture revision on the existing working branch. No new PR is needed.
+2. Check the latest PR diff and branch state after that commit; retain all test limitations and verify no application/backend files changed with the documentation revision.
+3. Obtain explicit approval before marking ready/merging. Do not change Pages settings.
+4. After an approved merge, check actual Pages deployment, assets and APIs; record merge commit/date and production-verification outcome.
+5. Only after accepting the structural milestone, consolidate internal rendering/style ownership in small tested changes.
 
 ## Future-session instructions
 Read this file, ARCHITECTURE.md and FEATURES.md. Resolve the current branch and implementation commit. Ask for uncommitted local edits if relevant. Read dependencies before editing. Separate behavior changes from refactoring. Report changed files, actual tests, limitations and deployment status. External writes and deployment require explicit approval.

@@ -1,0 +1,58 @@
+{
+  "1280-dark": {
+    "checkpoints": 14,
+    "matched": 14,
+    "differences": {},
+    "reference_errors": [],
+    "candidate_errors": [],
+    "missing_resources": [
+      "http://candidate.test/disney-busyness-monitor/images/AKEmoji_1_1023x1022.png",
+      "http://candidate.test/disney-busyness-monitor/images/EPCOTEmoji_1_1023x1023.png",
+      "http://candidate.test/disney-busyness-monitor/images/HSEmoji_1_1023x1023.png",
+      "http://candidate.test/disney-busyness-monitor/images/MKEmoji_1_1023x1023.png",
+      "https://wdw-queue-probe.jacocksr.workers.dev/api/ride-history?ride=129"
+    ]
+  },
+  "390-dark": {
+    "checkpoints": 14,
+    "matched": 14,
+    "differences": {},
+    "reference_errors": [],
+    "candidate_errors": [],
+    "missing_resources": [
+      "http://candidate.test/disney-busyness-monitor/images/AKEmoji_1_1023x1022.png",
+      "http://candidate.test/disney-busyness-monitor/images/EPCOTEmoji_1_1023x1023.png",
+      "http://candidate.test/disney-busyness-monitor/images/HSEmoji_1_1023x1023.png",
+      "http://candidate.test/disney-busyness-monitor/images/MKEmoji_1_1023x1023.png",
+      "https://wdw-queue-probe.jacocksr.workers.dev/api/ride-history?ride=129"
+    ]
+  },
+  "1280-light": {
+    "checkpoints": 14,
+    "matched": 14,
+    "differences": {},
+    "reference_errors": [],
+    "candidate_errors": [],
+    "missing_resources": [
+      "http://candidate.test/disney-busyness-monitor/images/AKEmoji_1_1023x1022.png",
+      "http://candidate.test/disney-busyness-monitor/images/EPCOTEmoji_1_1023x1023.png",
+      "http://candidate.test/disney-busyness-monitor/images/HSEmoji_1_1023x1023.png",
+      "http://candidate.test/disney-busyness-monitor/images/MKEmoji_1_1023x1023.png",
+      "https://wdw-queue-probe.jacocksr.workers.dev/api/ride-history?ride=129"
+    ]
+  },
+  "390-light": {
+    "checkpoints": 14,
+    "matched": 14,
+    "differences": {},
+    "reference_errors": [],
+    "candidate_errors": [],
+    "missing_resources": [
+      "http://candidate.test/disney-busyness-monitor/images/AKEmoji_1_1023x1022.png",
+      "http://candidate.test/disney-busyness-monitor/images/EPCOTEmoji_1_1023x1023.png",
+      "http://candidate.test/disney-busyness-monitor/images/HSEmoji_1_1023x1023.png",
+      "http://candidate.test/disney-busyness-monitor/images/MKEmoji_1_1023x1023.png",
+      "https://wdw-queue-probe.jacocksr.workers.dev/api/ride-history?ride=129"
+    ]
+  }
+}

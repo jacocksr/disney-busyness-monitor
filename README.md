@@ -25,12 +25,19 @@ The dashboard covers:
 
 Use the park icons to switch the selected park across the dashboard. Expand the wait-time, weather, event, and closure sections for additional context.
 
-The frontend is contained in [`index.html`](index.html) and can be served as a static website. The repository has GitHub Pages enabled; use the deployment URL shown in the repository’s Pages settings or deployment information.
+The frontend is a static, multi-file website: [`index.html`](index.html) defines the page structure and loads the JavaScript in [`assets/js/`](assets/js/) and the stylesheets in [`assets/css/`](assets/css/). Park images remain in [`images/`](images/). No frontend build step is required.
+
+Live dashboard: https://jacocksr.github.io/disney-busyness-monitor/
+
+### Development checkpoint
+
+As checked on October 18, 2026, the source-organization change is on `refactor/frontend-organization` in [draft pull request #1](https://github.com/jacocksr/disney-busyness-monitor/pull/1), not merged or deployed. GitHub Pages remains configured to publish `main` from the repository root. Viewing files on the development branch does not mean they are already live. See [project status](docs/PROJECT_STATUS.md) for the current reviewed snapshot and remaining work.
 
 ## Contents
 
 - [Features](#features)
 - [How to read the data](#how-to-read-the-data)
+- [Project continuity](#project-continuity)
 - [Architecture](#architecture)
 - [Repository layout](#repository-layout)
 - [API integration](#api-integration)
@@ -227,6 +234,23 @@ The Python collector is different: it creates timestamps and weekday/hour bucket
 
 ---
 
+## Project continuity
+
+Start a new development session by reading:
+
+| Document | Purpose |
+|---|---|
+| [Project status](docs/PROJECT_STATUS.md) | Current branch, reviewed version, validation, known issues and next task |
+| [Architecture](docs/ARCHITECTURE.md) | Source ownership, loading order, APIs, backend boundaries and development workflow |
+| [Feature register](docs/FEATURES.md) | Behaviors to preserve and acceptance checks |
+| [Changelog](docs/CHANGELOG.md) | Accepted changes and commit/merge/deployment state |
+
+Always identify the actual working branch and current commit before editing. Report any uncommitted local changes. Repository source, rather than old attachments or conversation memory, should determine the implementation being changed.
+
+Preserve existing features unless a behavior change or removal is explicitly approved. Keep structural refactoring separate from calculation fixes and redesigns. Report the exact files changed, tests actually performed, untested scenarios and deployment status.
+
+The initial refactor separates files but deliberately retains existing render wrappers and CSS override order. Deeper internal consolidation and known issues remain separate tasks. Do not reorder assets or change classic scripts to modules/async/defer without compatibility testing.
+
 ## Architecture
 
 The project currently has two distinct data paths.
@@ -264,7 +288,7 @@ Weather API response
   index.html
 ```
 
-The dashboard polls its configured APIs rather than rebuilding the website for every collection.
+The dashboard JavaScript polls its configured APIs rather than rebuilding the website for every collection. Both `index.html` and its referenced `assets/` files are required to run this branch’s frontend.
 
 The deployed backend uses cached responses so ordinary page views do not need to reconstruct history or closure episodes from all raw observations.
 
@@ -309,21 +333,43 @@ disney-busyness-monitor/
 ├── .github/
 │   └── workflows/
 │       └── update_wait_times.yml
+├── assets/
+│   ├── js/                         # 12 ordered classic scripts
+│   └── css/                        # 16 ordered style layers
 ├── data/
 │   ├── events/
 │   ├── historical_summary.json
 │   ├── history_24h.json
 │   ├── history_7d.json
 │   └── live_wait_times.json
+├── docs/
+│   ├── PROJECT_STATUS.md
+│   ├── ARCHITECTURE.md
+│   ├── FEATURES.md
+│   └── CHANGELOG.md
 ├── images/
+├── tests/
+│   ├── check_candidate.py
+│   ├── verify_source.py
+│   ├── reference.html
+│   ├── shipped-parity-results.json
+│   └── syntax-results.json
 ├── index.html
+├── source-manifest.json
+├── VALIDATION.md
 ├── scraper_collector.py
 └── README.md
 ```
 
 | Path | Purpose |
 |---|---|
-| [`index.html`](index.html) | Dashboard markup, styles, application logic, charts, and frontend event catalog |
+| [`index.html`](index.html) | Static page structure and ordered references to application assets |
+| [`assets/js/`](assets/js/) | Application state, fetching, rendering, charts, weather, closures and event catalog |
+| [`assets/css/`](assets/css/) | Presentation layers in preserved cascade order |
+| [`docs/`](docs/) | Project continuity, architecture, feature requirements and changelog |
+| [`tests/`](tests/) | Frozen original, extraction verification and optional HAR-backed browser comparisons |
+| [`source-manifest.json`](source-manifest.json) | Initial extraction mapping and source hashes |
+| [`VALIDATION.md`](VALIDATION.md) | Delivered candidate’s validation evidence and limitations |
 | [`images/`](images/) | Park icon assets |
 | [`scraper_collector.py`](scraper_collector.py) | Python collector and static-data generator |
 | [`.github/workflows/update_wait_times.yml`](.github/workflows/update_wait_times.yml) | Scheduled/manual collection workflow |
@@ -349,13 +395,19 @@ The frontend uses these queue-service routes:
 
 Weather is requested separately through the configured weather service’s `/api/weather` route.
 
-Search `index.html` for these configuration points:
+Configuration locations:
+
+- `API_BASE` and the main refresh interval: [`assets/js/10-core.js`](assets/js/10-core.js).
+- `WEATHER_API`: [`assets/js/20-weather.js`](assets/js/20-weather.js).
+- Closure endpoint integration: [`assets/js/90-closure-history.js`](assets/js/90-closure-history.js).
+
+The service addresses are:
 
 ```js
-const API_BASE = '[https://wdw-queue-probe.jacocksr.workers.dev](https://wdw-queue-probe.jacocksr.workers.dev)';
+const API_BASE = 'https://wdw-queue-probe.jacocksr.workers.dev';
 
 const WEATHER_API =
-  '[https://park-pulse-weather.jacocksr.workers.dev/api/weather](https://park-pulse-weather.jacocksr.workers.dev/api/weather)';
+  'https://park-pulse-weather.jacocksr.workers.dev/api/weather';
 ```
 
 These are public service addresses, not database credentials.
@@ -374,21 +426,23 @@ This is a polling interval, not a guarantee that a new upstream observation exis
 
 ## Run the frontend locally
 
-No frontend build step or package installation is required.
+No frontend build step or package installation is required to serve the normal website. On macOS, run the following in the Terminal application, not the browser’s JavaScript Console.
 
-With Python installed:
+To clone the current development branch with Git and Python 3 installed:
 
 ```bash
-git clone [https://github.com/jacocksr/disney-busyness-monitor.git](https://github.com/jacocksr/disney-busyness-monitor.git)
+git clone --branch refactor/frontend-organization https://github.com/jacocksr/disney-busyness-monitor.git
 cd disney-busyness-monitor
-python -m http.server 8000
+python3 -m http.server 8000 --bind 127.0.0.1
 ```
 
 Open:
 
 ```text
-http://localhost:8000
+http://127.0.0.1:8000/
 ```
+
+If you already extracted or downloaded the candidate, no Git clone is necessary: open Terminal in that folder and run only the `python3 -m http.server 8000 --bind 127.0.0.1` command. The folder must contain root `index.html`, `assets/` and the original `images/`. Open the root page, not `tests/reference.html`. Leave Terminal running; press Control+C to stop the server.
 
 The local page still requests its configured remote APIs and external browser dependencies. Serving the HTML locally does not start a collector, create a database, or make the dashboard offline-capable.
 
@@ -464,11 +518,15 @@ The frontend can be published with GitHub Pages or another static host.
 
 For GitHub Pages:
 
-1. Keep `index.html` and the `images/` directory at the selected publishing location.
-2. Configure Pages in the repository settings.
+1. Keep `index.html`, the entire `assets/` directory, and `images/` together at the selected publishing location.
+2. For this repository, retain the existing Pages setting: deploy from `main`, `/ (root)`. The development branch is not automatically a preview site.
 3. Verify the configured queue and weather API addresses.
 4. Open the deployment URL supplied by GitHub.
 5. Confirm that scripts, fonts, images, and API responses load successfully.
+
+Use document-relative asset paths such as `assets/js/10-core.js` and `images/MKEmoji_1_1023x1023.png`. The production site is under `/disney-busyness-monitor/`; do not accidentally point assets at the domain root. Preserve filename capitalization.
+
+Review changes in the existing pull request before any approved merge into `main`. Verify the actual Pages deployment afterward. Do not change Worker bindings, database schema, collection workflow or publishing settings merely to deploy this frontend refactor. Retain the accepted pre-change commit as a rollback reference and preserve unrelated later work when reverting.
 
 Changing `README.md` updates the repository landing page. It does not replace or modify the dashboard in `index.html`.
 
@@ -482,11 +540,7 @@ Do not publish API secrets, database credentials, or administrative tokens in `i
 
 ### Event-catalog maintenance
 
-Search for:
-
-```text
-verified-park-event-catalog
-```
+Edit [`assets/js/100-event-catalog.js`](assets/js/100-event-catalog.js). Expandable event presentation is in [`assets/js/110-event-details.js`](assets/js/110-event-details.js); root HTML retains the catalog script reference.
 
 The catalog contains maintained dates and event metadata. When updating it:
 
@@ -536,7 +590,38 @@ For authoritative operating rules, access eligibility, ticketing, attraction ava
 
 ## Development and validation
 
-There is no dedicated automated test suite or frontend build configuration included in the current repository.
+The development branch includes source-preservation checks and an optional HAR-backed browser comparison harness. No frontend build step is required. These tests are not automatically wired to GitHub Actions: the draft PR had zero check runs at the reviewed snapshot `12c2bf99fe12038816c30e2df152ab67d63a05d3`. Stored result files are historical local evidence, not proof that a newer commit passed.
+
+### Initial extraction verification
+
+```bash
+python3 tests/verify_source.py
+```
+
+This verifies all 28 extracted source blocks and reconstructs the original HTML byte-for-byte. It is a baseline extraction check: intentional later edits will change the hashes. Do not simply refresh hashes to hide an unexplained mismatch.
+
+### Optional browser replay
+
+Requires Python 3, Playwright, Chromium and the owner's locally retained HAR. Installing these test dependencies is optional; it is not required to view the site.
+
+```bash
+python3 -m pip install playwright
+python3 -m playwright install chromium
+python3 tests/check_candidate.py /path/to/networktest.har
+```
+
+Keep the HAR local unless a sanitized fixture set has been separately reviewed. The runner serves HTML/assets in memory, replays captured dependencies/API bodies, fixes the recording clock, blocks missing requests and compares original/candidate behavior. It writes `tests/latest-parity-results.json`; treat this as a local result rather than automatically committing it. `tests/reference.html` is frozen original test input, not a second editable application.
+
+### Current evidence and limits
+
+- Delivered local comparison suite: 56 matching checkpoints across 390px/1280px and light/dark themes; no page JavaScript exceptions observed in those runs.
+- Original park images were absent from automated replay; the owner subsequently reviewed them locally.
+- The owner confirmed that the ride popup works and other functionality appears correct; this is manual review, not exhaustive automated coverage.
+- Successful archived ride-history responses and active weather alerts were not in the captured fixture.
+- CSS motion was disabled for settled-state comparisons; no full-page visual or accessibility certification is claimed.
+- A later Git hash review found the 28 uploaded application assets and root entry identical to the expected extraction. That review did not rerun the full browser suite on a downloaded checkout.
+
+See [`VALIDATION.md`](VALIDATION.md) and [`docs/PROJECT_STATUS.md`](docs/PROJECT_STATUS.md) for details.
 
 Before publishing a change, validate at least:
 
@@ -593,7 +678,8 @@ The following remain future or follow-up work rather than guarantees about the c
 - Continued review of attraction classification and grouping.
 - Additional verified event dates and seasonal metadata.
 - More reproducible backend setup documentation and versioned deployment assets.
-- Automated regression tests for data handling and interface behavior.
+- Expanded regression coverage for data handling and interface behavior, including archive/alert fixtures and future CI integration.
+- Incremental consolidation of rendering wrappers and CSS ownership after accepting the structural split.
 - Further accessibility and performance validation.
 
 New closure analytics should be added only when observation coverage and classification support a defensible interpretation.

@@ -5,9 +5,11 @@ Record accepted changes and their actual status. Do not infer deployment from a 
 ## Unreleased — frontend source organization
 
 Date: 2026-10-18.
-Status: locally reviewed candidate; not committed, merged or deployed when this entry was written.
-Proposed branch: refactor/frontend-organization.
-Implementation commit: pending.
+Status: committed on the development branch and locally reviewed; draft PR open; not merged or deployed at the latest check.
+Working branch: refactor/frontend-organization.
+Reviewed branch snapshot: 12c2bf99fe12038816c30e2df152ab67d63a05d3.
+Pull request: https://github.com/jacocksr/disney-busyness-monitor/pull/1 .
+Documentation follow-up: prepared against the reviewed snapshot; its commit SHA will be established when committed.
 Production/rollback reference: 1c1e016a9f66ace98c5230743d8cd2a576f5aafd.
 
 ### Changed
@@ -22,7 +24,7 @@ Production/rollback reference: 1c1e016a9f66ace98c5230743d8cd2a576f5aafd.
 - Frozen original test reference and source-preservation verification.
 - Optional HAR-backed browser comparison harness and delivered results.
 - Validation and candidate setup documentation.
-- Four continuity documents: PROJECT_STATUS.md, ARCHITECTURE.md, FEATURES.md and this changelog, prepared for the branch upload.
+- Four continuity documents: PROJECT_STATUS.md, ARCHITECTURE.md, FEATURES.md and this changelog, uploaded with uppercase filenames.
 
 ### Validation
 - All 12 extracted JavaScript files passed syntax checks.
@@ -30,6 +32,8 @@ Production/rollback reference: 1c1e016a9f66ace98c5230743d8cd2a576f5aafd.
 - Delivered compact suite: 56/56 matching checkpoints (14 at each of 390px/1280px and light/dark).
 - No page JavaScript exceptions observed in delivered suite.
 - Owner reports clean local appearance with original images, functional ride popup and other functionality appearing to work as intended.
+- Uploaded-branch hash review matched all 28 application asset blobs and root index.html against the expected extraction; no deleted files in the 40-file PR list.
+- GitHub reported zero check runs for the reviewed PR head. Stored local results do not establish CI coverage or tests on every later commit.
 
 ### Limitations and unchanged scope
 - Automated park-image rendering and successful archived ride-history response replay were not covered by supplied fixtures.
@@ -38,12 +42,14 @@ Production/rollback reference: 1c1e016a9f66ace98c5230743d8cd2a576f5aafd.
 - Existing crowd-label/hours-validation/refresh/accessibility issues remain documented, not silently fixed.
 - No change to either Worker, D1, scraper_collector.py, data files, collection workflow or Pages settings.
 - Existing rendering wrappers and style overrides remain; internal semantic consolidation is future work.
-- Existing root README still needs a targeted multi-file development update before merge.
+- Documentation-only follow-up updates README for multi-file structure, config locations, literal-URL examples, local development, tests, continuity and deployment.
+- The same follow-up updates PROJECT_STATUS.md, this changelog and ARCHITECTURE.md for the actual branch/PR checkpoint without claiming a merge or deployment.
 
 ### Acceptance and deployment record
 - Owner local acceptance: reported 2026-10-18.
-- Branch upload: pending.
-- Pull request: pending.
+- Branch upload: complete; application upload and uppercase continuity names reviewed at 12c2bf99fe12038816c30e2df152ab67d63a05d3.
+- Pull request: #1, open draft into main.
+- Main at review: 4552f0b5561c244c49a185d5fce573594ab7e868; root entries/hashes match original baseline after a stylesheet add/remove pair.
 - Merge commit/date: pending.
 - Production verification: pending.
 - Rollback if required: restore/revert the frontend change while preserving unrelated later commits; original reference above is for comparison, not instruction to reset all repository history.

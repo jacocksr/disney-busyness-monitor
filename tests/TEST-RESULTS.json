@@ -1,0 +1,306 @@
+{
+  "1280-dark": {
+    "baseline_checks": {
+      "main_label": true,
+      "markers_drawn": true,
+      "marker_radius": true,
+      "toggle_hides_without_changing_waits": true,
+      "toggle_restores_markers": true,
+      "park_popup_label": true,
+      "park_popup_markers": true,
+      "ride_shading_label_unchanged": true,
+      "ride_closure_events_present": true,
+      "marker_click_routing": true,
+      "no_js_exceptions": true
+    },
+    "updated_checks": {
+      "main_label": true,
+      "markers_drawn": true,
+      "marker_radius": true,
+      "contrasting_outline": true,
+      "larger_hit_targets": true,
+      "toggle_hides_without_changing_waits": true,
+      "toggle_restores_markers": true,
+      "park_popup_label": true,
+      "park_popup_markers": true,
+      "ride_shading_label_unchanged": true,
+      "ride_closure_events_present": true,
+      "marker_click_routing": true,
+      "no_js_exceptions": true
+    },
+    "preservation": {
+      "series": true,
+      "popup_series": true,
+      "ride_series": true,
+      "group_count": true,
+      "closure_events": true
+    },
+    "group_count": 5,
+    "marker_details": [
+      {
+        "radius": 6,
+        "fill": "#ff5d7a",
+        "stroke": "#0f2545",
+        "lineWidth": 2
+      },
+      {
+        "radius": 6,
+        "fill": "#ff5d7a",
+        "stroke": "#0f2545",
+        "lineWidth": 2
+      },
+      {
+        "radius": 6,
+        "fill": "#ff5d7a",
+        "stroke": "#0f2545",
+        "lineWidth": 2
+      },
+      {
+        "radius": 6,
+        "fill": "#ff5d7a",
+        "stroke": "#0f2545",
+        "lineWidth": 2
+      },
+      {
+        "radius": 6,
+        "fill": "#ff5d7a",
+        "stroke": "#0f2545",
+        "lineWidth": 2
+      }
+    ],
+    "click_test": {
+      "rides": 1,
+      "chooser": false,
+      "ridePopup": true
+    },
+    "errors": []
+  },
+  "390-dark": {
+    "baseline_checks": {
+      "main_label": true,
+      "markers_drawn": true,
+      "marker_radius": true,
+      "toggle_hides_without_changing_waits": true,
+      "toggle_restores_markers": true,
+      "park_popup_label": true,
+      "park_popup_markers": true,
+      "ride_shading_label_unchanged": true,
+      "ride_closure_events_present": true,
+      "marker_click_routing": true,
+      "no_js_exceptions": true
+    },
+    "updated_checks": {
+      "main_label": true,
+      "markers_drawn": true,
+      "marker_radius": true,
+      "contrasting_outline": true,
+      "larger_hit_targets": true,
+      "toggle_hides_without_changing_waits": true,
+      "toggle_restores_markers": true,
+      "park_popup_label": true,
+      "park_popup_markers": true,
+      "ride_shading_label_unchanged": true,
+      "ride_closure_events_present": true,
+      "marker_click_routing": true,
+      "no_js_exceptions": true
+    },
+    "preservation": {
+      "series": true,
+      "popup_series": true,
+      "ride_series": true,
+      "group_count": true,
+      "closure_events": true
+    },
+    "group_count": 5,
+    "marker_details": [
+      {
+        "radius": 6,
+        "fill": "#ff5d7a",
+        "stroke": "#0f2545",
+        "lineWidth": 2
+      },
+      {
+        "radius": 6,
+        "fill": "#ff5d7a",
+        "stroke": "#0f2545",
+        "lineWidth": 2
+      },
+      {
+        "radius": 6,
+        "fill": "#ff5d7a",
+        "stroke": "#0f2545",
+        "lineWidth": 2
+      },
+      {
+        "radius": 6,
+        "fill": "#ff5d7a",
+        "stroke": "#0f2545",
+        "lineWidth": 2
+      },
+      {
+        "radius": 6,
+        "fill": "#ff5d7a",
+        "stroke": "#0f2545",
+        "lineWidth": 2
+      }
+    ],
+    "click_test": {
+      "rides": 1,
+      "chooser": false,
+      "ridePopup": true
+    },
+    "errors": []
+  },
+  "1280-light": {
+    "baseline_checks": {
+      "main_label": true,
+      "markers_drawn": true,
+      "marker_radius": true,
+      "toggle_hides_without_changing_waits": true,
+      "toggle_restores_markers": true,
+      "park_popup_label": true,
+      "park_popup_markers": true,
+      "ride_shading_label_unchanged": true,
+      "ride_closure_events_present": true,
+      "marker_click_routing": true,
+      "no_js_exceptions": true
+    },
+    "updated_checks": {
+      "main_label": true,
+      "markers_drawn": true,
+      "marker_radius": true,
+      "contrasting_outline": true,
+      "larger_hit_targets": true,
+      "toggle_hides_without_changing_waits": true,
+      "toggle_restores_markers": true,
+      "park_popup_label": true,
+      "park_popup_markers": true,
+      "ride_shading_label_unchanged": true,
+      "ride_closure_events_present": true,
+      "marker_click_routing": true,
+      "no_js_exceptions": true
+    },
+    "preservation": {
+      "series": true,
+      "popup_series": true,
+      "ride_series": true,
+      "group_count": true,
+      "closure_events": true
+    },
+    "group_count": 5,
+    "marker_details": [
+      {
+        "radius": 6,
+        "fill": "#a91e36",
+        "stroke": "#ffffff",
+        "lineWidth": 2
+      },
+      {
+        "radius": 6,
+        "fill": "#a91e36",
+        "stroke": "#ffffff",
+        "lineWidth": 2
+      },
+      {
+        "radius": 6,
+        "fill": "#a91e36",
+        "stroke": "#ffffff",
+        "lineWidth": 2
+      },
+      {
+        "radius": 6,
+        "fill": "#a91e36",
+        "stroke": "#ffffff",
+        "lineWidth": 2
+      },
+      {
+        "radius": 6,
+        "fill": "#a91e36",
+        "stroke": "#ffffff",
+        "lineWidth": 2
+      }
+    ],
+    "click_test": {
+      "rides": 1,
+      "chooser": false,
+      "ridePopup": true
+    },
+    "errors": []
+  },
+  "390-light": {
+    "baseline_checks": {
+      "main_label": true,
+      "markers_drawn": true,
+      "marker_radius": true,
+      "toggle_hides_without_changing_waits": true,
+      "toggle_restores_markers": true,
+      "park_popup_label": true,
+      "park_popup_markers": true,
+      "ride_shading_label_unchanged": true,
+      "ride_closure_events_present": true,
+      "marker_click_routing": true,
+      "no_js_exceptions": true
+    },
+    "updated_checks": {
+      "main_label": true,
+      "markers_drawn": true,
+      "marker_radius": true,
+      "contrasting_outline": true,
+      "larger_hit_targets": true,
+      "toggle_hides_without_changing_waits": true,
+      "toggle_restores_markers": true,
+      "park_popup_label": true,
+      "park_popup_markers": true,
+      "ride_shading_label_unchanged": true,
+      "ride_closure_events_present": true,
+      "marker_click_routing": true,
+      "no_js_exceptions": true
+    },
+    "preservation": {
+      "series": true,
+      "popup_series": true,
+      "ride_series": true,
+      "group_count": true,
+      "closure_events": true
+    },
+    "group_count": 5,
+    "marker_details": [
+      {
+        "radius": 6,
+        "fill": "#a91e36",
+        "stroke": "#ffffff",
+        "lineWidth": 2
+      },
+      {
+        "radius": 6,
+        "fill": "#a91e36",
+        "stroke": "#ffffff",
+        "lineWidth": 2
+      },
+      {
+        "radius": 6,
+        "fill": "#a91e36",
+        "stroke": "#ffffff",
+        "lineWidth": 2
+      },
+      {
+        "radius": 6,
+        "fill": "#a91e36",
+        "stroke": "#ffffff",
+        "lineWidth": 2
+      },
+      {
+        "radius": 6,
+        "fill": "#a91e36",
+        "stroke": "#ffffff",
+        "lineWidth": 2
+      }
+    ],
+    "click_test": {
+      "rides": 1,
+      "chooser": false,
+      "ridePopup": true
+    },
+    "errors": []
+  }
+}

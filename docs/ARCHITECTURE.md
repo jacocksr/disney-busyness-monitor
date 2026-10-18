@@ -1,6 +1,6 @@
 # Architecture — Disney World Park Pulse
 
-Last updated: 2026-10-18. Describes the locally accepted multi-file candidate; see PROJECT_STATUS.md for deployment status.
+Last updated: 2026-10-18. Describes the multi-file implementation on refactor/frontend-organization, reviewed at 12c2bf99fe12038816c30e2df152ab67d63a05d3 in draft PR #1. The refactor is not merged or deployed at this checkpoint; see [PROJECT_STATUS.md](PROJECT_STATUS.md) for status.
 
 ## System overview
 The browser receives static HTML, CSS, JavaScript and images from GitHub Pages (or a local development server). JavaScript requests public read APIs from two Cloudflare Workers. The Workers collect external data and share a D1 database. The frontend does not connect directly to D1.
@@ -27,7 +27,7 @@ The repository also has a separate Python static-data collector. It is not a dro
 - source-manifest.json: original source identity, extraction slots and hashes.
 - VALIDATION.md: delivered candidate's validation scope.
 - data/, scraper_collector.py, .github/: existing static collection path; retain unchanged.
-- README.md: repository entry documentation; its original single-file description needs updating before merge.
+- README.md: repository entry documentation, multi-file setup, configuration locations, tests and links to these continuity documents.
 
 ## JavaScript ownership
 Files are currently extracted components, NOT ES modules. Functions/state remain in classic-script global scope where the original code expects them. The script tags in index.html determine execution order; filename numbers are descriptive.
@@ -125,5 +125,16 @@ Optional browser replay (requires Python, Playwright, Chromium and the owner's H
 
 The delivered harness freezes time, replays captured resources, compares original/candidate settled states and blocks missing requests. Keep raw HAR local; do not publish it without review. tests/reference.html is immutable original test input, not another editable application. Full archived response fixtures, alert scenarios and motion/accessibility coverage remain limitations.
 
+The compact runner's stored results describe 56 prior local comparison checkpoints, not automatic GitHub Actions execution. At the reviewed PR head, GitHub reported zero check runs. A separate Git-blob comparison verified the uploaded root entry and all 28 application assets match the expected source extraction; it was not a browser rerun on a downloaded checkout. Owner local acceptance is recorded separately in PROJECT_STATUS.md.
+
+The runner writes tests/latest-parity-results.json locally. Review generated results before committing them; do not commit raw browser logs or temporary Python/macOS files. This documentation-only revision does not add CI or change application code.
+
 ## Deployment
 GitHub Pages: main, repository root, no custom domain configured in supplied screenshot. Development branches do not automatically become preview sites. Uploading to an isolated branch is not deployment. Review pull-request changes before merge; after merge, verify actual Pages assets/APIs and retain rollback commit.
+
+## Review and continuity workflow
+Draft PR #1: https://github.com/jacocksr/disney-busyness-monitor/pull/1 . Source refactor/frontend-organization, base main. Add approved follow-up commits to the same source branch; keep application changes separate from this documentation revision. Check actual head/base again before merge.
+
+The latest reviewed main commit is 4552f0b5561c244c49a185d5fce573594ab7e868. Original extraction reference remains 1c1e016a9f66ace98c5230743d8cd2a576f5aafd. The extra main commits added and removed one stylesheet; the reviewed current root entries/hashes match the extraction baseline. Preserve this history rather than resetting it merely to remove ahead/behind counts.
+
+For a future session, read PROJECT_STATUS.md, this document and FEATURES.md; inspect the current implementation and uncommitted changes. After an approved merge, record the actual merge and production verification. A documentation update alone does not authorize a merge or deployment.

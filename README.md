@@ -29,9 +29,15 @@ The frontend is a static, multi-file website: [`index.html`](index.html) defines
 
 Live dashboard: https://jacocksr.github.io/disney-busyness-monitor/
 
-### Development checkpoint
+### Current release
 
-As checked on October 18, 2026, the source-organization change is on `refactor/frontend-organization` in [draft pull request #1](https://github.com/jacocksr/disney-busyness-monitor/pull/1), not merged or deployed. GitHub Pages remains configured to publish `main` from the repository root. Viewing files on the development branch does not mean they are already live. See [project status](docs/PROJECT_STATUS.md) for the current reviewed snapshot and remaining work.
+The multi-file frontend and closure-interface improvements were merged into `main` through [pull request #2](https://github.com/jacocksr/disney-busyness-monitor/pull/2) on October 19, 2026.
+
+Milestone merge: `738ec44d8067d3d2e80a4f44899e379bcf2b0b44`. GitHub confirmed the merge, and the owner subsequently reported a clean live check. That owner review is production-use evidence, not a separate full assistant browser audit or accessibility certification.
+
+GitHub Pages publishes `main` from the repository root. Use the actual latest `main` for the accepted implementation; documentation and future commits may advance beyond the milestone SHA. Create a fresh task branch from `main` for future site revisions rather than continuing on the completed refactor branch.
+
+See [project status](docs/PROJECT_STATUS.md) and [changelog](docs/CHANGELOG.md) for release history, known issues, validation scope and next work. PR #1 is closed historical review; PR #2 is the merged release, not an active draft.
 
 ## Contents
 
@@ -117,6 +123,12 @@ Its collapsed view provides useful summary information before expansion. The exp
 - Separate treatment of refurbishments and uncertain-start records.
 
 Individual ride charts can show closure intervals as vertical shaded bands. Park-wide graphs group closure activity to avoid placing a separate annotation over every observation.
+
+The park-wide chart's **Show Closures** checkbox controls marker visibility. A full-width **Ride interruptions today** disclosure provides access to readable details even when the markers are hidden. Its count is the number of distinct affected rides—not the number of dots, interruption episodes, or rides currently closed.
+
+Tapping a marker opens the same panel filtered to that marker's hour and highlights the selection. **Show all today** clears the filter. Ride rows distinguish current reported status from historical interruption timing, expand multiple recorded interruptions, and link to ride-history charts.
+
+The park-wide popup is bounded to the viewport, with a visible header and scrolling body. Main and nested interruption details expand and collapse smoothly, retain same-park/day state during re-renders, support keyboard focus restoration, and respect Reduced Motion. The interruption interface uses neutral interiors with red outer frames; current open/closed badges retain their semantic colors.
 
 Missing observations are not treated as proof that an attraction was open or closed.
 
@@ -222,6 +234,8 @@ Important distinctions:
 
 The dashboard does not establish the cause of a closure. A reported interruption is not proof of a mechanical problem, staffing issue, or weather-related shutdown.
 
+A label such as **Reported Open 2:30 PM** uses the ride feed's `last_updated` timestamp, formatted in the selected display time zone. It means that the feed reported the ride open at that time—not that the ride reopened then. Stale or missing reports must not be interpreted as confirmed current operation. Changing the display time zone refreshes the closure labels without requiring another data fetch.
+
 ### Dates and time zones
 
 Dashboard day-based views use Eastern park-calendar dates.
@@ -288,7 +302,7 @@ Weather API response
   index.html
 ```
 
-The dashboard JavaScript polls its configured APIs rather than rebuilding the website for every collection. Both `index.html` and its referenced `assets/` files are required to run this branch’s frontend.
+The dashboard JavaScript polls its configured APIs rather than rebuilding the website for every collection. Both `index.html` and its referenced `assets/` files are required to run the frontend.
 
 The deployed backend uses cached responses so ordinary page views do not need to reconstruct history or closure episodes from all raw observations.
 
@@ -353,7 +367,8 @@ disney-busyness-monitor/
 │   ├── verify_source.py
 │   ├── reference.html
 │   ├── shipped-parity-results.json
-│   └── syntax-results.json
+│   ├── syntax-results.json
+│   └── TEST-RESULTS.json           # Stored marker-update results
 ├── index.html
 ├── source-manifest.json
 ├── VALIDATION.md
@@ -428,10 +443,10 @@ This is a polling interval, not a guarantee that a new upstream observation exis
 
 No frontend build step or package installation is required to serve the normal website. On macOS, run the following in the Terminal application, not the browser’s JavaScript Console.
 
-To clone the current development branch with Git and Python 3 installed:
+To clone the accepted `main` implementation with Git and Python 3 installed:
 
 ```bash
-git clone --branch refactor/frontend-organization https://github.com/jacocksr/disney-busyness-monitor.git
+git clone --branch main https://github.com/jacocksr/disney-busyness-monitor.git
 cd disney-busyness-monitor
 python3 -m http.server 8000 --bind 127.0.0.1
 ```
@@ -442,7 +457,9 @@ Open:
 http://127.0.0.1:8000/
 ```
 
-If you already extracted or downloaded the candidate, no Git clone is necessary: open Terminal in that folder and run only the `python3 -m http.server 8000 --bind 127.0.0.1` command. The folder must contain root `index.html`, `assets/` and the original `images/`. Open the root page, not `tests/reference.html`. Leave Terminal running; press Control+C to stop the server.
+If you already downloaded the repository from `main`, no Git clone is necessary: open Terminal in that folder and run only the `python3 -m http.server 8000 --bind 127.0.0.1` command. The folder must contain root `index.html`, `assets/` and the original `images/`. Open the root page, not `tests/reference.html`. Leave Terminal running; press Control+C to stop the server.
+
+For a browser-only download, select `main` in GitHub, choose **Code → Download ZIP**, and extract it into a clearly labeled working folder. Keep older candidates as separate historical backups; do not copy obsolete scripts over the accepted source.
 
 The local page still requests its configured remote APIs and external browser dependencies. Serving the HTML locally does not start a collector, create a database, or make the dashboard offline-capable.
 
@@ -526,7 +543,7 @@ For GitHub Pages:
 
 Use document-relative asset paths such as `assets/js/10-core.js` and `images/MKEmoji_1_1023x1023.png`. The production site is under `/disney-busyness-monitor/`; do not accidentally point assets at the domain root. Preserve filename capitalization.
 
-Review changes in the existing pull request before any approved merge into `main`. Verify the actual Pages deployment afterward. Do not change Worker bindings, database schema, collection workflow or publishing settings merely to deploy this frontend refactor. Retain the accepted pre-change commit as a rollback reference and preserve unrelated later work when reverting.
+For future changes, create a fresh task branch from the actual latest `main`, review its pull request, and merge only after approval. Verify the actual Pages deployment afterward. Do not change Worker bindings, database schema, collection workflow or publishing settings merely to deploy this frontend refactor. Retain the accepted pre-change commit as a rollback reference and preserve unrelated later work when reverting.
 
 Changing `README.md` updates the repository landing page. It does not replace or modify the dashboard in `index.html`.
 
@@ -590,17 +607,23 @@ For authoritative operating rules, access eligibility, ticketing, attraction ava
 
 ## Development and validation
 
-The development branch includes source-preservation checks and an optional HAR-backed browser comparison harness. No frontend build step is required. These tests are not automatically wired to GitHub Actions: the draft PR had zero check runs at the reviewed snapshot `12c2bf99fe12038816c30e2df152ab67d63a05d3`. Stored result files are historical local evidence, not proof that a newer commit passed.
+The repository includes historical source-extraction checks and an optional HAR-backed original/candidate comparison harness. No frontend build step is required.
 
-### Initial extraction verification
+Regression tests were not automatically wired to GitHub Actions for this release; pre-merge PR check runs were zero. Stored result files are local evidence for their identified stage, not a current CI badge or proof that every later commit passed. The data-collection workflow and Pages deployment are separate from a frontend regression-test pipeline.
+
+Subsequent targeted checks covered banner tiers, closure interactions, status-time formatting, mobile popup behavior and smooth disclosures. See [project status](docs/PROJECT_STATUS.md) and [changelog](docs/CHANGELOG.md) for the stage-specific evidence, owner review and remaining limitations.
+
+### Historical extraction verification
 
 ```bash
 python3 tests/verify_source.py
 ```
 
-This verifies all 28 extracted source blocks and reconstructs the original HTML byte-for-byte. It is a baseline extraction check: intentional later edits will change the hashes. Do not simply refresh hashes to hide an unexplained mismatch.
+This check originally verified all 28 extracted source blocks and reconstructed the original HTML byte-for-byte. It is historical extraction evidence, not a current-release regression gate: accepted banner and closure changes now intentionally differ from those hashes.
 
-### Optional browser replay
+Preserve `source-manifest.json` and `tests/reference.html` as the original record instead of rewriting them to force a pass. Inspect unexplained differences, and establish a separately named accepted-release baseline with behavior-oriented regression tests for future changes.
+
+### Optional historical browser comparison
 
 Requires Python 3, Playwright, Chromium and the owner's locally retained HAR. Installing these test dependencies is optional; it is not required to view the site.
 
@@ -612,7 +635,9 @@ python3 tests/check_candidate.py /path/to/networktest.har
 
 Keep the HAR local unless a sanitized fixture set has been separately reviewed. The runner serves HTML/assets in memory, replays captured dependencies/API bodies, fixes the recording clock, blocks missing requests and compares original/candidate behavior. It writes `tests/latest-parity-results.json`; treat this as a local result rather than automatically committing it. `tests/reference.html` is frozen original test input, not a second editable application.
 
-### Current evidence and limits
+The exact original-versus-current comparison can now report intentional differences in labels, chart pixels and closure-panel structure. The original 56-checkpoint passing result belongs to the extraction stage, not the final release. Do not update the frozen input simply to make these intended changes disappear. Create a separately named current-release fixture/assertion set for ongoing regression work.
+
+### Historical extraction evidence and limits
 
 - Delivered local comparison suite: 56 matching checkpoints across 390px/1280px and light/dark themes; no page JavaScript exceptions observed in those runs.
 - Original park images were absent from automated replay; the owner subsequently reviewed them locally.
@@ -621,7 +646,29 @@ Keep the HAR local unless a sanitized fixture set has been separately reviewed. 
 - CSS motion was disabled for settled-state comparisons; no full-page visual or accessibility certification is claimed.
 - A later Git hash review found the 28 uploaded application assets and root entry identical to the expected extraction. That review did not rerun the full browser suite on a downloaded checkout.
 
-See [`VALIDATION.md`](VALIDATION.md) and [`docs/PROJECT_STATUS.md`](docs/PROJECT_STATUS.md) for details.
+[`VALIDATION.md`](VALIDATION.md) preserves that initial candidate's evidence and limits. [`docs/PROJECT_STATUS.md`](docs/PROJECT_STATUS.md) records subsequent changes and acceptance.
+
+### Accepted-release checks and remaining gaps
+
+- The best-park banner fix passed 35 controlled logic assertions, including strongly quieter conditions and threshold boundaries; ranking mathematics was retained.
+- Marker and inline-panel updates had targeted browser checks for controls, filtering, grouping, state and ride-history access. Later inline-panel checks included physical marker taps/clicks, not only direct handler calls.
+- Report-time tests covered selected time zones and freshness safeguards. The time is the source report timestamp, not an inferred reopening time.
+- The final smooth-disclosure package passed 35 checks per configuration at mobile/desktop and light/dark, plus a mobile Reduced Motion run, with four extra transition edge checks. Normal-motion runs checked intermediate heights, rapid reversal, cleanup and nested resizing.
+- Counts describe repeated assertions within separate test stages. Do not add them together as an exhaustive feature-coverage total.
+- The owner reported a clean live check after PR #2 was merged on October 19, 2026. This is owner verification, not an independently executed full production audit by the assistant.
+- Successful archived-history/active-alert fixtures, a full accessibility audit, backend concurrency/integration checks and prolonged resource testing remain follow-up work.
+- Not all targeted harnesses supplied during development are installed as runnable repository tests; inspect the actual `tests/` directory before relying on a script.
+
+### Future revision workflow
+
+1. Start from the actual latest `main`; create a fresh branch named for the task.
+2. Read the status, architecture and feature register; identify the affected files and uncommitted local changes.
+3. Make focused edits rather than appending unrelated patches or replacing the whole application.
+4. Test the requested behavior and related preservation checks; report untested cases honestly.
+5. Review the diff and pull request before an approved merge.
+6. Verify the live result, update release/continuity records, and remove the completed task branch when safe.
+
+Keep code refactoring, behavior fixes and backend/schema changes separate unless their relationship is explicit. Do not commit raw HAR logs, credentials, `.DS_Store`, `__pycache__` or other local packaging artifacts.
 
 Before publishing a change, validate at least:
 

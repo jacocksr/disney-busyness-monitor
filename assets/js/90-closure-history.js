@@ -45,7 +45,7 @@
   const source=ms(ride.last_updated),stamp=ms(parkData.updated_at),fresh=Number.isFinite(stamp)&&Date.now()-stamp<=STALE_THRESHOLD_MINUTES*60000&&Number.isFinite(source)&&Date.now()-source<=15*60000;
   if(!fresh)return {code:'unknown',label:'Last report only'};
   const phase=getParkPhase(key,park);if(!['open','early-entry'].includes(phase.phase)&&!phase.openNow)return {code:'outside',label:phase.phase==='pre-open'?'Not open yet':'Park not operating'};
-  return {code:ride.is_open?'open':'closed',label:ride.is_open?'Reported open':'Reported closed'};
+  return {code:ride.is_open?'open':'closed',label:ride.is_open?'Reported Open '+clock(ride.last_updated):'Reported closed'};
  }
  function description(e,withDate=false){
   const status=liveStatus(e.park,e.ride_id),prefix=withDate?dateLabel(e.first_closed_at)+' · ':'';
@@ -198,9 +198,188 @@
    });
   });
  }
+
+ // Per-chart UI state lives on the persistent note node, not in API data.
+ function parkChartGroupKey(event){const p=et(ms(event.first_closed_at));return p.day+':'+p.hour;}
+ function parkChartGroupLabel(groupKey){
+  const m=String(groupKey||'').match(/^(\d{4}-\d{2}-\d{2}):(\d{1,2})$/);if(!m)return 'Selected hour';
+  const t=hourStart(m[1],Number(m[2])),options={hour:'numeric',timeZoneName:'short'};
+  if(selectedTz!=='local')options.timeZone=selectedTz;
+  return Number.isFinite(t)?'Around '+new Date(t).toLocaleTimeString([],options):'Selected hour';
+ }
+ function parkChartPanelState(note,key,day){
+  const scope=key+'|'+day;
+  if(note._pcParkState?.scope!==scope)note._pcParkState={scope,open:false,filter:null,expanded:new Set(),about:false};
+  return note._pcParkState;
+ }
+ function setChartClosureVisibility(visible){
+  showGraphClosures=!!visible;
+  for(const c of [chartInstance,parkWaitTrendModalChartInstance,sparklineInstance,hmSparklineInstance])if(c?.$pc)c.update('none');
+  document.querySelectorAll('.pc-chart-toggle input').forEach(input=>input.checked=showGraphClosures);
+ }
+
+ // Animate zero-padding wrappers so borders and spacing collapse with their content.
+ const parkClosureMotions=new WeakMap();
+ function parkClosureNaturalHeight(el){
+  const child=el.firstElementChild;if(!child)return 0;
+  const style=getComputedStyle(child);
+  return child.getBoundingClientRect().height+(parseFloat(style.marginTop)||0)+(parseFloat(style.marginBottom)||0);
+ }
+ function cancelParkClosureMotion(el){
+  const record=parkClosureMotions.get(el);if(!record)return;
+  parkClosureMotions.delete(el);record.observer?.disconnect();record.animation?.cancel();record.resolve(false);
+ }
+ function animateParkClosureRegion(el,open,from=null){
+  if(!el)return Promise.resolve(false);
+  const start=from?.height??(el.hidden?0:el.getBoundingClientRect().height);
+  const opacity=from?.opacity??(el.hidden?0:Number(getComputedStyle(el).opacity));
+  cancelParkClosureMotion(el);
+  el.inert=!open;el.setAttribute('aria-hidden',String(!open));
+  const reset=()=>{el.hidden=!open;el.style.height='';el.style.opacity='';el.classList.remove('pc-closure-animating');};
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches||typeof el.animate!=='function'){
+   reset();return Promise.resolve(true);
+  }
+  el.hidden=false;el.style.height='';el.style.opacity='';
+  const end=open?parkClosureNaturalHeight(el):0;
+  if(Math.abs(start-end)<.5){reset();return Promise.resolve(true);}
+  const duration=open?320:260;
+  let resolve;const finished=new Promise(done=>resolve=done);
+  const record={open,resolve,animation:null,observer:null,deadline:performance.now()+duration,end};
+  parkClosureMotions.set(el,record);el.classList.add('pc-closure-animating');
+  const run=(height,alpha,target,milliseconds)=>{
+   const previous=record.animation;
+   el.style.height=height+'px';el.style.opacity=String(alpha);
+   const animation=el.animate([{height:height+'px',opacity:alpha},{height:target+'px',opacity:open?1:0}],{duration:milliseconds,easing:'cubic-bezier(.22,1,.36,1)',fill:'both'});
+   record.animation=animation;previous?.cancel();
+   animation.finished.then(()=>{
+    if(parkClosureMotions.get(el)!==record||record.animation!==animation)return;
+    parkClosureMotions.delete(el);record.observer?.disconnect();animation.cancel();reset();resolve(true);
+   }).catch(()=>{});
+  };
+  run(start,Number.isFinite(opacity)?opacity:(open?0:1),end,duration);
+  if(open&&typeof ResizeObserver!=='undefined'&&el.firstElementChild){
+   record.observer=new ResizeObserver(()=>{
+    if(parkClosureMotions.get(el)!==record)return;
+    const target=parkClosureNaturalHeight(el);if(Math.abs(target-record.end)<1)return;
+    const height=el.getBoundingClientRect().height,alpha=Number(getComputedStyle(el).opacity);
+    record.end=target;run(height,alpha,target,Math.max(80,record.deadline-performance.now()));
+   });record.observer.observe(el.firstElementChild);
+  }
+  return finished;
+ }
+ function captureParkClosureMotions(note){
+  const shots=new Map();
+  note.querySelectorAll('[data-pc-motion]').forEach(el=>{
+   const record=parkClosureMotions.get(el);
+   shots.set(el.dataset.pcMotion,{height:el.hidden?0:el.getBoundingClientRect().height,opacity:el.hidden?0:Number(getComputedStyle(el).opacity),running:!!record});
+   cancelParkClosureMotion(el);
+  });return shots;
+ }
+ function closeParkChartPanel(note,chart,state){
+  state.open=false;state.filter=null;chart.$pcSelectedGroup=null;
+  const button=note.querySelector('[data-pc-chart-action="disclosure"]');
+  button?.setAttribute('aria-expanded','false');const cue=button?.querySelector(':scope > span:last-child');if(cue)cue.textContent='▾';
+  const wrapper=note.querySelector('[data-pc-motion="panel"]');
+  button?.focus({preventScroll:true});
+  const pending=animateParkClosureRegion(wrapper,false);if(wrapper)wrapper._pcMotionPromise=pending;
+  chart.draw?.();return pending;
+ }
+ function revealParkChartPanel(panel){
+  if(!panel?.isConnected)return;
+  const behavior=matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth';
+  const body=panel.closest('#parkWaitModalOverlay .ride-modal-body');
+  if(body){const a=panel.getBoundingClientRect(),b=body.getBoundingClientRect();if(a.top<b.top||a.bottom>b.bottom)body.scrollTo({top:Math.max(0,body.scrollTop+a.top-b.top-8),behavior});}
+  else panel.scrollIntoView({behavior,block:'nearest'});
+ }
+
+ function renderParkChartNote(note,chart,key,day,events,options={}){
+  note.classList.add('pc-chart-note-park');
+  const previousScope=note._pcParkState?.scope,motionBefore=captureParkClosureMotions(note);
+  const state=parkChartPanelState(note,key,day);
+  if(state.filter&&!events.some(e=>parkChartGroupKey(e)===state.filter))state.filter=null;
+  chart.$pcSelectedGroup=state.filter;
+  const focused=note.contains(document.activeElement)?document.activeElement:null;
+  const focusAction=focused?.dataset.pcChartAction,focusRide=focused?.dataset.pcChartRide;
+  const focusToggle=focused?.matches?.('[data-pc-chart-toggle]');
+  const focusPanel=focused?.classList.contains('pc-chart-detail-panel');
+  const focusAbout=focused?.matches?.('.pc-chart-about > summary');
+  const aboutBefore=note.querySelector('.pc-chart-about');if(aboutBefore)state.about=aboutBefore.open;
+  const filtered=state.filter?events.filter(e=>parkChartGroupKey(e)===state.filter):events;
+  const groupRides=list=>{const groups=new Map();for(const e of list){const id=String(e.ride_id),g=groups.get(id)||{id,name:currentRide(key,id)?.name||e.ride_name,events:[]};g.events.push(e);groups.set(id,g);}return [...groups.values()].sort((a,b)=>a.name.localeCompare(b.name));};
+  const allRides=groupRides(events),rides=groupRides(filtered);
+  const panelId=chart.canvas.id+'ClosureDetails',headingId=panelId+'Heading';
+  const unavailable=payload?.tracking_started_at&&day<et(ms(payload.tracking_started_at)).day;
+  const isToday=day===et(Date.now()).day;
+  const title='Ride interruptions'+(isToday?' today':' · '+dateLabel(dayStart(day)));
+  const count=allRides.length+' ride'+(allRides.length===1?'':'s');
+  const filterCount=rides.length+' ride'+(rides.length===1?'':'s')+' affected';
+  const heading=state.filter?parkChartGroupLabel(state.filter)+' · '+filterCount:title;
+  const episode=e=>esc(description(e,e.day!==day));
+  const empty=!payload?(failed?'Ride interruption history is unavailable right now.':'Loading recorded ride interruptions…'):unavailable?'Ride interruption history is not available for this date.':'No temporary ride interruptions were recorded for this day. Missing reports do not mean every ride stayed open.';
+  note.innerHTML='<div class="pc-chart-controls pc-chart-controls-park">'+
+   '<span class="pc-chart-marker-key"><span class="pc-chart-key-dot" aria-hidden="true"></span>Recorded ride interruptions</span>'+
+   (events.length?'<label class="pc-chart-toggle"><input type="checkbox" data-pc-chart-toggle'+(showGraphClosures?' checked':'')+'> Show Closures</label>':'')+'</div>'+
+   '<button type="button" class="pc-chart-disclosure" data-pc-chart-action="disclosure" aria-expanded="'+state.open+'" aria-controls="'+esc(panelId)+'"><span><strong>'+esc(title)+(payload?' · '+count:'')+'</strong><small>See which rides paused and when</small></span><span aria-hidden="true">'+(state.open?'▴':'▾')+'</span></button>'+
+   '<div class="pc-chart-panel-motion" data-pc-motion="panel" aria-hidden="'+(!state.open)+'"'+(state.open?'':' hidden inert')+'><div class="pc-chart-detail-panel" id="'+esc(panelId)+'" role="region" tabindex="-1" aria-labelledby="'+esc(headingId)+'">'+
+   '<div class="pc-chart-detail-header"><h4 id="'+esc(headingId)+'" tabindex="-1">'+esc(heading)+'</h4>'+(state.filter?'<button type="button" class="pc-chart-all" data-pc-chart-action="all">Show all today</button>':'')+'</div>'+
+   '<p class="pc-chart-context">'+(state.filter?'Showing rides with a recorded interruption starting in this hour.':'Recorded temporary interruptions, not a list of rides closed right now.')+' Times follow your display time zone.</p>'+
+   (closureDelayed()?'<p class="pc-inline-warning">Closure updates are delayed. These are the last available reports.</p>':'')+
+   (payload?.truncated?'<p class="pc-inline-warning">Only part of the recorded event list is available.</p>':'')+
+   (!rides.length?'<p class="pc-empty">'+esc(empty)+'</p>':'<div class="pc-chart-ride-list">'+rides.map(g=>{
+    const st=liveStatus(key,g.id),expanded=state.expanded.has(g.id),sorted=g.events.slice().sort((a,b)=>ms(b.first_closed_at)-ms(a.first_closed_at));
+    const multiple=sorted.length>1;
+    return '<section class="pc-chart-ride"><div class="pc-chart-ride-heading"><h5>'+esc(g.name)+'</h5><span class="pc-state '+statusClass(st.code)+'">'+esc(st.label)+'</span></div>'+
+     (multiple?'<button type="button" class="pc-chart-episodes-toggle" data-pc-chart-action="episodes" data-pc-chart-ride="'+esc(g.id)+'" aria-expanded="'+expanded+'" aria-controls="'+esc(panelId+'Ride'+g.id)+'">'+sorted.length+' recorded interruptions <span aria-hidden="true">'+(expanded?'▴':'▾')+'</span></button><div class="pc-chart-episode-motion" data-pc-motion="ride:'+esc(g.id)+'" aria-hidden="'+(!expanded)+'"'+(expanded?'':' hidden inert')+'><ul class="pc-chart-episodes" id="'+esc(panelId+'Ride'+g.id)+'">'+sorted.map(e=>'<li>'+episode(e)+'</li>').join('')+'</ul></div>':'<p class="pc-chart-single-episode">'+episode(sorted[0])+'</p>')+
+     (currentRide(key,g.id)?'<button type="button" class="pc-chart-history" data-pc-chart-action="history" data-pc-chart-ride="'+esc(g.id)+'">View ride history <span aria-hidden="true">→</span></button>':'<p class="pc-small-note">This ride is not in the current park feed.</p>')+'</section>';
+   }).join('')+'</div>')+
+   '<details class="pc-chart-about"'+(state.about?' open':'')+'><summary>About closure data ⓘ</summary><p>'+esc(coverage(day))+'</p><p>Dots group interruptions by the hour their first closed report was recorded. One dot can represent more than one ride or interruption. Reports do not establish the exact transition time or cause. Refurbishments and unknown-start reports remain in the main Ride closures section.</p></details>'+
+   '<button type="button" class="pc-chart-close" data-pc-chart-action="close">Hide interruption details</button></div></div>';
+  note.onchange=event=>{if(event.target.matches('[data-pc-chart-toggle]'))setChartClosureVisibility(event.target.checked);};
+  note.onclick=event=>{
+   const button=event.target.closest('button[data-pc-chart-action]');if(!button||!note.contains(button))return;
+   const action=button.dataset.pcChartAction,id=button.dataset.pcChartRide;
+   if(action==='history'){openRideHistory(key,id);return;}
+   if(action==='close'||action==='disclosure'&&state.open){closeParkChartPanel(note,chart,state);return;}
+   if(action==='disclosure'){state.open=true;renderParkChartNote(note,chart,key,day,events,{animatePanel:true});return;}
+   if(action==='episodes'){
+    const expanded=!state.expanded.has(id);if(expanded)state.expanded.add(id);else state.expanded.delete(id);
+    button.setAttribute('aria-expanded',String(expanded));const cue=button.querySelector('span');if(cue)cue.textContent=expanded?'▴':'▾';
+    const wrapper=[...note.querySelectorAll('[data-pc-motion]')].find(el=>el.dataset.pcMotion==='ride:'+id);
+    const pending=animateParkClosureRegion(wrapper,expanded);if(wrapper)wrapper._pcMotionPromise=pending;return;
+   }
+   if(action==='all'){state.filter=null;renderParkChartNote(note,chart,key,day,events,{animatePanel:true});note.querySelector('.pc-chart-detail-panel')?.focus({preventScroll:true});}
+   chart.draw?.();
+  };
+  if(!note.dataset.pcAboutBound){note.dataset.pcAboutBound='true';note.addEventListener('toggle',event=>{if(event.target.matches('.pc-chart-about')&&note._pcParkState)note._pcParkState.about=event.target.open;},true);}
+  note.onkeydown=event=>{
+   if(event.key==='Escape'&&state.open&&event.target.closest('.pc-chart-detail-panel')){event.preventDefault();event.stopPropagation();closeParkChartPanel(note,chart,state);note.querySelector('[data-pc-chart-action="disclosure"]')?.focus({preventScroll:true});}
+  };
+  note.querySelectorAll('[data-pc-motion]').forEach(el=>{
+   const name=el.dataset.pcMotion,previous=previousScope===state.scope?motionBefore.get(name):null;
+   const open=name==='panel'?state.open:state.expanded.has(name.slice(5));
+   if(name==='panel'&&options.animatePanel||previous?.running){el._pcMotionPromise=animateParkClosureRegion(el,open,previous||{height:0,opacity:0});}
+  });
+  let nextFocus=null;
+  if(focusAction)nextFocus=[...note.querySelectorAll('[data-pc-chart-action]')].find(b=>b.dataset.pcChartAction===focusAction&&b.dataset.pcChartRide===focusRide);
+  else if(focusToggle)nextFocus=note.querySelector('[data-pc-chart-toggle]');
+  else if(focusPanel)nextFocus=note.querySelector('.pc-chart-detail-panel');
+  else if(focusAbout)nextFocus=note.querySelector('.pc-chart-about > summary');
+  if(focused){if(!nextFocus||nextFocus.closest('[hidden]'))nextFocus=note.querySelector('[data-pc-chart-action="disclosure"]');nextFocus?.focus({preventScroll:true});}
+  chart.draw?.();
+ }
+ function openParkChartGroup(chart,hit){
+  const info=chart.$pc,note=document.getElementById(chart.canvas.id+'ClosureNote');if(!info||!note||!hit?.events?.length)return;
+  const state=parkChartPanelState(note,info.key,info.day);state.open=true;state.filter=parkChartGroupKey(hit.events[0]);
+  const selected=state.filter;
+  renderParkChartNote(note,chart,info.key,info.day,info.events,{animatePanel:true});
+  const panel=note.querySelector('.pc-chart-detail-panel'),wrapper=note.querySelector('[data-pc-motion="panel"]');panel?.focus({preventScroll:true});
+  Promise.resolve(wrapper?._pcMotionPromise??true).then(done=>{if(done&&note._pcParkState===state&&state.open&&state.filter===selected)revealParkChartPanel(panel);});
+ }
+
  function noteForChart(chart,key,rideId,day,events){
   const canvas=chart.canvas;if(!canvas?.parentElement)return;let note=document.getElementById(canvas.id+'ClosureNote');
   if(!note){note=document.createElement('div');note.id=canvas.id+'ClosureNote';note.className='pc-chart-note';canvas.parentElement.insertAdjacentElement('afterend',note);}
+  if(rideId==null){renderParkChartNote(note,chart,key,day,events);return;}
   const unavailable=payload?.tracking_started_at&&day<et(ms(payload.tracking_started_at)).day;
   const grouped=new Map();for(const e of events){const id=String(e.ride_id),g=grouped.get(id)||{id,name:e.ride_name};grouped.set(id,g);}
   note.innerHTML='<div class="pc-chart-controls">'+(events.length?'<label class="pc-chart-toggle"><input type="checkbox" '+(showGraphClosures?'checked':'')+'> '+(rideId==null?'Show Closures':'Show closure shading')+'</label>':'')+'<button type="button" class="pc-text-action" data-pc-info>About closure data ⓘ</button></div>'+
@@ -216,7 +395,7 @@
   const groups=[];for(const e of sorted){const a=ms(e.first_closed_at),b=eventEnd(e),last=groups.at(-1);if(last&&a<=last.end){last.end=Math.max(last.end,b);last.events.push(e);}else groups.push({start:a,end:b,events:[e]});}return groups;
  }
  // Park-wide closure dots: canvas pixels; individual ride shading is unchanged.
- const PARK_CLOSURE_MARKER={radius:6,offset:9,edgePadding:8,hitPadding:11,hitHeight:22};
+ const PARK_CLOSURE_MARKER={radius:6,offset:12,edgePadding:12,hitPadding:16,hitHeight:32};
  const drawingPlugin={
   id:'parkClosureEvents',
   beforeDatasetsDraw(chart){
@@ -230,13 +409,14 @@
      ctx.strokeStyle=uncertain?(light?'rgba(140,90,0,.55)':'rgba(255,200,87,.65)'):(light?'rgba(165,20,45,.75)':'rgba(255,75,100,.8)');ctx.lineWidth=1;
      ctx.beginPath();ctx.moveTo(left+.5,a.top);ctx.lineTo(left+.5,a.bottom);ctx.stroke();
      if(right-left>3){ctx.beginPath();ctx.moveTo(right-.5,a.top);ctx.lineTo(right-.5,a.bottom);ctx.stroke();}}
-    chart.$pcHits.push({left:info.rideId==null?px-PARK_CLOSURE_MARKER.hitPadding:left,right:info.rideId==null?px+PARK_CLOSURE_MARKER.hitPadding:Math.max(left+9,right),top:info.rideId==null?a.bottom-PARK_CLOSURE_MARKER.hitHeight:a.top,bottom:a.bottom,markerX:px,events:group.events});
+    chart.$pcHits.push({left:info.rideId==null?px-PARK_CLOSURE_MARKER.hitPadding:left,right:info.rideId==null?px+PARK_CLOSURE_MARKER.hitPadding:Math.max(left+9,right),top:info.rideId==null?a.bottom-PARK_CLOSURE_MARKER.hitHeight:a.top,bottom:a.bottom,markerX:px,groupKey:info.rideId==null?parkChartGroupKey(group.events[0]):null,events:group.events});
    }ctx.restore();
   },
   afterDatasetsDraw(chart){
    if(!showGraphClosures||!chart.$pc||chart.$pc.rideId!=null||!chart.chartArea)return;
    const {ctx,chartArea:a}=chart,light=document.documentElement.dataset.theme==='light';ctx.save();
    for(const hit of chart.$pcHits||[]){
+    if(chart.$pcSelectedGroup===hit.groupKey){ctx.strokeStyle=light?'#17324f':'#ffd166';ctx.lineWidth=2;ctx.beginPath();ctx.arc(hit.markerX,a.bottom-PARK_CLOSURE_MARKER.offset,PARK_CLOSURE_MARKER.radius+3,0,Math.PI*2);ctx.stroke();}
     ctx.fillStyle=light?'#a91e36':'#ff5d7a';
     ctx.strokeStyle=light?'#ffffff':'#0f2545';ctx.lineWidth=2;
     ctx.beginPath();ctx.arc(hit.markerX,a.bottom-PARK_CLOSURE_MARKER.offset,PARK_CLOSURE_MARKER.radius,0,Math.PI*2);ctx.fill();ctx.stroke();
@@ -246,9 +426,9 @@
    // Closure overlays never add hover text. Ordinary Chart.js wait-point tooltips are unchanged.
    const p=args.event;if(p?.type!=='click'||!chart.$pc||chart.$pc.rideId!=null)return;
    const hits=(chart.$pcHits||[]).filter(h=>p.x>=h.left&&p.x<=h.right&&p.y>=h.top&&p.y<=h.bottom);
-   const rides=[...new Set(hits.flatMap(h=>h.events).map(e=>String(e.ride_id)))];
-   if(rides.length===1)openRideHistory(chart.$pc.key,rides[0]);
-   else if(rides.length>1){const chooser=document.getElementById(chart.canvas.id+'ClosureNote')?.querySelector('.pc-chart-rides');if(chooser){chooser.open=true;chooser.querySelector('summary')?.focus();}}
+   // Adjacent touch regions may overlap: select one nearest marker/hour, never merge unrelated groups.
+   hits.sort((a,b)=>Math.abs(p.x-a.markerX)-Math.abs(p.x-b.markerX));
+   if(hits.length)openParkChartGroup(chart,hits[0]);
   }
  };
  if(typeof Chart!=='undefined'&&typeof Chart.register==='function')Chart.register(drawingPlugin);
@@ -298,6 +478,20 @@
  const oldCards=renderCards;renderCards=function(...args){const result=oldCards.apply(this,args);renderAvailability();return result;};
  const oldFetch=fetchLatestData;fetchLatestData=async function(...args){try{return await oldFetch.apply(this,args);}finally{await loadClosureData();}};
  const oldDayNav=renderDayNav;renderDayNav=function(kind,state){const result=oldDayNav.call(this,kind,state),points=state.series[state.selected]?.points||[];if(points.length<2){const context=rideContext(kind),canvas=document.getElementById(kind==='ride'?'rideModalSparkline':'hmModalSparkline');if(context&&canvas)noteForChart({canvas},context.key,context.id,context.day,relevant(context.key,context.id,context.day,true));}return result;};
+// Refresh closure views when the selected display time zone changes.
+let closureDisplayTimeZone = selectedTz;
+const priorClosureTimestamp = updateTimestamp;
+
+updateTimestamp = function(...args) {
+  const result = priorClosureTimestamp.apply(this, args);
+
+  if (closureDisplayTimeZone !== selectedTz) {
+    closureDisplayTimeZone = selectedTz;
+    refreshVisible();
+  }
+
+  return result;
+};
  window.ParkClosureUI={normalize,relevant,rideData,dayStart,dayEnd,hourStart,description,load:loadClosureData,getPayload:()=>payload,periodBounds,chartGroups,refresh:refreshVisible};
  renderAvailability();ensureHeatmapLegend();
 })();

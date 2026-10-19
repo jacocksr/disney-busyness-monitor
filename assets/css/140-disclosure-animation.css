@@ -1,0 +1,5 @@
+
+details.pp-smooth-disclosure.pp-disclosure-animating { overflow: hidden; }
+@media (prefers-reduced-motion: reduce) {
+ details.pp-smooth-disclosure { scroll-behavior: auto; }
+}

@@ -1,0 +1,50 @@
+
+/* Match the other panel park selectors. */
+#pcClosureSummary {
+  --closure-icon-size: 68px;
+  --closure-button-size: 80px;
+}
+
+#pcClosureSummary .pc-closure-park-strip .park-select-btn {
+  flex: 0 0 var(--closure-button-size);
+
+  width: var(--closure-button-size);
+  min-width: var(--closure-button-size);
+  max-width: var(--closure-button-size);
+
+  height: var(--closure-button-size);
+  min-height: var(--closure-button-size);
+  max-height: var(--closure-button-size);
+
+  padding: 6px;
+}
+
+#pcClosureSummary .pc-closure-park-strip .park-select-btn img {
+  flex: 0 0 var(--closure-icon-size);
+
+  width: var(--closure-icon-size) !important;
+  min-width: var(--closure-icon-size);
+  max-width: var(--closure-icon-size);
+
+  height: var(--closure-icon-size) !important;
+  min-height: var(--closure-icon-size);
+  max-height: var(--closure-icon-size);
+
+  object-fit: contain;
+}
+
+/* Match the other cards' mobile image size. */
+@media (max-width: 600px) {
+  #pcClosureSummary {
+    --closure-icon-size: 48px;
+    --closure-button-size: 56px;
+  }
+
+  #pcClosureSummary .pc-closure-park-strip {
+    gap: 0.25rem;
+  }
+
+  #pcClosureSummary .pc-closure-park-strip .park-select-btn {
+    padding: 4px;
+  }
+}

@@ -1,0 +1,16 @@
+
+/* Weather park navigation and forecast browsing; all data fetching is unchanged. */
+#weatherPanel #weatherPanelParkStrip{margin:.8rem 0 .7rem;gap:.85rem;justify-content:center}
+#weatherPanel #weatherPanelParkStrip img{width:68px;height:68px}
+#weatherPanel .ppwx-glance-forecast{grid-template-columns:repeat(5,minmax(0,1fr));max-width:none;width:100%;gap:.5rem;overflow-x:auto}
+#weatherPanel .ppwx-glance-hour{text-align:center;box-sizing:border-box;border:1px solid var(--card-border);border-radius:10px;background:rgba(255,255,255,.035);padding:.35rem .12rem}
+[data-theme="light"] #weatherPanel .ppwx-glance-hour{background:rgba(15,35,55,.025)}
+#weatherPanel .ppwx-forecast-heading{display:flex;justify-content:space-between;align-items:center;gap:.75rem;flex-wrap:wrap}
+#weatherPanel .ppwx-forecast-hint{display:block;font-size:.68rem;font-weight:400;color:var(--text-muted);margin-top:.1rem}
+#weatherPanel .ppwx-forecast-controls{display:flex;gap:.4rem}
+#weatherPanel .ppwx-forecast-controls button{width:34px;height:34px;border:1px solid var(--card-border);border-radius:50%;background:var(--card-bg-solid);color:var(--gold);font:600 1.3rem/1 'Poppins',sans-serif;cursor:pointer}
+#weatherPanel .ppwx-forecast-controls button:disabled{opacity:.35;cursor:default}
+#weatherPanel .ppwx-forecast-controls button:focus-visible,#weatherPanel .ppwx-forecast-scroller:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
+#weatherPanel .ppwx-forecast-scroller{display:flex;gap:.6rem;overflow-x:auto;scroll-snap-type:x proximity;overscroll-behavior-x:contain;position:relative;padding:.25rem 0 .5rem;scrollbar-width:thin}
+#weatherPanel .ppwx-forecast-scroller .weather-hour{flex:0 0 calc((100% - 3rem)/6);min-width:155px;scroll-snap-align:start}
+@media(max-width:600px){#weatherPanel #weatherPanelParkStrip{gap:.5rem}#weatherPanel #weatherPanelParkStrip img{width:48px;height:48px}#weatherPanel .ppwx-glance-forecast{grid-template-columns:repeat(5,minmax(0,1fr));gap:.15rem;padding-bottom:.2rem}#weatherPanel .ppwx-glance-hour strong{font-size:.8rem}#weatherPanel .ppwx-forecast-scroller .weather-hour{flex-basis:155px}}

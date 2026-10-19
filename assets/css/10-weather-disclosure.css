@@ -1,0 +1,45 @@
+
+/* One consolidated presentation layer for the existing weather disclosure. */
+#weatherPanel{padding:0;overflow:hidden}
+#weatherPanel .weather-summary{display:block;list-style:none;cursor:pointer;padding:1.2rem 1.4rem}
+#weatherPanel .weather-summary::-webkit-details-marker{display:none}
+#weatherPanel .weather-summary:focus-visible{outline:3px solid var(--teal);outline-offset:-4px;border-radius:18px}
+#weatherPanel .weather-summary-header{display:flex;justify-content:space-between;align-items:center;gap:1rem}
+#weatherPanel .weather-summary-header h2{font:700 1.25rem/1.35 'Baloo 2',sans-serif;color:var(--text);display:flex;align-items:center;margin-top:.15rem}
+#weatherPanel .weather-expand-label{
+  font-size: .75rem;
+  font-weight: 600;
+  color: var(--gold);
+  white-space: nowrap;
+  background: rgba(255,209,102,.08);
+  border: 1px solid rgba(255,209,102,.28);
+  border-radius: 999px;
+  padding: 0.3rem 0.65rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  transition: all .2s ease;
+}
+#weatherPanel .weather-summary:hover .weather-expand-label {
+  background: rgba(255,209,102,.16);
+  border-color: var(--gold);
+}
+#weatherPanel .ppwx-current{font-size:1.4rem;font-weight:700;line-height:1.35;color:var(--text);margin:.75rem 0 .15rem}
+#weatherPanel .ppwx-metadata{font-size:.8rem;line-height:1.5;color:var(--text-muted)}
+#weatherPanel .ppwx-trend{font-size:.85rem;font-weight:600;color:var(--teal);margin:.65rem 0 .25rem}
+#weatherPanel .ppwx-strip-label{font-size:.65rem;color:var(--text-muted);margin:.6rem 0 .15rem}
+#weatherPanel .ppwx-glance-forecast{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.4rem;margin:.3rem 0 .6rem;max-width:600px}
+#weatherPanel .ppwx-glance-hour{padding:.2rem .35rem;text-align:center;min-width:0;color:var(--text);border:0;background:none}
+#weatherPanel .ppwx-glance-hour time{display:block;font-size:.7rem;color:var(--text-muted)}
+#weatherPanel .ppwx-glance-hour strong{display:block;font-size:.95rem;margin:.2rem 0}
+#weatherPanel .ppwx-glance-hour small{font-size:.74rem;color:var(--teal)}
+#weatherPanel .ppwx-glance-source{font-size:.68rem;color:var(--text-muted);line-height:1.5}
+#weatherPanel .ppwx-warning{font-size:.76rem;color:var(--yellow);margin:.5rem 0 0}
+#weatherPanel .ppwx-alert-preview{font-size:.8rem;font-weight:600;color:var(--red);margin:.5rem 0 0}
+#weatherPanel .weather-expanded-content{border-top:1px solid var(--card-border);padding:1rem 1.4rem 1.2rem}
+#weatherPanel .ppwx-detail-heading{font-size:.95rem;font-weight:700;color:var(--text)}
+#weatherPanel .ppwx-provenance{font-size:.73rem;line-height:1.6;color:var(--text-muted);margin-top:.8rem}
+#weatherPanel .ppwx-provenance p{margin:.3rem 0}
+#weatherPanel .ppwx-no-alert{font-size:.73rem;color:var(--text-muted);margin:.65rem 0}
+#weatherPanel[open] .ppwx-glance-forecast,#weatherPanel[open] .ppwx-strip-label,#weatherPanel[open] .ppwx-glance-source{display:none}
+@media(max-width:600px){#weatherPanel .weather-summary{padding:1rem}#weatherPanel .weather-summary-header{gap:.5rem}#weatherPanel .weather-summary-header h2{font-size:1.05rem}#weatherPanel .weather-expand-label{font-size:.7rem;padding:0.25rem 0.55rem}#weatherPanel .ppwx-current{font-size:1.18rem}#weatherPanel .ppwx-metadata{font-size:.73rem}#weatherPanel .weather-expanded-content{padding:.9rem 1rem 1rem}#weatherPanel .ppwx-glance-forecast{gap:.15rem}#weatherPanel .ppwx-glance-hour{padding:.2rem .05rem}#weatherPanel .ppwx-glance-hour strong{font-size:.83rem}}

@@ -1,0 +1,305 @@
+
+.pc-panel>summary{cursor:pointer;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:.55rem .8rem;align-items:center;list-style:none;color:var(--text)}
+.pc-panel>summary::-webkit-details-marker{display:none}.pc-card-title{font-size:1.05rem;font-weight:700}.pc-card-title small{display:block;font-size:.73rem;color:var(--text-muted);font-weight:400;margin-top:.15rem}
+.pc-collapsed-stats{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:.35rem}.pc-count-chip,.pc-subtle-tag,.pc-state{display:inline-block;border:1px solid var(--card-border);border-radius:999px;padding:.25rem .55rem;font-size:.73rem;font-weight:500;color:var(--text-muted)}
+.pc-count-chip.is-closed,.pc-state.is-closed{color:var(--red);background:rgba(255,93,122,.07)}.pc-state.is-open{color:var(--green)}.pc-card-cue{font-size:.75rem;color:var(--teal);white-space:nowrap}.pc-panel[open] .pc-card-cue>span{display:inline-block;transform:rotate(180deg)}
+#pcAvailabilityBody{padding-top:.8rem}.pc-period-tabs{display:flex;gap:.35rem;flex-wrap:wrap}.pc-period-tab,.pc-action{font:inherit;font-size:.76rem;min-height:36px;padding:.4rem .65rem;border:1px solid var(--card-border);border-radius:8px;color:var(--text);background:var(--card-bg);cursor:pointer;text-align:left;text-decoration:none}
+.pc-period-tab[aria-pressed="true"]{border-color:var(--teal);color:var(--teal);background:rgba(76,214,192,.08)}.pc-period-tab:hover,.pc-action:hover,.pc-current-ride:hover{filter:brightness(1.12)}
+.pc-action:focus-visible,.pc-period-tab:focus-visible,.pc-text-action:focus-visible,.pc-current-ride:focus-visible,.pc-ride-row>summary:focus-visible,.pc-other summary:focus-visible,.pc-data-info summary:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+.pc-range-line{display:flex;align-items:center;flex-wrap:wrap;gap:.4rem .7rem;font-size:.73rem;color:var(--text-muted);margin:.6rem 0 .8rem}.pc-text-action{font:inherit;font-size:.73rem;color:var(--teal);background:transparent;border:0;min-height:34px;padding:.3rem .2rem;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.pc-current{margin:.7rem 0 1rem}.pc-current h4,.pc-list-heading{font-size:.86rem;color:var(--text);margin:.5rem 0}.pc-current h4 small{font-size:.7rem;font-weight:400;color:var(--text-muted);margin-left:.35rem}.pc-current-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:.4rem}
+.pc-current-ride{display:flex;align-items:center;justify-content:space-between;gap:.5rem;border:1px solid rgba(255,93,122,.3);background:rgba(255,93,122,.06);color:var(--text);font:inherit;font-size:.76rem;min-height:44px;border-radius:8px;padding:.5rem .6rem;cursor:pointer;text-align:left}.pc-current-ride span:last-child{font-size:.69rem;color:var(--text-muted);flex-shrink:0}
+.pc-ride-list{display:flex;flex-direction:column;gap:.4rem}.pc-ride-row{border:1px solid var(--card-border);border-radius:9px;overflow:hidden}.pc-ride-row>summary{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:.6rem;min-height:48px;padding:.5rem .65rem;cursor:pointer;list-style:none;color:var(--text);font-size:.78rem;background:var(--card-bg)}
+.pc-ride-row>summary::-webkit-details-marker{display:none}.pc-row-count{font-size:.71rem;color:var(--text-muted);white-space:nowrap}.pc-row-action{font-size:.71rem;color:var(--teal);white-space:nowrap}.pc-ride-row>summary:hover{background:rgba(76,214,192,.055)}.pc-ride-name{overflow-wrap:anywhere}.pc-ride-body{padding:.6rem .75rem;font-size:.76rem;color:var(--text)}
+.pc-ride-body ul,.pc-other ul,.pc-dialog-ride ul{padding-left:1.15rem;line-height:1.6}.pc-state{font-size:.69rem}.pc-show-all{margin-top:.6rem}.pc-empty,.pc-small-note{font-size:.76rem;color:var(--text-muted);line-height:1.5}.pc-small-note{display:block;font-size:.69rem}
+.pc-other,.pc-data-info{margin-top:.9rem;font-size:.76rem;color:var(--text-muted);border-top:1px solid var(--card-border);padding-top:.7rem}.pc-other>summary,.pc-data-info>summary{cursor:pointer;min-height:36px;line-height:1.6}.pc-other>summary span{font-size:.69rem;margin-left:.35rem}.pc-other-ride{margin:.35rem 0}.pc-other-ride>summary{cursor:pointer;min-height:34px;color:var(--text)}.pc-data-info p{line-height:1.6;font-size:.72rem}.pc-scheduled{margin-top:.65rem}
+.pc-combined-legend{flex-wrap:wrap}.pc-mini-legend{display:flex;align-items:center;flex-wrap:wrap;justify-content:center;gap:.35rem .8rem;font-size:.72rem;color:var(--text-muted);margin:.3rem 0}.pc-inline-warning{color:var(--yellow);font-size:.71rem}
+button.pc-heatmap-action{position:relative;box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;width:30px;min-width:30px;max-width:30px;height:22px;min-height:22px;max-height:22px;padding:0;font-family:inherit;font-size:.62rem;font-weight:700;line-height:1;cursor:pointer;border:0;border-radius:4px;vertical-align:middle;appearance:none}
+button.pc-heatmap-action:hover{filter:brightness(1.1)}button.pc-heatmap-action:focus-visible{outline:2px solid var(--teal);outline-offset:-2px}
+.pc-heatmap-badge{position:absolute;right:2px;top:3px;font-size:.58rem;line-height:1;padding:2px;border-radius:3px;color:#fff;background:#8e1830}.pc-chart-note{font-size:.72rem;color:var(--text-muted);margin:.45rem 0 .6rem}.pc-chart-controls{display:flex;align-items:center;gap:.4rem .6rem;flex-wrap:wrap}.pc-chart-controls .pc-action{font-size:.7rem;min-height:34px}.pc-chart-toggle{display:inline-flex;align-items:center;gap:.25rem;font-size:.7rem;cursor:pointer;min-height:34px}.pc-chart-toggle input{accent-color:var(--teal)}
+
+[data-theme="light"] .pc-inline-warning{color:#805000}[data-theme="light"] .pc-count-chip,[data-theme="light"] .pc-subtle-tag{background:#f3f6fa;border-color:#a9b8c8}[data-theme="light"] .pc-state.is-open{color:#14603d}[data-theme="light"] .pc-count-chip.is-closed,[data-theme="light"] .pc-state.is-closed{color:#a91e36}[data-theme="light"] .pc-action:hover,[data-theme="light"] .pc-period-tab:hover,[data-theme="light"] .pc-current-ride:hover{filter:brightness(.97)}
+@media(max-width:500px){.pc-ride-row>summary{grid-template-columns:minmax(0,1fr) auto;gap:.25rem .4rem}.pc-row-count{grid-column:1;font-size:.68rem}.pc-row-action{grid-column:2;grid-row:1/3}.pc-current-list{grid-template-columns:1fr}.pc-card-cue{font-size:.69rem}.pc-card-title{font-size:1rem}.pc-count-chip{font-size:.68rem}.pc-dialog-heading h3{font-size:.9rem}}
+@media(prefers-reduced-motion:reduce){.pc-action,.pc-period-tab{transition:none}}
+
+
+/* Park-wide chart interruption details. Existing closure card rules above stay intact. */
+.pc-chart-note-park{font-size:.76rem;min-width:0;max-width:100%}
+.pc-chart-note-park [hidden]{display:none!important}
+.pc-chart-controls-park{justify-content:space-between;gap:.25rem .75rem;margin:.5rem 0}
+.pc-chart-marker-key{display:inline-flex;align-items:center;gap:.4rem;color:var(--text-muted);font-size:.72rem;line-height:1.4}
+.pc-chart-key-dot{display:inline-block;width:12px;height:12px;flex:0 0 12px;border-radius:50%;background:#ff5d7a;border:2px solid var(--card-bg-solid);box-shadow:0 0 0 1px #ff5d7a}
+.pc-chart-note-park .pc-chart-toggle{min-height:44px;gap:.5rem;font-size:.76rem}
+.pc-chart-note-park .pc-chart-toggle input{width:18px;height:18px;flex:0 0 18px}
+.pc-chart-disclosure{display:flex;align-items:center;justify-content:space-between;gap:.7rem;width:100%;min-height:56px;box-sizing:border-box;padding:.7rem .8rem;border:1px solid var(--card-border);border-radius:10px;background:var(--card-bg);color:var(--text);font:inherit;text-align:left;cursor:pointer}
+.pc-chart-disclosure strong{display:block;font-size:.8rem;line-height:1.45;overflow-wrap:anywhere}
+.pc-chart-disclosure small{display:block;font-size:.71rem;color:var(--text-muted);line-height:1.5;margin-top:.15rem}
+.pc-chart-disclosure[aria-expanded="true"]{border-color:var(--teal)}
+.pc-chart-detail-panel{margin-top:.5rem;border:1px solid var(--card-border);border-radius:10px;padding:.75rem;min-width:0;box-sizing:border-box;background:var(--card-bg)}
+.pc-chart-detail-header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.35rem .6rem}
+.pc-chart-detail-header h4{margin:0;font-size:.84rem;line-height:1.5;color:var(--text);overflow-wrap:anywhere}
+.pc-chart-context{font-size:.7rem;line-height:1.6;color:var(--text-muted);margin:.4rem 0 .7rem}
+.pc-chart-ride-list{display:flex;flex-direction:column;gap:.6rem}
+.pc-chart-ride{padding:.7rem;border:1px solid var(--card-border);border-radius:9px;background:var(--card-bg-solid);min-width:0}
+.pc-chart-ride-heading{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:.35rem .5rem}
+.pc-chart-ride-heading h5{font:600 .8rem/1.5 'Poppins',sans-serif;margin:0;min-width:0;color:var(--text);overflow-wrap:anywhere}
+.pc-chart-ride-heading .pc-state{font-size:.66rem;line-height:1.4}
+.pc-chart-single-episode,.pc-chart-episodes{font-size:.73rem;line-height:1.65;color:var(--text);margin:.4rem 0;overflow-wrap:anywhere}
+.pc-chart-episodes{padding-left:1.1rem}.pc-chart-episodes li+li{margin-top:.35rem}
+.pc-chart-note-park button:not(.pc-chart-disclosure){font:inherit;font-size:.74rem;line-height:1.4;min-height:44px;box-sizing:border-box;cursor:pointer;border-radius:8px;padding:.5rem .65rem}
+.pc-chart-episodes-toggle{display:flex;align-items:center;justify-content:space-between;gap:.6rem;width:100%;margin-top:.4rem;border:1px solid var(--card-border);background:var(--card-bg);color:var(--text);text-align:left}
+.pc-chart-history{display:flex;align-items:center;justify-content:space-between;gap:.6rem;width:100%;margin-top:.45rem;border:1px solid var(--teal);background:rgba(76,214,192,.06);color:var(--teal);text-align:left}
+.pc-chart-all{border:1px solid var(--card-border);background:var(--card-bg-solid);color:var(--teal)}
+.pc-chart-close{margin-top:.6rem;border:1px solid var(--card-border);background:transparent;color:var(--text-muted);width:100%}
+.pc-chart-about{border-top:1px solid var(--card-border);margin-top:.7rem;padding-top:.4rem;color:var(--text-muted);font-size:.72rem}
+.pc-chart-about>summary{display:flex;align-items:center;min-height:44px;cursor:pointer;color:var(--teal)}
+.pc-chart-about p{font-size:.7rem;line-height:1.6;margin:.4rem 0;overflow-wrap:anywhere}
+.pc-chart-note-park button:hover{border-color:var(--teal)}
+.pc-chart-note-park button:focus-visible,.pc-chart-note-park input:focus-visible,.pc-chart-detail-panel:focus-visible,.pc-chart-about>summary:focus-visible{outline:2px solid var(--teal);outline-offset:3px}
+[data-theme="light"] .pc-chart-key-dot{background:#a91e36;box-shadow:0 0 0 1px #a91e36}
+[data-theme="light"] .pc-chart-disclosure,[data-theme="light"] .pc-chart-detail-panel{background:#f5f8fc;border-color:#b9c7d6}
+[data-theme="light"] .pc-chart-disclosure[aria-expanded="true"]{border-color:var(--teal)}
+@media(max-width:600px){.pc-chart-controls-park{align-items:flex-start;flex-direction:column;gap:.1rem}.pc-chart-disclosure{padding:.65rem .7rem}.pc-chart-detail-panel{padding:.6rem}.pc-chart-ride{padding:.6rem}.pc-chart-detail-header{align-items:flex-start}.pc-chart-all{width:100%}.pc-chart-ride-heading{flex-direction:column;align-items:flex-start}}
+
+/* Keep the park-wide trend popup inside the visible viewport. */
+#parkWaitModalOverlay {
+  box-sizing: border-box;
+  height: 100vh;
+  height: 100dvh;
+  padding: 12px;
+  padding-top: max(12px, env(safe-area-inset-top));
+  padding-bottom: max(12px, env(safe-area-inset-bottom));
+  overflow: hidden;
+}
+
+#parkWaitModalOverlay .ride-modal {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  max-height: 100%;
+  overflow: hidden;
+}
+
+/* Title and close button stay outside the scrolling content. */
+#parkWaitModalOverlay .ride-modal-header {
+  flex: 0 0 auto;
+}
+
+/* Only the modal body scrolls. */
+#parkWaitModalOverlay .ride-modal-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 600px) {
+  #parkWaitModalOverlay .ride-modal-header {
+    padding: 0.85rem 0.9rem;
+    align-items: center;
+  }
+
+  #parkWaitModalOverlay .ride-modal-close {
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+  }
+
+  #parkWaitModalOverlay .ride-modal-body {
+    padding: 0.85rem 0.9rem 1rem;
+  }
+
+  /* Keep all three metrics, but use the width more efficiently. */
+  #parkWaitModalOverlay .ride-modal-stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.4rem;
+    margin-bottom: 0.9rem;
+  }
+
+  #parkWaitModalOverlay .ride-modal-stat {
+    min-width: 0;
+    padding: 0.55rem 0.35rem;
+  }
+
+  #parkWaitModalOverlay .ride-modal-stat-label {
+    font-size: 0.6rem;
+    letter-spacing: 0.02em;
+  }
+
+  #parkWaitModalOverlay .ride-modal-stat-value {
+    font-size: 1rem;
+    line-height: 1.3;
+    overflow-wrap: anywhere;
+  }
+}
+
+/* Closure details: stronger visual hierarchy in both themes.
+   Append after the existing closure styles; this is not a full stylesheet. */
+.pc-chart-note-park {
+  --pc-detail-bg: #112c44;
+  --pc-detail-border: #668da5;
+  --pc-detail-accent: #65ddce;
+  --pc-detail-text: #f5f9fd;
+  --pc-detail-muted: #c0d2e0;
+  --pc-detail-card-bg: #21435e;
+  --pc-detail-card-border: #7895a9;
+  --pc-detail-action-bg: #17374d;
+  --pc-detail-shadow: 0 8px 22px rgba(0, 0, 0, .22);
+}
+
+[data-theme="light"] .pc-chart-note-park {
+  --pc-detail-bg: #e9f2f8;
+  --pc-detail-border: #819daf;
+  --pc-detail-accent: #066b65;
+  --pc-detail-text: #17324f;
+  --pc-detail-muted: #405a70;
+  --pc-detail-card-bg: #ffffff;
+  --pc-detail-card-border: #a1b7c8;
+  --pc-detail-action-bg: #e6f3f3;
+  --pc-detail-shadow: 0 6px 18px rgba(23, 50, 79, .10);
+}
+
+.pc-chart-note-park .pc-chart-detail-panel {
+  background: var(--pc-detail-bg);
+  border: 1px solid var(--pc-detail-border);
+  border-top: 3px solid var(--pc-detail-accent);
+  border-radius: 12px;
+  box-shadow: var(--pc-detail-shadow);
+  color: var(--pc-detail-text);
+}
+
+.pc-chart-note-park .pc-chart-detail-header {
+  padding-bottom: .65rem;
+  margin-bottom: .6rem;
+  border-bottom: 1px solid var(--pc-detail-border);
+}
+
+.pc-chart-note-park .pc-chart-detail-header h4 {
+  color: var(--pc-detail-text);
+  font-weight: 700;
+  font-size: .88rem;
+}
+
+.pc-chart-note-park .pc-chart-context {
+  color: var(--pc-detail-muted);
+  line-height: 1.65;
+  margin-bottom: .8rem;
+}
+
+.pc-chart-note-park .pc-chart-ride-list {
+  gap: .8rem;
+}
+
+.pc-chart-note-park .pc-chart-ride {
+  background: var(--pc-detail-card-bg);
+  border: 1px solid var(--pc-detail-card-border);
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, .08);
+}
+
+.pc-chart-note-park .pc-chart-ride-heading h5 {
+  color: var(--pc-detail-text);
+  font-weight: 700;
+}
+
+.pc-chart-note-park .pc-chart-single-episode,
+.pc-chart-note-park .pc-chart-episodes {
+  color: var(--pc-detail-text);
+}
+
+.pc-chart-note-park button.pc-chart-history {
+  background: var(--pc-detail-action-bg);
+  border-color: var(--pc-detail-accent);
+  color: var(--pc-detail-accent);
+  font-weight: 600;
+}
+
+.pc-chart-note-park .pc-chart-episodes-toggle,
+.pc-chart-note-park .pc-chart-all {
+  background: var(--pc-detail-action-bg);
+  border-color: var(--pc-detail-card-border);
+  color: var(--pc-detail-text);
+}
+
+.pc-chart-note-park .pc-chart-about {
+  border-color: var(--pc-detail-border);
+  color: var(--pc-detail-muted);
+}
+
+.pc-chart-note-park .pc-chart-about p {
+  color: var(--pc-detail-muted);
+}
+
+.pc-chart-note-park .pc-chart-close {
+  border-color: var(--pc-detail-border);
+  color: var(--pc-detail-muted);
+}
+
+/* Neutral closure interiors; red identifies only the outer frames.
+   Replace the previous red/rose palette patch with this block.
+   Keep all layout, modal-sizing and visual-hierarchy rules above it. */
+.pc-chart-note-park {
+  --pc-detail-bg: #112c44;
+  --pc-detail-border: #668da5;
+  --pc-detail-accent: #65ddce;
+  --pc-detail-text: #f5f9fd;
+  --pc-detail-muted: #c0d2e0;
+  --pc-detail-card-bg: #21435e;
+  --pc-detail-card-border: #7895a9;
+  --pc-detail-action-bg: #17374d;
+  --pc-detail-shadow: 0 8px 22px rgba(0, 0, 0, .22);
+  --pc-closure-frame: #e38a9b;
+}
+
+[data-theme="light"] .pc-chart-note-park {
+  --pc-detail-bg: #e9f2f8;
+  --pc-detail-border: #819daf;
+  --pc-detail-accent: #066b65;
+  --pc-detail-text: #17324f;
+  --pc-detail-muted: #405a70;
+  --pc-detail-card-bg: #ffffff;
+  --pc-detail-card-border: #a1b7c8;
+  --pc-detail-action-bg: #e6f3f3;
+  --pc-detail-shadow: 0 6px 18px rgba(23, 50, 79, .10);
+  --pc-closure-frame: #b54a62;
+}
+
+.pc-chart-note-park .pc-chart-detail-panel {
+  border-color: var(--pc-closure-frame);
+  border-top-color: var(--pc-closure-frame);
+}
+
+.pc-chart-note-park .pc-chart-disclosure,
+.pc-chart-note-park .pc-chart-disclosure[aria-expanded="true"],
+.pc-chart-note-park .pc-chart-disclosure:hover {
+  background: var(--card-bg);
+  border-color: var(--pc-closure-frame);
+  color: var(--pc-detail-text);
+}
+
+.pc-chart-note-park .pc-chart-disclosure small {
+  color: var(--pc-detail-muted);
+}
+
+/* Smooth chart-closure disclosures. Wrapper-only rules preserve panel colors/layout. */
+.pc-chart-note-park .pc-chart-panel-motion,
+.pc-chart-note-park .pc-chart-episode-motion {
+  display: flow-root;
+  min-height: 0;
+}
+.pc-chart-note-park .pc-closure-animating {
+  overflow: hidden;
+  overflow: clip;
+  will-change: height, opacity;
+}
+.pc-chart-note-park [data-pc-motion][hidden] {
+  display: none !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .pc-chart-note-park [data-pc-motion] {
+    will-change: auto;
+  }
+}

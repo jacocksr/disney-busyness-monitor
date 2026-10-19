@@ -1,0 +1,5 @@
+
+#parkGrid .pp-event-section-title{margin:.6rem 0 .2rem;font-size:.77rem;color:var(--text);font-weight:600}
+#parkGrid .pp-event-highlights{padding-left:1.2rem;margin:.25rem 0 .55rem;color:var(--text);line-height:1.6}
+#parkGrid .pp-event-caution{padding:.45rem .55rem;border:1px solid var(--card-border);border-radius:7px;color:var(--yellow);font-size:.72rem}
+[data-theme="light"] #parkGrid .pp-event-caution{color:#805000;background:#fff5df;border-color:#c5a25e}

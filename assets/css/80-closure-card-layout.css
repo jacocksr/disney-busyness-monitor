@@ -1,0 +1,15 @@
+
+#pcClosureSummary .pc-card-title{grid-column:1;grid-row:1}#pcClosureSummary .pc-collapsed-stats{grid-column:1/-1;grid-row:3}
+#pcClosureSummary .pc-details-pill{grid-column:2;grid-row:1;justify-self:end;display:inline-flex;align-items:center;gap:.4rem;white-space:nowrap;min-height:34px;padding:.35rem .7rem;border:1px solid var(--gold);border-radius:999px;background:rgba(255,209,102,.08);color:var(--gold);font:600 .73rem 'Poppins',sans-serif;cursor:pointer;transition:background .18s ease,border-color .18s ease}
+#pcClosureSummary .pc-details-pill:hover{background:rgba(255,209,102,.16)}#pcClosureSummary .pc-details-pill:focus-visible{outline:2px solid var(--teal);outline-offset:3px}
+#pcClosureSummary .pc-closure-park-strip{grid-column:1/-1;grid-row:2;display:flex;align-items:center;justify-content:center;gap:1rem;padding:.55rem 0 .35rem;cursor:default}
+#pcClosureSummary .park-select-btn{display:inline-flex;align-items:center;justify-content:center;min-height:58px;min-width:58px;padding:5px}
+#pcClosureSummary .park-select-btn img{width:52px;height:52px;object-fit:contain;transition:transform .18s ease}#pcClosureSummary .park-select-btn:disabled{opacity:.45;cursor:default}
+#heatmapTable .pc-heatmap-action .pc-heatmap-badge{right:1px;top:1px;width:7px;height:7px;padding:0;font-size:5px;line-height:7px;text-align:center;border-radius:2px;pointer-events:none}
+#heatmapTable .pc-heatmap-action:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+.pp-event-brief .pp-event-heading{margin-bottom:.3rem!important}.pp-event-brief-hours{font-size:.78rem;font-weight:600;margin:.2rem 0}.pp-event-brief-admission,.pp-event-brief-entry{font-size:.74rem;line-height:1.5;margin:.25rem 0}.pp-event-brief-entry{color:var(--text-muted)}
+.pp-event-brief-actions{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.4rem .8rem;margin-top:.5rem}.pp-event-brief-actions .pp-event-link,.pp-event-brief-actions .pp-event-close{margin:0!important}.pp-event-brief-caution{font-size:.7rem;color:var(--yellow);margin:.3rem 0}
+[data-theme="light"] #pcClosureSummary .pc-details-pill{color:#754600;border-color:#ac701b;background:#fff4de}[data-theme="light"] #pcClosureSummary .pc-details-pill:hover{background:#ffedc9}[data-theme="light"] .pp-event-brief-caution{color:#805000}
+@media(max-width:600px){#heatmapTable .heatmap-cell.pc-heatmap-action{width:34px;min-width:34px;max-width:34px;height:26px;min-height:26px;max-height:26px;font-size:.68rem}}
+@media(max-width:500px){#pcClosureSummary .pc-closure-park-strip{gap:.7rem}#pcClosureSummary .park-select-btn{min-width:48px;min-height:48px;padding:4px}#pcClosureSummary .park-select-btn img{width:42px;height:42px}#pcClosureSummary .pc-details-pill{padding:.3rem .55rem;font-size:.68rem}}
+@media(prefers-reduced-motion:reduce){#pcClosureSummary .park-select-btn img,#pcClosureSummary .pc-details-pill{transition:none}}

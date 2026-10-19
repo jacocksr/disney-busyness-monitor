@@ -1,0 +1,14 @@
+
+.pulse-score-group{display:flex;flex-direction:column;align-items:center;gap:.25rem;flex-shrink:0}
+.pulse-score-group .pulse-descriptor{margin:0;text-align:center;font-size:.72rem;font-weight:600;line-height:1.3;max-width:110px}
+.pulse-score-group .score-badge{display:block}
+.pulse-closures{display:flex;flex-direction:column;gap:.5rem;margin:.5rem 0 0}
+.pulse-closures .pulse-closure-main{display:block;width:100%;padding:.42rem .6rem;border-radius:8px;border:1px solid rgba(53,208,138,.22);background:rgba(53,208,138,.08);color:var(--green);font-size:.78rem;font-weight:600;line-height:1.4}
+.pulse-closures .pulse-closure-main.down{background:rgba(255,93,122,.09);border-color:rgba(255,93,122,.25);color:var(--red)}
+.pulse-closures .pulse-secondary{display:block;width:100%;padding:.32rem .6rem;border-radius:8px;border:1px solid rgba(167,139,250,.20);background:rgba(167,139,250,.07);color:var(--purple);font-size:.70rem;font-weight:500;line-height:1.4}
+.pulse-closures button{cursor:pointer;text-align:left}
+.pulse-closures button:hover{filter:brightness(1.08)}
+.pulse-insight{padding:.5rem .65rem;border-radius:8px;border:1px solid rgba(76,214,192,.20);background:rgba(76,214,192,.08);margin:.5rem 0 0;color:var(--teal)}
+.pulse-insight small{color:var(--text-muted)}
+[data-theme="light"] .pulse-score-group .pulse-descriptor{color:var(--text-muted)}
+@media(max-width:450px){.pulse-score-group .pulse-descriptor{max-width:90px;font-size:.66rem}}

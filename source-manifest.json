@@ -1,0 +1,205 @@
+{
+  "repository": "jacocksr/disney-busyness-monitor",
+  "baseline_commit": "1c1e016a9f66ace98c5230743d8cd2a576f5aafd",
+  "baseline_git_blob": "2bd7b961f6a02efabe4b7ec0d76b80372062d3e5",
+  "baseline_sha256": "b8d8852be2b0787ace18bbfe5b485b005718a2e1a8fac5a9e7eca44dd599de92",
+  "candidate_html_sha256": "bf8ccf9fb841a5db7a8dbcde3f7bf342440247258239ff602051d5e155109281",
+  "source_blocks": [
+    {
+      "kind": "script",
+      "path": "assets/js/00-theme-bootstrap.js",
+      "sha256": "d3722e35716abc793b38e15bbf7d775f3319ba843148de92e782a6b3a344edb0",
+      "replacement": "<script src=\"assets/js/00-theme-bootstrap.js\"></script>",
+      "original_opening_tag": "<script>"
+    },
+    {
+      "kind": "style",
+      "path": "assets/css/00-foundation.css",
+      "sha256": "dffd1d2f8fd2880b2d7ca10fc00b5f62cc567485db556833bd2e7c7ea550dd30",
+      "replacement": "<link rel=\"stylesheet\" href=\"assets/css/00-foundation.css\">",
+      "original_opening_tag": "<style>"
+    },
+    {
+      "kind": "style",
+      "path": "assets/css/10-weather-disclosure.css",
+      "sha256": "a299aeb46171aced8cf2a7b09f1e619880b04538b1e718ddbedadb633a4ccf3a",
+      "replacement": "<link rel=\"stylesheet\" href=\"assets/css/10-weather-disclosure.css\">",
+      "original_opening_tag": "<style>"
+    },
+    {
+      "kind": "style",
+      "path": "assets/css/20-weather-navigation.css",
+      "sha256": "588f1f9b3ae0c778d137fb8d92f73951fe561fbde01c3cf1923a8459312cd767",
+      "replacement": "<link rel=\"stylesheet\" href=\"assets/css/20-weather-navigation.css\">",
+      "original_opening_tag": "<style>"
+    },
+    {
+      "kind": "style",
+      "path": "assets/css/30-mobile-tables.css",
+      "sha256": "eb06f06dae6a32ee299b2c71c6bbba5b476e14e73b2546771d56f81468ecf5c9",
+      "replacement": "<link rel=\"stylesheet\" href=\"assets/css/30-mobile-tables.css\">",
+      "original_opening_tag": "<style>"
+    },
+    {
+      "kind": "style",
+      "path": "assets/css/40-light-wait-contrast.css",
+      "sha256": "4b75cd07420e402326b60ecedca60ae05371a767523e3b57cdc601cd67413c2a",
+      "replacement": "<link rel=\"stylesheet\" id=\"light-mode-wait-panel-contrast\" href=\"assets/css/40-light-wait-contrast.css\">",
+      "original_opening_tag": "<style id=\"light-mode-wait-panel-contrast\">"
+    },
+    {
+      "kind": "style",
+      "path": "assets/css/50-closure-panels.css",
+      "sha256": "dff8e3bcb6ee5251a9ddf33a155bac11e383c5f01785354e37b3209cfb18a45c",
+      "replacement": "<link rel=\"stylesheet\" id=\"park-closure-visual-styles\" href=\"assets/css/50-closure-panels.css\">",
+      "original_opening_tag": "<style id=\"park-closure-visual-styles\">"
+    },
+    {
+      "kind": "style",
+      "path": "assets/css/60-card-interactions.css",
+      "sha256": "70d8193aeefc414055678deba109e370ecc7a8641a84341b7a3d7a5b7010c89b",
+      "replacement": "<link rel=\"stylesheet\" id=\"park-card-pill-interactions\" href=\"assets/css/60-card-interactions.css\">",
+      "original_opening_tag": "<style id=\"park-card-pill-interactions\">"
+    },
+    {
+      "kind": "style",
+      "path": "assets/css/70-event-details.css",
+      "sha256": "57f4c35a67476b8a8636d36f2db543d5424e5f0642a18dd3fa003e0cfc0afcf7",
+      "replacement": "<link rel=\"stylesheet\" id=\"event-catalog-detail-styles\" href=\"assets/css/70-event-details.css\">",
+      "original_opening_tag": "<style id=\"event-catalog-detail-styles\">"
+    },
+    {
+      "kind": "style",
+      "path": "assets/css/80-closure-card-layout.css",
+      "sha256": "570b0eddc4a4702182f44f5b69713ee007f24ee018d44869d7a4109adbc4267b",
+      "replacement": "<link rel=\"stylesheet\" id=\"closure-card-layout-refinements\" href=\"assets/css/80-closure-card-layout.css\">",
+      "original_opening_tag": "<style id=\"closure-card-layout-refinements\">"
+    },
+    {
+      "kind": "style",
+      "path": "assets/css/90-closure-direct-rides.css",
+      "sha256": "e1145c11711aee4101c3a8d091ed646261411fe14a14f12c0c868d961fa215da",
+      "replacement": "<link rel=\"stylesheet\" id=\"closure-direct-ride-refinements\" href=\"assets/css/90-closure-direct-rides.css\">",
+      "original_opening_tag": "<style id=\"closure-direct-ride-refinements\">"
+    },
+    {
+      "kind": "style",
+      "path": "assets/css/100-closure-icons.css",
+      "sha256": "b186ee82f21defc0f9cb6367f7b0a6fb60a6cb51d0ca01045962eea66c7584b6",
+      "replacement": "<link rel=\"stylesheet\" id=\"closure-park-icon-size\" href=\"assets/css/100-closure-icons.css\">",
+      "original_opening_tag": "<style id=\"closure-park-icon-size\">"
+    },
+    {
+      "kind": "script",
+      "path": "assets/js/10-core.js",
+      "sha256": "9f9a51f6f63524a9a0db8dd6d36bd80450e6cf82469d00db4b7ab350dcc64cb0",
+      "replacement": "<script src=\"assets/js/10-core.js\"></script>",
+      "original_opening_tag": "<script>"
+    },
+    {
+      "kind": "script",
+      "path": "assets/js/20-weather.js",
+      "sha256": "a510b6284a22fe761f5c7a5ebd7888c6d412d793b614bf594365ae51170e5d99",
+      "replacement": "<script src=\"assets/js/20-weather.js\"></script>",
+      "original_opening_tag": "<script>"
+    },
+    {
+      "kind": "style",
+      "path": "assets/css/110-card-score-layout.css",
+      "sha256": "d278b4c08e1ce58f4418d18ee12c10bd7f026690c3ba6aedf0c841deb68d5481",
+      "replacement": "<link rel=\"stylesheet\" href=\"assets/css/110-card-score-layout.css\">",
+      "original_opening_tag": "<style>"
+    },
+    {
+      "kind": "script",
+      "path": "assets/js/30-card-descriptors.js",
+      "sha256": "bdcdf05f4ef1ee05b980c74a56d7bca7dcd45b092be48f7500577752752afa44",
+      "replacement": "<script src=\"assets/js/30-card-descriptors.js\"></script>",
+      "original_opening_tag": "<script>"
+    },
+    {
+      "kind": "style",
+      "path": "assets/css/120-card-closure-pills.css",
+      "sha256": "350270e6241c849db1ef0f42dbd96181c3ee2be90e52c3a853f6c57163df6214",
+      "replacement": "<link rel=\"stylesheet\" href=\"assets/css/120-card-closure-pills.css\">",
+      "original_opening_tag": "<style>"
+    },
+    {
+      "kind": "script",
+      "path": "assets/js/40-card-weather-actions.js",
+      "sha256": "f87d26074bf7ff72357ad41e1c191a73779be1bfefd6e1a60afafebe9359630e",
+      "replacement": "<script src=\"assets/js/40-card-weather-actions.js\"></script>",
+      "original_opening_tag": "<script>"
+    },
+    {
+      "kind": "style",
+      "path": "assets/css/130-heatmap-names.css",
+      "sha256": "17c13dfd1e24f824d993fd3510558c31ef9d0e5c2cdf406fbbf99f6a79afeb05",
+      "replacement": "<link rel=\"stylesheet\" href=\"assets/css/130-heatmap-names.css\">",
+      "original_opening_tag": "<style>"
+    },
+    {
+      "kind": "style",
+      "path": "assets/css/140-disclosure-animation.css",
+      "sha256": "11cbf48d51043b4dc5d547ab808830918ea2c136c2a7edf35b57a8d2c8e89ada",
+      "replacement": "<link rel=\"stylesheet\" href=\"assets/css/140-disclosure-animation.css\">",
+      "original_opening_tag": "<style>"
+    },
+    {
+      "kind": "script",
+      "path": "assets/js/50-disclosure-animation.js",
+      "sha256": "c458dd81e5cc0a5a1af4faceb17dff1991cebfce2caa28de1c20e2843a520102",
+      "replacement": "<script src=\"assets/js/50-disclosure-animation.js\"></script>",
+      "original_opening_tag": "<script>"
+    },
+    {
+      "kind": "script",
+      "path": "assets/js/60-table-navigation.js",
+      "sha256": "1c7cbe8487ce348b6c9598a793f9f44f2c6ae62d83814a5cf774ab7679ee1eb5",
+      "replacement": "<script src=\"assets/js/60-table-navigation.js\"></script>",
+      "original_opening_tag": "<script>"
+    },
+    {
+      "kind": "style",
+      "path": "assets/css/150-card-label-wrapping.css",
+      "sha256": "bb17b8081bb96bf7fa10fa35a9028dd206c38dddca06af33e8234226474c62af",
+      "replacement": "<link rel=\"stylesheet\" href=\"assets/css/150-card-label-wrapping.css\">",
+      "original_opening_tag": "<style>"
+    },
+    {
+      "kind": "script",
+      "path": "assets/js/70-comparison-and-card-labels.js",
+      "sha256": "9f88b5bf38f5b647607d9c0d00297508ebb5ecd550457719f4c4e1caf4386332",
+      "replacement": "<script src=\"assets/js/70-comparison-and-card-labels.js\"></script>",
+      "original_opening_tag": "<script>"
+    },
+    {
+      "kind": "script",
+      "path": "assets/js/80-hours-and-park-trends.js",
+      "sha256": "ce85a42a107704e624f0ddd59b8ca2d628f6f07aee9bb3515d3a52c94956ef8f",
+      "replacement": "<script src=\"assets/js/80-hours-and-park-trends.js\"></script>",
+      "original_opening_tag": "<script>"
+    },
+    {
+      "kind": "script",
+      "path": "assets/js/90-closure-history.js",
+      "sha256": "9774d69fadcece92c9740d3c1bf865dad1f347345c8bddd4d4d3d14d93d47ac4",
+      "replacement": "<script id=\"park-closure-visuals\" src=\"assets/js/90-closure-history.js\"></script>",
+      "original_opening_tag": "<script id=\"park-closure-visuals\">"
+    },
+    {
+      "kind": "script",
+      "path": "assets/js/100-event-catalog.js",
+      "sha256": "cb36f68cd6cf7ad6dfb2875ca55b74ae6efde9deff30f7aa15ba3f629a59ea18",
+      "replacement": "<script id=\"verified-park-event-catalog\" src=\"assets/js/100-event-catalog.js\"></script>",
+      "original_opening_tag": "<script id=\"verified-park-event-catalog\">"
+    },
+    {
+      "kind": "script",
+      "path": "assets/js/110-event-details.js",
+      "sha256": "aa0b849cf3242e697c65fffa01f377eb3f8637e0e7e9b51f06adeee5f86a11ca",
+      "replacement": "<script id=\"park-card-event-details\" src=\"assets/js/110-event-details.js\"></script>",
+      "original_opening_tag": "<script id=\"park-card-event-details\">"
+    }
+  ]
+}

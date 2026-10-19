@@ -674,19 +674,31 @@
     const tier = vsTypicalTier(best.comp.pctDiff);
     const magnitude = Math.abs(best.comp.pctDiff);
     const name = escapeHtml(best.park.name);
+    const onlyOneComparison = ready.length === 1;
+    const comparisonNote = onlyOneComparison
+      ? "This is the only park we can compare right now."
+      : "Compared with each park’s usual waits at this hour.";
     let icon, dot, title, sub;
-    if (tier === "better") {
+    if (tier === "much-better" || tier === "better") {
       icon = "🏆"; dot = "🟢";
-      title = `A Great Day for ${name}!`;
-      sub = `Waits are about ${magnitude}% shorter than usual for this time of day.`;
+      title = `${name} Is a Great Pick Right Now!`;
+      sub = tier === "much-better"
+        ? `Waits are about ${magnitude}% shorter than usual for this time of day. More time to explore, less time in line!`
+        : `Waits are about ${magnitude}% shorter than usual for this time of day. A nice moment to enjoy a few favorites.`;
     } else if (tier === "typical") {
       icon = "🧭"; dot = "🔵";
       title = `${name} Is Right on Track!`;
-      sub = `Typical for this time of day.`;
-    } else {
+      sub = `Waits are close to their usual levels for this time of day. Pick your favorites and enjoy the park.`;
+    } else if (tier === "busier" || tier === "much-busier") {
       icon = "🧭"; dot = "🟠";
-      title = `${name} Is Your Best Bet`;
-      sub = `Every park is busier than usual right now, but ${name} is running closest to normal.`;
+      title = onlyOneComparison ? `A Busy Stretch at ${name}` : `${name} Is Your Best Bet Right Now`;
+      sub = onlyOneComparison
+        ? `Waits are about ${magnitude}% longer than usual right now. Check individual rides before choosing your next stop.`
+        : `It’s a busy stretch, but ${name} is closest to its usual wait times.`;
+    } else {
+      icon = "📊"; dot = "⚪";
+      title = `Let’s Check the Latest Waits`;
+      sub = `We don’t have a clear comparison just yet. The individual ride waits can help you choose your next stop.`;
     }
 
     banner.innerHTML = `
@@ -696,7 +708,7 @@
           <div class="best-park-eyebrow">Best Park Right Now</div>
           <div class="best-park-title">${title}</div>
           <div class="best-park-sub">${dot} ${sub}</div>
-          <div class="best-park-note">Ranked among open parks by current waits vs. a typical day at this hour.</div>
+          <div class="best-park-note">${comparisonNote}</div>
         </div>
       </div>`;
   }

@@ -1,4 +1,4 @@
-# Disney World Park Pulse
+[README-UPDATES.md](https://github.com/user-attachments/files/33778554/README-UPDATES.md)# Disney World Park Pulse
 
 ### Live wait times, historical patterns, weather, and ride-closure context for Walt Disney World.
 
@@ -764,6 +764,97 @@ For an interface or data issue, include:
 
 Please keep changes focused, explain data assumptions, and avoid combining unrelated calculation, classification, and presentation changes in one patch.
 
+[Upload# README Updates for the PR #3 Candidate
+
+
+### Current Release and Calendar Candidate
+
+The frontend organization and closure-interface milestone was merged through [PR #2](https://github.com/jacocksr/disney-busyness-monitor/pull/2) on October 19, 2026, at `738ec44d8067d3d2e80a4f44899e379bcf2b0b44`. The owner subsequently reported the live site clean; this is not a separate full assistant production-browser audit.
+
+[PR #3](https://github.com/jacocksr/disney-busyness-monitor/pull/3), branch `calendar_update`, adds the monthly history interface, shared exact-date ride history, weather-description presentation fix and header/layout refinements. It remains open and unmerged at this documentation checkpoint. Its last GitHub-reviewed head was `4c9311917d61920ee6d4c4b7169ca56f68451255`; the owner's later pasted focus-restoration correction was source-reviewed but still requires commit verification.
+
+The calendar API dependency was separately deployed and owner-verified. That backend deployment, the owner's local frontend review, a frontend merge and a completed Pages deployment are different facts. No PR #3 merge SHA or production frontend verification is recorded yet.
+
+Both new stylesheets are now on the synchronized feature branch. The accepted hero preserves Park Pulse branding with “Your Best Disney Day / Starts Here” and the tagline “Live wait times. Smarter park choices. / More time for the magic.”
+
+GitHub Pages continues to publish `main` from the repository root. For candidate review, use the actual `calendar_update` head; for the accepted deployed frontend, inspect current `main` and Pages delivery. Do not change publishing configuration to review the branch. After this milestone is accepted, start unrelated future work from the actual latest `main`.
+
+See [project status](docs/PROJECT_STATUS.md), [architecture](docs/ARCHITECTURE.md), [feature register](docs/FEATURES.md) and [changelog](docs/CHANGELOG.md). PR #1 is closed historical review; PR #2 is the previous merged release; PR #3 is the current candidate, not a completed deployment.
+
+## 2. Replace the Old Heatmap Subsection
+
+Replace the existing `### Ride wait heatmaps` subsection, stopping BEFORE
+`### Ride-closure history`, with:
+
+### History: Today and Explore History
+
+The calendar candidate provides two primary modes:
+
+- **Today:** the existing hourly ride-wait heatmap, with its mobile scrolling and closure context.
+- **Explore History:** a monthly calendar with park-average or qualifying-attraction selection, bounded month navigation and park synchronization.
+
+Calendar colors are stable absolute average-minute bands across months, not attendance, crowd-score tiers, predictions or a typical-relative ranking. Calendar cells display whole minutes while calculations retain their precision. Today is partial; a dash means no qualifying summary, not zero waits. Future dates are not forecasts.
+
+Select a park date to browse a queue-style attraction list with search/sorting and the existing wait-badge rules. Select an attraction/date to open the familiar standby ride-history modal and closure-aware graph for that exact date. Summary-only dates retain their date and available summary values; the interface does not silently substitute today when no graph is returned.
+
+The existing dated Last Seven Days and aggregate weekday views remain in a secondary disclosure. Weekday values combine multiple dates; the graph identifies an actual selected date rather than pretending a weekday aggregate is one day.
+
+The top-right information disclosure contains metric, coverage and snapshot details. A recorded summary or sample count does not establish a complete day, and an absent closure overlay does not establish a day without interruptions.
+
+Months are fetched on demand and reused across park/attraction changes. Detailed ride/date data is fetched when selected. No new five-minute monthly-history polling loop is added; explicit history/date refresh controls allow rechecking loaded data.
+
+## 3. Update the Repository Layout Counts
+
+In the directory tree, change these comments only:
+
+```text
+assets/js/   # 13 ordered classic scripts in the calendar candidate
+assets/css/  # 18 ordered style layers in the calendar candidate
+```
+
+Keep all directories and existing test/evidence entries. Do not add absent test runners
+or Worker source to the layout merely because a chat produced them.
+
+## 4. Add Two API Rows
+
+In the queue-service route table, retain all five existing routes and add:
+
+| Route | Purpose |
+|---|---|
+| `/api/history-calendar?month=YYYY-MM` | Stored monthly park/attraction daily summaries, metric/coverage and supported-history bounds |
+| `/api/ride-history-day?ride=ID&day=YYYY-MM-DD` | Exact requested archive date or today's rolling readings; epoch-second points and explicit no-graph state |
+
+Add this configuration bullet beneath the existing API configuration locations:
+
+- Monthly history, exact-date bridge and session caching: [`assets/js/120-history-calendar.js`](assets/js/120-history-calendar.js).
+
+Add this paragraph after the polling explanation:
+
+> The five-minute live-data refresh interval is separate from history browsing. Monthly
+> history is loaded on demand, reused in-session and refreshed explicitly; this feature
+> does not add a five-minute monthly-history polling loop. Graph points from both archive
+> routes use epoch seconds; the browser converts them to milliseconds. A successful
+> response is not proof of fresh or complete-day source coverage.
+
+## 5. Add the Owner-Led Review Note
+
+In Project continuity or Development and validation, add:
+
+> For the calendar/presentation milestone, the owner prefers to perform browser checks
+> locally while the assistant provides source-reviewed files or precise edits. Record
+> owner results separately from any actual automated evidence. No new browser test run,
+> passing CI suite, full accessibility audit or production deployment is implied by source
+> review or documentation preparation. Preserve original extraction fixtures and historical
+> test reports rather than rewriting their baselines for intentional UI changes.
+
+## 6. Avoid Premature Release Claims
+
+Do not change the PR #3 entry to merged/live until the actual merge and Pages delivery
+are confirmed. After acceptance, record actual identifiers/time and the owner's live
+check in PROJECT_STATUS and CHANGELOG. Do not alter original PR #2 historical evidence.
+ing README-UPDATES.md…]()
+
+
 ---
 
 ## License and affiliation
@@ -775,5 +866,7 @@ Disney names, characters, park identities, and other third-party assets remain a
 Disney World Park Pulse is an independent project and is not affiliated with, sponsored by, or endorsed by The Walt Disney Company.
 
 ---
+
+
 
 Every Disney day is different. Park Pulse helps put the available observations into context.

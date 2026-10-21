@@ -1,0 +1,138 @@
+/* =========================================================
+   Park Pulse Header and Section Layout
+   ========================================================= */
+
+:root {
+  --card-gap: 1.25rem;
+}
+
+/* ---------------------------------------------------------
+   Hero Headline — All Screen Sizes
+   --------------------------------------------------------- */
+
+.hero h1 {
+  font-size: clamp(1.35rem, 7vw, 3.2rem);
+  font-weight: 800;
+  line-height: 1.12;
+  letter-spacing: 0;
+  white-space: normal;
+  margin-bottom: 0.65rem;
+
+  /* Each line supplies its own gradient. */
+  background: none;
+  -webkit-background-clip: initial;
+  background-clip: initial;
+  -webkit-text-fill-color: initial;
+  color: var(--text);
+}
+
+.hero h1 .hero-title-line {
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  margin-inline: auto;
+
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* Your Best Disney Day — vivid orange, coral, and pink. */
+[data-theme="light"] .hero h1 .hero-title-warm {
+  background-image: linear-gradient(
+    90deg,
+    #d96b0b 0%,
+    #df4055 50%,
+    #c52d86 100%
+  );
+}
+
+/* Starts Here — vibrant purple, blue, and teal. */
+[data-theme="light"] .hero h1 .hero-title-cool {
+  background-image: linear-gradient(
+    90deg,
+    #9250c7 0%,
+    #356fce 50%,
+    #168bea 100%
+  );
+}
+
+/* ---------------------------------------------------------
+   Supporting Description — All Screen Sizes
+   --------------------------------------------------------- */
+
+.hero p.tagline {
+  font-size: clamp(0.85rem, 2.3vw, 0.95rem);
+  line-height: 1.5;
+  font-weight: 400;
+  letter-spacing: 0;
+  max-width: 32rem;
+  margin: 0.45rem auto 0;
+  padding: 0 0.25rem;
+}
+
+.hero p.tagline > span {
+  display: block;
+}
+
+/* ---------------------------------------------------------
+   Compact Mobile Header Spacing
+   --------------------------------------------------------- */
+
+@media (max-width: 600px) {
+  .hero {
+    padding: 1.5rem 0 0.5rem;
+    margin-bottom: 0.65rem;
+  }
+
+  .best-park-banner {
+    margin-top: 0;
+    margin-bottom: 0.75rem;
+  }
+}
+
+/* ---------------------------------------------------------
+   Consistent Card and Section Spacing
+   --------------------------------------------------------- */
+
+.container > #parkGrid {
+  gap: var(--card-gap);
+  margin-bottom: 0;
+}
+
+.container > #weatherPanel,
+.container > .content-grid,
+.container > .heatmap-panel,
+.container > #pcAvailabilityPanel {
+  margin-top: var(--card-gap);
+  margin-bottom: 0;
+}
+
+.container > .content-grid {
+  gap: var(--card-gap);
+}
+
+.container > .content-grid > .panel {
+  margin-top: 0;
+  margin-bottom: 0;
+}	
+
+/* Brighter headline gradients for dark mode only. */
+[data-theme="dark"] .hero h1 .hero-title-warm {
+  background-image: linear-gradient(
+    90deg,
+    #ffbd69 0%,
+    #ff917b 50%,
+    #ff80ad 100%
+  );
+}
+
+[data-theme="dark"] .hero h1 .hero-title-cool {
+  background-image: linear-gradient(
+    90deg,
+    #c3a0ff 0%,
+    #8fc7ff 50%,
+    #75e0d1 100%
+  );
+}

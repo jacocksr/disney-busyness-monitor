@@ -1,51 +1,74 @@
-# Feature-preservation register — Disney World Park Pulse
+# Feature-Preservation Register — Disney World Park Pulse
 
-Last updated: 2026-10-18.
+Last updated: October 21, 2026. Includes the PR #3 candidate; not a claim of merge, production verification or completed acceptance checks.
 
 ## Policy
-Preserve every existing feature unless the owner explicitly approves a change or removal. This is a baseline inventory, not a guarantee of complete correctness. Existing defects belong in PROJECT_STATUS.md and must not be fixed silently during unrelated refactoring.
 
-For each change: identify affected IDs, inspect dependencies, compare the accepted source, run applicable tests, record manual evidence and state untested scenarios. No removal of code or UI is justified solely because it is missing from this register; inspect and extend the register if additional functionality is found.
+Preserve every existing feature unless a behavior change/removal is explicitly approved. This inventory is not a guarantee of correctness; absence from the register is not permission to remove behavior. Existing defects belong in PROJECT_STATUS, not silent fixes during unrelated presentation work.
+
+Identify affected IDs, inspect effective source/wrappers, provide source-reviewed changes, record the owner's local results and state unverified scenarios. The owner currently prefers to run browser testing; do not require a new assistant browser cycle for each edit. Record automated checks only if actually performed, with their scope.
 
 ## Features
-| ID | Feature and behavior to preserve | Acceptance checks |
+
+| ID | Feature and Behavior to Preserve | Acceptance Checks / Owner Review |
 |---|---|---|
-| F01 | Theme: saved/system selection, toggle, palettes and motion preference | Both themes; reload preference; chart readability; no theme flash regression |
-| F02 | Time display and freshness: display-zone choice, source timestamps, loading/unavailable/stale notices and retry behavior | Different time zones; initial failure; delayed data; recovery; source age distinct from fetch time |
-| F03 | Four-park overview and synchronized selection: cards, icons, metrics, comparisons, best-park banner | Select each park; table/chart/weather/closure selection remains coherent; repeated rendering does not duplicate content |
-| F04 | Operating schedule and phase: hours, Early Entry, before-open, open, closed, clearing queues and ticketed event presentation | Missing/dated hours; phase boundaries; access wording; post-close and next-day handling |
-| F05 | Attraction table: search by name/land, sorting, mobile presentation, standard/special grouping, operating statuses and popup launch | Search/reset; sort fields/directions; expand scheduled experiences; open a row; long names remain usable |
-| F06 | Wait calculations and historical comparisons: effective positive-wait filters, matched sets, equal ride weights, sample gate, coverage and typical band | Zero/null/closed/alternate queues; partial baselines; no data; insufficient history; correct matched denominator |
-| F07 | Park wait trends: today versus typical, coverage context, main chart and park popup | Same captured data yields same series/labels; no artificial zero during closures; modal opens/closes; themes |
-| F08 | Ride history: rolling readings, daily archive, previous/next navigation, average/peak summaries and sparklines | Today and previous available day; empty/partial/archive-failure cases; return to today; consistent units |
-| F09 | Three heatmap views: today/hour, date-specific last seven days, weekday aggregation | Correct headings/calendar semantics; sorting; missing values; mobile scroll; long names; cells open expected details |
-| F10 | Weather: card readings, glance/detail, park switching, feels-like/wind/humidity, forecasts and alerts | Captured observations/forecasts; expanded browsing; source timestamps; no alerts; missing/stale/provider error; alert fixture when available |
-| F11 | Current closures and classifications: temporary, refurbishment, unknown start, scheduled/limited experiences | Counts/groupings stay distinct; current feed and historical records are not conflated; logical attraction grouping retained |
-| F12 | Closure history: today/week/seven-day periods, timelines, ride links, uncertainty and coverage | Switch periods/parks; interrupted and ongoing episodes; truncation/coverage notices; sampled bounds not exact cause claims |
-| F13 | Closure chart/heatmap overlays: markers, grouped park annotations, ride shading, legends and direct links | No duplicate annotations after refresh; wait values/colors retain meaning; open correct ride details; gaps handled conservatively |
-| F14 | Events/festivals: schedule enrichment, explicit date/park matching, admission distinctions, expandable brief and official links | Identified and unknown event; member versus paid ticket; included festival; long titles; expand/close; no season-based invention |
-| F15 | Disclosures and navigation: expand/collapse, card actions, keyboard sorting/scrolling, visible focus, modal closing and reduced motion | Mouse/keyboard; repeated park changes; Escape; no accidental nested actions; actual accessibility gaps remain tracked |
-| F16 | External dependencies, attribution and static paths: Chart.js, fonts, provider attribution, park images and relative asset references | Actual Pages prefix; no missing assets; retained provider links; unavailable dependency behavior documented |
-| F17 | Refresh lifecycle and resource behavior: polling, prior snapshot retention, independent weather/closure data and source freshness | Initial load, repeat refresh, failures/retry, no duplicated DOM or unnecessary backend changes |
-| F18 | Backend/collector continuity: queue/weather Workers, shared D1, static Python collector and automation | No accidental source/config/schema/workflow edits during frontend-only work; explicit review for any future backend change |
+| F01 | Saved/system theme, toggle, palettes and motion preference; candidate adds distinct readable hero gradients per theme | Both themes; saved reload; no theme flash; chart readability; light cool endpoint remains `#168bea` |
+| F02 | Display-time preferences, source timestamps, loading/stale/unavailable notices and recovery | Multiple zones/device local; initial failure; delayed data; source age versus request time; presentation changes do not create unnecessary fetching |
+| F03 | Four-park overview, icons, metrics/comparisons, best-park banner and synchronized selection | Each park updates queue/chart/weather/closure/history consistently; no duplicate controls or unsupported rankings |
+| F04 | Hours, Early Entry, before/open/closed/clearing phases and ticketed schedules | Missing/dated hours; boundaries; access distinctions; final queues; next day; preserve known limitations for separate review |
+| F05 | Search/sort attraction table, land information, standard/special grouping, statuses and native ride modal | Filter/reset; sort/direction; expand special group; keyboard and row open; long names |
+| F06 | Positive-wait eligibility, matched-set comparisons, equal weights, sample gates and typical bands | Zero/null/closed/alternate queues; partial baseline; matched denominator; no silent metric/classification changes |
+| F07 | Today versus typical park wait trends, coverage context, main chart and park popup | Same source yields same series; no invented zero at closures; theme/zone and modal behavior; new heading is presentation only |
+| F08 | Rolling/archive ride history, previous/next navigation, average/peak and shared renderer | Today and past; empty/one point/null/zero/error; return to today; seconds versus milliseconds; ordinary standby path preserved |
+| F09 | Original hourly, dated Last Seven Days and aggregate weekday heatmaps remain accessible | Today is primary; daily/weekday secondary; sorting, scrolling, markers and title/date semantics; dated cell opens that column's actual day |
+| F10 | Independent weather glance/details, card weather, forecast/alerts, timestamps and freshness | Partial observations, blank/whitespace description, valid temperature with no description, no observations, stale/errors; no forecast-to-observation substitution; alerts fixture still limited |
+| F11 | Current closure classification and grouping: temporary, refurbishment, unknown starts, scheduled experiences | Current feed separate from durable episodes; logical railroad grouping; no special-experience inflation of temporary counts |
+| F12 | Today/week/seven-day closure history, timelines, ride links, uncertainty and coverage | Period/park changes; interrupted/ongoing; truncation/start coverage; no inferred exact transition or cause |
+| F13 | Park markers, per-ride shading, gap handling, legends and direct graph links | No duplicate annotations; counts distinct; shared renderer on calendar opens; absent shading is not full historical coverage |
+| F14 | Event/festival enrichment with explicit dates/parks, admission distinctions and official links | Known/unknown; complimentary-member versus paid versus included; no seasonal invention/live inventory claim |
+| F15 | Disclosures, card navigation, focus, modal closing, keyboard controls, Reduced Motion | Mouse/keyboard/Escape; info disclosure accessible without hover; normal history close restores focus, park-change close suppresses old-row restoration; pending correction needs committed/local verification |
+| F16 | Chart.js/fonts, provider attribution, park PNGs and document-relative assets | Pages prefix/case; dependency failures; both new CSS and calendar JS load; sources retained |
+| F17 | Refresh lifecycle, retained prior snapshots, independent weather/closure and resource discipline | Repeat refresh/failure/retry; no duplicate DOM; month reused across parks/rides; no added five-minute monthly history polling |
+| F18 | Backend/collector continuity: shared D1, queue/weather Workers, separate Python collector and workflow | No unintended migration/index/cron/Worker/publishing changes; backend dependency deployment recorded separately; no secrets |
+| F19 | Monthly Explore History calendar, bounded month navigation, park/attraction selector, historical queue-style lists and exact-date bridge | Earliest/latest month; leap/month boundaries; today partial, future/no data neutral; whole-minute cells, precise underlying means; stable colors; search/sort; summary-only date does not substitute today; stale response cannot change another/closed modal |
+| F20 | Hero branding, two-line benefit heading, concise tagline, Title Case/emoji headings and consistent card spacing | Correct hero/container wrappers; both gradients; no long-value overlap; info icon does not reserve empty row; `--card-gap` without equal-height forcing; desktop park columns remain |
 
-## Current evidence
-- Original inline code retained verbatim in 12 JavaScript and 16 stylesheet files; byte-identical reconstruction passed.
-- Delivered browser suite: 56 matching checkpoints across two widths and two initial themes. Actual Chart.js replayed from the HAR.
-- Compact suite covers park selection, search, heatmap modes, expanded weather/closures, ride popup open/close and theme toggle. It does not individually prove every acceptance check above.
-- Owner reports clean local rendering with images, functional ride popup and other functionality appearing to work as intended.
-- Earlier broader working-environment checks are documented separately in PROJECT_STATUS.md; do not present them as part of the shipped compact runner.
+## History and Metric Requirements
 
-## Coverage still to extend
-Successful archived response replay; active alerts; complete keyboard/focus behavior; animation fidelity; full screenshot parity; all operating-phase edges; prolonged refresh/recovery; backend integration/concurrency. Manual popup confirmation is valuable but is not a recorded archive-response fixture.
+- Existing inclusion rules are limited maintained name patterns; some theater-style experiences remain standard in both frontend and backend. Expanding these exclusions is a separate behavior decision.
+- Calendar attraction means use positive open readings from completed hourly rollups. Park-day means weight qualifying attraction means equally, not pooled samples.
+- Calendar has five stable absolute minute bands (<15, <30, <45, <60, >=60). Queue pills retain the existing three bands (<=15, <=45, >45). Neither is an attendance or typical-relative crowd scale.
+- Cell display rounding does not change stored values, detailed summaries or band thresholds. Preserve zero graph readings; they are not closures and do not enter positive-wait means.
+- Past summary/sample presence is not complete-day coverage. Missing/future dates are not zero. Graph availability flags are snapshot-time metadata, not conclusive negative archive proof.
+- Calendar selection uses the existing standby modal and closure-aware renderer with the requested date. Ordinary standby initialization remains unchanged.
+- Weekday cells summarize multiple dates; the graph must identify its explicitly selected actual day and explain the distinction.
+- Current wait/status remains current. A historical average or missing live ride must not be presented as current operation.
+- Preserve the native shared modal, asynchronous state/token guards, bounded caches, on-demand fetches, explicit refresh and retry. An old request must not reopen a closed modal or reset another selection to today.
 
-## Change review checklist
-- [ ] Starting branch/commit identified and current files inspected.
-- [ ] Affected feature IDs and dependency files listed.
-- [ ] No intentional behavior changes hidden inside structural cleanup.
-- [ ] New/modified/deleted files reviewed; any removal justified.
-- [ ] Relevant automated checks actually run and results recorded.
-- [ ] Owner review recorded separately from automated tests.
-- [ ] Known defects and untested scenarios explicitly noted.
-- [ ] No credentials or raw private browser logs committed.
-- [ ] Deployment/rollback status updated after acceptance.
+## Evidence and Limitations
+
+### Historical PR #2 Evidence
+
+Original extraction preserved 12 JavaScript blocks and 16 stylesheets with byte-identical reconstruction. The compact HAR-backed suite recorded 56 comparisons across two widths/two themes, replaying actual Chart.js. A separate broader 88-checkpoint stage and later targeted banner/marker/inline/status/motion checks are documented in CHANGELOG and are not additive exhaustive coverage. Owner local review included genuine PNGs, followed by an owner-reported clean live check after PR #2.
+
+The original compact suite covered park selection/search/heatmap modes, expanded weather/closures, ride popup and theme. It did not establish every acceptance requirement. Active-alert and successful archive fixtures, broad accessibility, backend concurrency and sustained resource usage remained limited.
+
+### PR #3 Candidate Evidence
+
+The owner confirmed monthly bootstrap, archived-date, summary-only and today's rolling-history endpoint outcomes and reviewed successive frontend iterations locally. The corrected focus functions were source-reviewed in the October 21 paste; commit verification and owner browser behavior of that last change are separate.
+
+Initial calendar component tests used fixture hooks/intercepted APIs/stubbed Chart construction: 45 checks repeated in four configurations, not 180 unique scenarios or a full-site pass. Revision-2 assistant browser work stopped on an unresolved fixture mobile check; it is not a completed passing regression suite. No new browser tests were run for these documentation updates. Last inspected PR check runs were zero.
+
+No full production, real-Chart pixel parity, accessibility, concurrent-scheduler or shared-D1 quota certification is claimed. Do not rewrite original fixtures or historical results to hide expected changes.
+
+## Change Review Checklist
+
+- [ ] Current branch/head/base and any local uncommitted corrections identified.
+- [ ] Affected feature IDs, effective wrapper dependencies and complete asset inventory reviewed.
+- [ ] No unapproved behavior/denominator/classification changes hidden inside polish.
+- [ ] Owner local checks and any actual automated evidence recorded separately, with limitations.
+- [ ] Exact-date/no-graph/late-response and normal-close/park-change-focus behavior reviewed.
+- [ ] Source timestamps, stale warnings, closure uncertainty and provider attribution retained.
+- [ ] No secrets, private raw HARs, generated caches or unrelated files added.
+- [ ] Backend deployment distinguished from frontend merge and Pages delivery.
+- [ ] Merge/deployment/rollback facts recorded only after the actions occur.

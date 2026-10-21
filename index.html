@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="color-scheme" content="dark light" />
 <script src="assets/js/00-theme-bootstrap.js"></script>
-<title>Disney World Park Pulse | Plan Your Magical Day</title>
+<title>Park Pulse | Plan Your Magical Day</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -36,9 +36,17 @@
 </button>
 <div class="container">
   <div class="hero">
-    <div class="hero-badge">✨ Live Crowd Intelligence</div>
-    <h1>Disney World Park Pulse</h1>
-    <p class="tagline">Real-time wait times and historical crowd trends across all four Walt Disney World parks — plan your perfect day before you go.</p>
+    <div class="hero-badge">✨ Disney World Park Pulse</div>
+
+    <h1>
+      <span class="hero-title-line hero-title-warm">Your Best Disney Day</span>
+      <span class="hero-title-line hero-title-cool">Starts Here</span>
+    </h1>
+
+    <p class="tagline">
+      <span>Live wait times. Smarter park choices.</span>
+      <span>More time for the magic.</span>
+    </p>
     <div class="hero-park-strip" id="heroParkStrip">
       <button type="button" class="park-select-btn" data-park-key="magic_kingdom" onclick="selectPark('magic_kingdom', this)">
         <img src="images/MKEmoji_1_1023x1023.png" alt="Magic Kingdom emoji" />
@@ -72,7 +80,7 @@
 
   <div class="section-label">
     <div class="section-label-left">
-      <span class="emoji">🎢</span> Choose Your Park
+      <span class="emoji">🌎</span> Choose Your Park
       <div class="info-btn-wrap">
         <div class="info-btn" id="crowdInfoBtn" onclick="toggleInfoPopover(event)">?</div>
         <div class="info-popover" id="crowdInfoPopover">
@@ -123,7 +131,7 @@
 
     <div class="panel">
       <div class="panel-header">
-        <h2>📈 Average Waits: Today vs. Typical</h2>
+        <h2>📈 Today’s Wait Pulse</h2>
       </div>
       <div class="panel-park-strip" id="chartPanelParkStrip"></div>
       <div class="chart-wrap">
@@ -367,12 +375,10 @@ Additive patch for the current compact/mobile implementation; not a replacement 
 
 
 <script id="park-closure-visuals" src="assets/js/90-closure-history.js"></script>
-
-
-
-
 <script id="verified-park-event-catalog" src="assets/js/100-event-catalog.js"></script>
 <script id="park-card-event-details" src="assets/js/110-event-details.js"></script>
-
+<link rel="stylesheet" href="assets/css/160-history-calendar.css">
+<script src="assets/js/120-history-calendar.js"></script>
+<link rel="stylesheet" href="assets/css/170-header-layout.css">
 </body>
 </html>

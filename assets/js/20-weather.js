@@ -85,7 +85,18 @@ function renderWeatherGlance(view){
   if(feel)metadata.push('Feels '+wxF(feel.v).replace('°F','°'));
   if(wxN(o?.wind_kmh))metadata.push('Wind '+Math.round(o.wind_kmh/1.609344)+' mph');
   if(wxN(o?.humidity_percent))metadata.push('Humidity '+Math.round(o.humidity_percent)+'%');
-  let html='<div class="ppwx-current">'+(o?'<span aria-hidden="true">'+wxIcon(o.description)+'</span> '+wxF(o.temperature_c)+' · '+wxE(o.description||'Conditions unavailable'):'Current conditions unavailable')+'</div>';
+  const condition = typeof o?.description === 'string'
+  ? o.description.trim()
+  : '';
+
+let html = '<div class="ppwx-current">' +
+  (o
+    ? '<span aria-hidden="true">' + wxIcon(condition) + '</span> ' +
+      wxF(o.temperature_c) +
+      (condition ? ' · ' + wxE(condition) : '')
+    : 'Current conditions unavailable'
+  ) +
+  '</div>';
   if(metadata.length)html+='<div class="ppwx-metadata"'+(feel?' title="Feels value uses '+wxE(feel.label.toLowerCase())+'"':'')+'>'+wxE(metadata.join(' · '))+'</div>';
   if(trend)html+='<div class="ppwx-trend"><span aria-hidden="true">'+trend.icon+'</span> '+wxE(trend.text)+'</div>';
   if(periods.length){

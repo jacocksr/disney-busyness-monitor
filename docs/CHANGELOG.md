@@ -2,6 +2,56 @@
 
 This log records actual source/release milestones. Stored test results are local evidence for the stated stage, not automatic CI or proof that every later commit passed.
 
+## 2026-10-21 — Calendar and Presentation Release Candidate (PR #3)
+
+Status: committed candidate on `calendar_update`; PR #3 open and unmerged at preparation. Final owner-pasted focus correction is source-reviewed but not commit-verified.
+
+- PR: https://github.com/jacocksr/disney-busyness-monitor/pull/3
+- Last GitHub-reviewed head: `4c9311917d61920ee6d4c4b7169ca56f68451255`.
+- Last GitHub-reviewed base/main: `0ab07cb3b4fc491c6670d251e9130e1cdfd3d512`.
+- The two new CSS assets were first committed to main and later synchronized into the feature branch. Both are present at the reviewed head; do not infer missing assets from the PR file count.
+- Merge SHA/time and calendar Pages/live verification: not yet recorded. Inspect the new head after committing corrections/docs; do not treat these checkpoint SHAs as immutable current heads.
+
+### Added and Changed
+- Today / Explore History primary navigation; existing hourly, dated recent-day and weekday-pattern information retained.
+- Monthly park/attraction history with bounded month navigation, stable absolute minute colors and whole-minute calendar text. Stored averages/thresholds stay precise.
+- Explicit today/partial, missing, future and summary-only behavior; unavailable graphs never substitute today.
+- Month navigation directly above date cells; methodology/coverage/snapshot context in an accessible top-right information disclosure.
+- Historical lists reuse queue rows, wait-pill styles and the existing wait-color helper, with land-aware filtering and sorting.
+- Date drilldown uses the actual standby modal and closure-aware renderer, not a separate calendar Chart/dialog. Existing normal standby behavior remains.
+- Exact-date fetch validation, second-to-millisecond conversion, selected-date preservation and stale/closed-state response guards.
+- Date navigation loads recorded detail on demand. Weekday aggregates are explained as multi-date values, not dated forecasts.
+- On-demand reusable month/session detail caches; no additional five-minute monthly-history polling loop.
+- Calendar digit/unit stacking and responsive fitting for long values.
+- Header: Your Best Disney Day / Starts Here; tagline: Live wait times. Smarter park choices. / More time for the magic.
+- Correct hero/container wrapper nesting, distinct light/dark gradients (light cool endpoint `#168bea`), compact mobile header/banner spacing and shared `--card-gap:1.25rem`.
+- Emoji/Title Case history headings and chart heading `📈 Today’s Wait Pulse`.
+- Weather glance omits an empty observation-description suffix while preserving useful numeric observations, forecast, timestamps and missing/stale-data safeguards. No forecast description is promoted to an observed station condition.
+- Owner-pasted focus correction forwards `restore` to the close wrapper so park-change close can avoid old-row focus restoration; normal close retains it. Final commit verification remains pending at this checkpoint.
+
+Files: `index.html`, `assets/js/120-history-calendar.js`, `assets/js/20-weather.js`, `assets/css/160-history-calendar.css`, `assets/css/170-header-layout.css`. Features: F01–F03, F05–F10, F13, F15–F20; existing event/closure/collection preservation obligations remain.
+
+### Separately Deployed Backend Dependency
+- Owner added calendar APIs to the supplied queue v3.7 baseline; no formal new Worker version assigned. This frontend PR does not deploy that Worker.
+- `/api/history-calendar?month=YYYY-MM` serves scheduled, stored month snapshots.
+- `/api/ride-history-day?ride=ID&day=YYYY-MM-DD` serves an indexed archive date or today's rolling readings, with epoch-second points and honest no-graph state.
+- Existing routes, collection, rollups, archive jobs and closure tracking remain compatible. Weather Worker is unchanged by the frontend display fix.
+- No new calendar migration/index/cron/service/Pages setting is required by this frontend milestone.
+- Owner October 20 verification: September snapshot at `19:45:31.975Z`, October at `19:50:31.596Z`, manifest at `19:50:32.992Z` with `bootstrap_next:null`; expected month, archive, summary-only and current-day responses confirmed.
+- Shared D1 quota usage/overnight behavior and full scheduler concurrency are not certified. Public month misses do not aggregate raw history.
+
+### Evidence and Limits
+- Owner reviewed frontend iterations locally and supplied screenshots/feedback; this is not a recorded post-merge Pages audit.
+- Last inspected GitHub head had zero check runs. No passing CI claim.
+- Initial calendar component work reported 45 checks repeated over four configurations (180 assertions), using fixture page hooks/intercepted APIs/stubbed Chart construction; not complete site or real-Chart rendering parity.
+- Revision-2 assistant browser work stopped on an unresolved fixture mobile check and did not complete a passing regression sequence. Later owner review/refinements are distinct evidence.
+- Full manual Worker review previously recorded 23 controlled mocked integration groups; earlier add-on/SQLite/hook checks are separate, not an aggregate certification of the deployed code.
+- The owner now prefers to run browser checks locally; this documentation/focus review is source review, not a new automated test result.
+- Known crowd-score wording/band, hours validation, main refresh lifecycle, broad accessibility and backend reproducibility gaps remain separate tasks.
+
+### Release and Rollback
+Commit the pasted correction and docs to `calendar_update`, review the new head and obtain owner acceptance before merge. After merge, record actual identifiers, Pages delivery and owner live review. Frontend rollback must preserve unrelated commits; separately deployed backend rollback is a different operation. Do not rewrite original extraction evidence to make the candidate appear byte-identical to PR #2.
+
 ## 2026-10-19 — Frontend organization and closure-interface milestone
 
 Status: merged into main; owner reports a clean live check.

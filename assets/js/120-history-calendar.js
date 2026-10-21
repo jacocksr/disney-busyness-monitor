@@ -163,9 +163,9 @@
   return note;
  }
  function closeGraph(restore=true){
-  const nav=dayNavState.ride;if(!nav?._ppHistory)return;
-  const target=nav._ppHistory.returnFocus;closeRideModal();if(restore&&target?.isConnected)target.focus({preventScroll:true});
- }
+  if(!dayNavState.ride?._ppHistory)return;
+  closeRideModal(restore);
+}
  function summaryFor(nav,day){return nav._ppHistory.summaries?.[day];}
  async function fetchSharedDay(nav,day,force=false){
   const meta=nav._ppHistory;if(meta.loading[day]&&!force)return;
@@ -223,7 +223,19 @@
   };
   rebuildDayNav=function(kind,nav,reset){if(nav?._ppHistory)return renderDayNav(kind,nav);return originalRebuild.apply(this,arguments);};
   renderDayNav=function(kind,nav){const result=originalRender.apply(this,arguments);if(kind==='ride'&&nav?._ppHistory)paintSharedState(nav);return result;};
-  closeRideModal=function(){const nav=dayNavState.ride;const result=originalClose.apply(this,arguments);const note=doc.getElementById('ppSharedHistoryNote');if(note)note.hidden=true;if(nav?._ppHistory?.returnFocus?.isConnected)nav._ppHistory.returnFocus.focus({preventScroll:true});return result;};
+  closeRideModal=function(restore=true){
+  const nav=dayNavState.ride;
+  const result=originalClose.apply(this,arguments);
+  const note=doc.getElementById('ppSharedHistoryNote');
+
+  if(note)note.hidden=true;
+
+  if(restore&&nav?._ppHistory?.returnFocus?.isConnected){
+    nav._ppHistory.returnFocus.focus({preventScroll:true});
+  }
+
+  return result;
+  };
  }
  function clock(ms){const options={hour:'numeric',minute:'2-digit',timeZoneName:'short'};if(typeof selectedTz==='string'&&selectedTz!=='local')options.timeZone=selectedTz;return new Intl.DateTimeFormat('en-US',options).format(new Date(ms));}
  function syncPark(){const key=active();if(state.park===key)return;state.park=key;state.ride='park';state.selectedDay=null;closeGraph(false);if(state.payload){renderSelector();renderCalendar();}}

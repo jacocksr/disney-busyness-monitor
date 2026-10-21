@@ -1,0 +1,117 @@
+/* Park Pulse score-only presentation. Surrounding card layout is unchanged. */
+:root { --pp-score-gauge-ready: 1; }
+
+#parkGrid .park-card .score-badge.pp-score-gauge {
+  position: relative;
+  display: block;
+  width: 96px;
+  height: 64px;
+  min-width: 96px;
+  flex: 0 0 auto;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  color: var(--text, #f5f8fc);
+  text-align: center;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+#parkGrid .pp-score-gauge .pp-score-dial {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+#parkGrid .pp-score-gauge .pp-score-track {
+  fill: none;
+  stroke: var(--gray, #6b7d94);
+  stroke-width: 9;
+  stroke-linecap: round;
+  opacity: .25;
+}
+
+#parkGrid .pp-score-gauge .pp-score-arc {
+  fill: none;
+  stroke-width: 7;
+  stroke-linecap: round;
+}
+
+#parkGrid .pp-score-gauge .pp-score-stop-green { stop-color: var(--green, #35d08a); }
+#parkGrid .pp-score-gauge .pp-score-stop-yellow { stop-color: var(--yellow, #ffc857); }
+#parkGrid .pp-score-gauge .pp-score-stop-orange { stop-color: #ff9a5c; }
+#parkGrid .pp-score-gauge .pp-score-stop-red { stop-color: var(--red, #ff5d7a); }
+
+#parkGrid .pp-score-gauge .pp-score-wand-outline {
+  fill: none;
+  stroke: var(--card-bg-solid, #17324f);
+  stroke-width: 6;
+  stroke-linecap: round;
+}
+
+#parkGrid .pp-score-gauge .pp-score-wand {
+  fill: none;
+  stroke: var(--text, #f5f8fc);
+  stroke-width: 3.4;
+  stroke-linecap: round;
+}
+
+#parkGrid .pp-score-gauge .pp-score-star-outline {
+  fill: var(--card-bg-solid, #17324f);
+  stroke: var(--card-bg-solid, #17324f);
+  stroke-width: 3.4;
+  stroke-linejoin: round;
+}
+
+#parkGrid .pp-score-gauge .pp-score-star {
+  fill: var(--gold, #ffd166);
+  stroke: var(--text, #f5f8fc);
+  stroke-width: 1;
+  stroke-linejoin: round;
+}
+
+#parkGrid .pp-score-gauge .pp-score-pivot {
+  fill: var(--card-bg-solid, #17324f);
+  stroke: var(--text, #f5f8fc);
+  stroke-width: 1.7;
+}
+
+#parkGrid .pp-score-gauge .pp-score-reading {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: block;
+  color: var(--text, #f5f8fc);
+  font-size: .94rem;
+  font-weight: 800;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
+
+#parkGrid .pp-score-gauge .pp-score-denominator {
+  color: var(--text-muted, #a9bdd4);
+  font-size: .62rem;
+  font-weight: 500;
+}
+
+#parkGrid .pp-score-gauge[data-status="pending"] .pp-score-pointer,
+#parkGrid .pp-score-gauge[data-status="pending"] .pp-score-pivot,
+#parkGrid .pp-score-gauge[data-status="unavailable"] .pp-score-pointer,
+#parkGrid .pp-score-gauge[data-status="unavailable"] .pp-score-pivot,
+#parkGrid .pp-score-gauge[data-status="unavailable"] .pp-score-arc,
+#parkGrid .pp-score-gauge[data-status="unavailable"] .pp-score-denominator {
+  visibility: hidden;
+}
+
+#parkGrid .pp-score-gauge[data-status="unavailable"] .pp-score-reading {
+  color: var(--text-muted, #a9bdd4);
+  font-size: .82rem;
+  font-weight: 600;
+}

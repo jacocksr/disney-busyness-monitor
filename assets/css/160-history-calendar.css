@@ -1,0 +1,114 @@
+/* Park Pulse calendar revision 2. Existing queue/modal classes are reused. */
+.heatmap-panel .pp-legacy-title{display:none!important}
+.heatmap-panel [hidden]{display:none!important}
+.pp-sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.pp-history-primary,.pp-history-actions,.pp-month-navigation{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+.pp-history-primary button,.pp-history-toolbar button,.pp-history-toolbar select,.pp-month-navigation button,.pp-calendar>button[data-pp-action],.pp-history-list-sort select,.pp-history-list-sort button{font:inherit;color:var(--text,#f5f8fc);border:1px solid var(--card-border,#61758c);border-radius:10px;background:var(--card-bg-solid,#17324f);padding:.55rem .8rem;cursor:pointer}
+.pp-history-primary button[aria-pressed="true"]{border-color:var(--teal,#4cd6c0);box-shadow:inset 0 -3px 0 var(--teal,#4cd6c0)}
+.pp-history-toolbar button:disabled,.pp-month-navigation button:disabled{opacity:.4;cursor:not-allowed}
+.pp-history-primary button:focus-visible,.pp-history-toolbar :focus-visible,.pp-month-navigation button:focus-visible,#ppCalendar button:focus-visible,#ppDayOverview button:focus-visible,#ppDayOverview input:focus-visible,#ppDayOverview select:focus-visible,#ppLegacyPatterns summary:focus-visible,#ppHistoryInfo summary:focus-visible{outline:2px solid var(--teal,#4cd6c0);outline-offset:3px}
+.pp-history-toolbar{display:flex;align-items:end;justify-content:space-between;gap:.8rem;flex-wrap:wrap;margin:1rem 0 .5rem}
+.pp-history-select{display:grid;gap:.25rem;font-size:.8rem;max-width:100%;min-width:0}
+.pp-history-select select{max-width:100%;width:min(100%,25rem)}
+.pp-history-actions{font-size:.8rem}
+.pp-history-info{margin:.25rem 0 .5rem;color:var(--text-muted)}
+.pp-history-info>summary{cursor:pointer;list-style:none;display:flex;justify-content:flex-end;padding:2px}
+.pp-history-info>summary::-webkit-details-marker{display:none}
+.pp-history-info .info-btn{width:24px;height:24px;font-size:.8rem}
+.pp-history-info-body{padding:.75rem .85rem;border:1px solid var(--card-border);background:var(--card-bg-solid);border-radius:10px;font-size:.76rem;line-height:1.6;margin-top:.5rem}
+.pp-history-info-body p+p{margin-top:.55rem}
+.pp-month-navigation{flex-wrap:nowrap;justify-content:space-between;width:100%;margin:.4rem 0 .6rem}
+.pp-month-navigation h3{min-width:0;text-align:center;margin:0;font-size:1.05rem;color:var(--text)}
+.pp-month-navigation button{min-width:34px;min-height:40px}
+.pp-calendar{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:.45rem;margin-top:0}
+.pp-weekday{text-align:center;font-size:.75rem;color:var(--text-muted,#a9bdd4);padding:.3rem 0}
+.pp-calendar-cell{display:flex;min-width:0;min-height:100px;flex-direction:column;align-items:stretch;justify-content:space-between;gap:.25rem;border:1px solid var(--card-border,#61758c);border-radius:10px;padding:.6rem;color:#102a43;font:inherit}
+#ppCalendar>button.pp-calendar-cell{background:var(--pp-band);color:#102a43;text-align:left;border-color:transparent;padding:.6rem;cursor:pointer}
+.pp-calendar-cell time{font-size:.85rem;font-weight:600}
+.pp-cell-value{display:block;width:100%;min-width:0;font-weight:800;line-height:1.15}
+.pp-cell-number{display:block;width:100%;max-width:100%;font-size:1.2rem;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap;line-height:1.2}
+.pp-cell-unit{display:block;font-weight:500;font-size:.65rem;line-height:1.3;margin-top:1px}
+.pp-cell-partial{font-size:.62rem;line-height:1.25;overflow-wrap:anywhere}
+#ppCalendar button[aria-pressed="true"]{outline:3px solid var(--text,#f5f8fc);outline-offset:1px;box-shadow:inset 0 0 0 2px #102a43}
+.pp-band-short{--pp-band:#35d08a}.pp-band-medium{--pp-band:#8fd08a}.pp-band-long{--pp-band:#ffc857}.pp-band-longer{--pp-band:#ff9a5c}.pp-band-longest{--pp-band:#ff5d7a}
+.pp-band-none{color:var(--text-muted,#a9bdd4);background:var(--card-bg-solid,#17324f)}
+.pp-future{opacity:.6}.pp-future .pp-cell-value{font-size:.75rem;font-weight:500}
+.pp-history-legend{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.8rem;font-size:.7rem}
+.pp-history-legend span{border-radius:5px;padding:.25rem .4rem;background:var(--pp-band,var(--card-bg-solid,#17324f));color:#102a43}
+.pp-history-legend .pp-band-none{color:var(--text-muted,#a9bdd4)}
+.pp-calendar>.pp-history-message,.pp-calendar>[data-pp-action]{grid-column:1/-1}
+.pp-history-message{background:var(--card-bg-solid,#17324f);border:1px solid var(--card-border,#61758c);border-radius:10px;padding:1rem;line-height:1.6;color:var(--text,#f5f8fc)}
+#ppDayOverview{margin-top:1.3rem}
+.pp-history-list-header h3{font-family:'Baloo 2','Poppins',sans-serif;color:var(--text);font-size:1.15rem;margin:0 0 .3rem;line-height:1.35}
+.pp-history-list-header p{font-size:.8rem;color:var(--text-muted);margin-bottom:.7rem}
+.pp-history-filter-label{display:block;margin-bottom:.7rem}
+#ppHistoryFilter{width:100%;border:1px solid var(--card-border);background:var(--card-bg-solid);color:var(--text);border-radius:999px;padding:.55rem .85rem;font:inherit;font-size:.85rem}
+#ppHistoryFilter::placeholder{color:var(--text-muted)}
+.pp-history-list-sort{display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;margin-bottom:.7rem;color:var(--text-muted);font-size:.75rem}
+.pp-history-list-sort select,.pp-history-list-sort button{font:inherit;min-height:36px;padding:.35rem .5rem;border-radius:8px}
+.pp-history-list-sort select{flex:1;min-width:85px}
+.pp-history-table{width:100%;table-layout:fixed;border-collapse:collapse}
+.pp-history-table th:first-child{width:55%}.pp-history-table th:nth-child(2){width:20%}.pp-history-table th:last-child{width:25%}
+.pp-history-table .pp-history-ride-name{font:inherit;color:inherit;border:0;background:none;text-align:left;padding:0;cursor:pointer;line-height:1.4}
+.pp-history-table td{vertical-align:middle;overflow-wrap:anywhere}
+.pp-history-table .wait-pill{white-space:nowrap;font-variant-numeric:tabular-nums}
+.pp-history-table .pp-empty-rows{padding:1.5rem .8rem;text-align:center;color:var(--text-muted)}
+.pp-history-table-container{max-height:480px;overflow-y:auto;overflow-x:hidden;border-radius:12px}
+#ppLegacyPatterns{margin-top:1.5rem;border-top:1px solid var(--card-border,#61758c);padding-top:1rem}
+#ppLegacyPatterns>summary{cursor:pointer;font-size:.85rem;padding:.4rem 0}#ppLegacyBody>.heatmap-tabs{margin:.7rem 0}
+#ppSharedHistoryNote{font-size:.72rem;color:var(--text-muted);line-height:1.5;margin-top:.8rem}
+#ppSharedHistoryNote p+p{margin-top:.4rem}
+#ppSharedHistoryNote[hidden]{display:none!important}
+@media(max-width:600px){
+ .pp-history-toolbar{align-items:stretch}.pp-history-select,.pp-history-select select{width:100%}.pp-history-actions{width:100%;justify-content:space-between}
+ .pp-calendar{gap:.25rem}.pp-calendar-cell,#ppCalendar>button.pp-calendar-cell{min-height:88px;padding:.35rem .2rem;border-radius:7px}
+ .pp-calendar-cell time{font-size:.72rem}.pp-cell-number{font-size:clamp(.8rem,3.3vw,1.1rem)}.pp-cell-unit{font-size:.58rem}.pp-cell-partial{font-size:.53rem}.pp-weekday{font-size:.63rem}.pp-future .pp-cell-value{font-size:.6rem}
+ #ppHistoryFilter{font-size:16px}
+ .pp-history-table{font-size:.84rem}.pp-history-table th.pp-history-land,.pp-history-table td.pp-history-land{display:none}
+ .pp-history-table th:first-child{width:65%}.pp-history-table th:last-child{width:35%}
+ .pp-history-table th{padding:.6rem .4rem;font-size:.66rem;letter-spacing:.025em;white-space:normal}
+ .pp-history-table td{padding:.6rem .4rem}
+ .pp-history-table tr.ride-row td:first-child strong{display:block;font-size:.85rem;line-height:1.4}
+ .pp-history-table .queue-mobile-land{display:block;font-size:.72rem;line-height:1.35;color:var(--text-muted);margin-top:.15rem}
+ .pp-history-table .wait-pill{padding:.25rem .45rem;font-size:.78rem}
+ .pp-history-table-container{max-height:65vh}
+}
+@media(prefers-reduced-motion:reduce){.pp-calendar-cell{transition:none;animation:none}}
+/* Anchor the information icon to the history card. */
+.heatmap-panel {
+  position: relative;
+}
+
+/* Leave room for the icon beside the heading. */
+#ppHistoryTitle {
+  padding-right: 2.5rem;
+}
+
+/* Remove the disclosure's empty row when collapsed. */
+.pp-history-info {
+  position: static;
+  margin: 0;
+}
+
+/* Move only the clickable icon—not the expanded content. */
+.pp-history-info > summary {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  margin: 0;
+  padding: 2px;
+}
+
+/* Match the card's existing mobile padding. */
+@media (max-width: 600px) {
+  .pp-history-info > summary {
+    top: 1rem;
+    right: 0.75rem;
+  }
+}

@@ -83,7 +83,7 @@
   .park-select-btn {
     background: none; border: none; padding: 6px; cursor: pointer;
     border-radius: 16px;
-    transition: box-shadow 0.2s ease, background 0.2s ease;
+    transition: box-shadow 0.1s ease, background 0.1s ease;
   }
   .park-select-btn:hover { background: rgba(255,255,255,0.06); }
   .park-select-btn.active-park {
@@ -606,17 +606,17 @@
 
   @media (max-width: 600px) {
   body { padding: 1rem; }
-  .hero { padding: 1.75rem 0.5rem 1.5rem; }
+  .hero { padding: 1.5rem 0.5rem 1.5rem; }
 
   .hero-park-strip {
-    gap: 0.5rem;               /* was 1.1rem/1.4rem — tightened to prevent overflow */
+    gap: 0.25rem;               /* was 1.1rem/1.4rem — tightened to prevent overflow */
   }
   .hero-park-strip .park-select-btn {
     padding: 4px;               /* was 6px — trims a few px per icon */
   }
   .hero-park-strip img {
-    width: 70px;                /* was 80px — this is the actual fix */
-    height: 70px;
+    width: 80px;                /* was 80px — this is the actual fix */
+    height: 80px;
   }
   .panel-park-strip img { width: 48px; height: 48px; }
   .info-popover { left: auto; right: 0; }
@@ -865,8 +865,9 @@
 
 /* Compact park cards */
 .park-card{padding:1.35rem}.pulse-header{display:flex;justify-content:space-between;align-items:flex-start;gap:.7rem;margin-bottom:1rem}
-.pulse-identity{display:flex;align-items:center;gap:.65rem;min-width:0}.pulse-identity img{width:52px;height:52px;object-fit:contain;flex-shrink:0}
-.pulse-identity h3{font:700 1.35rem/1.2 'Baloo 2',sans-serif;color:var(--text)}.pulse-descriptor{font-size:.76rem;color:var(--text-muted);margin-top:.2rem}
+.pulse-identity{display:flex;align-items:center;gap:.65rem;min-width:0}
+.pulse-identity > div{min-width:0}.pulse-identity img{width:80px;height:80px;object-fit:contain;flex-shrink:0}
+.pulse-identity h3{font:700 1.375rem/1.2 'Baloo 2',sans-serif;color:var(--text);white-space:normal;overflow-wrap:break-word}.pulse-descriptor{font-size:.76rem;color:var(--text-muted);margin-top:.2rem}
 .pulse-waits{
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
@@ -938,7 +939,7 @@
 .pulse-disclosure:focus-visible,.pulse-weather-details:focus-visible{outline:2px solid var(--teal);outline-offset:3px}
 .weather-panel{margin-bottom:1.5rem}.weather-panel h2{color:var(--text)}.weather-meta{font-size:.75rem;line-height:1.5;color:var(--text-muted)}.weather-current{font-size:1.1rem;color:var(--text);margin:.7rem 0}
 .weather-hours{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:.5rem;margin:.8rem 0}.weather-hour{background:var(--card-bg-solid);border:1px solid var(--card-border);border-radius:10px;padding:.7rem;font-size:.72rem;min-width:0;color:var(--text-muted)}.weather-hour strong{display:block;color:var(--text);font-size:1rem}.weather-status{font-size:.78rem;color:var(--text-muted);margin:.7rem 0}.weather-warning{color:var(--yellow)}.weather-alert{border:1px solid var(--red);padding:.7rem;border-radius:10px;margin:.6rem 0}.weather-alert summary{color:var(--red);cursor:pointer}.weather-alert p{font-size:.78rem;white-space:pre-wrap;color:var(--text)}
-@media(max-width:800px){.weather-hours{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:450px){.weather-hours{grid-template-columns:repeat(2,minmax(0,1fr))}.pulse-identity h3{font-size:1.2rem}.pulse-identity img{width:44px;height:44px}.park-card{padding:1.1rem}.score-badge{font-size:.95rem;padding:.35rem .5rem}}
+@media(max-width:800px){.weather-hours{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:450px){.weather-hours{grid-template-columns:repeat(2,minmax(0,1fr))}.pulse-identity h3{font-size:1.25rem}.pulse-identity img{width:80px;height:80px}.park-card{padding:1.1rem}.score-badge{font-size:.95rem;padding:.35rem .5rem}}
 
 
 .curve-warning{color:var(--yellow);border-left-color:var(--yellow)}

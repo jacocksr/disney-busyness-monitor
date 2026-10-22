@@ -11,6 +11,9 @@
   });
   const states = new Map();
   const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
+  function motionDisabled() {
+    return motionPreference.matches || window.ParkPulseMotion?.enabled === false;
+  }
   let nextId = 0;
   let fallbackFrame = 0;
   let missingStyleWarned = false;
@@ -73,7 +76,7 @@
   function animateToTarget(state, duration) {
     cancelMotion(state);
     const distance = state.target - state.position;
-    if (motionPreference.matches || detailsAreBeingViewed() || !state.visible || !sufficientlyVisible(state.node) ||
+    if (motionDisabled() || detailsAreBeingViewed() || !state.visible || !sufficientlyVisible(state.node) ||
         Math.abs(distance) < 0.00001) {
       settle(state);
       return;
@@ -93,7 +96,7 @@
     function smooth(progress) { return progress * progress * (3 - 2 * progress); }
     function step(now) {
       if (state.motion !== motion) return;
-      if (!state.valid || !state.node.isConnected || detailsAreBeingViewed() || !state.visible) {
+      if (motionDisabled() || !state.valid || !state.node.isConnected || detailsAreBeingViewed() || !state.visible) {
         settle(state);
         return;
       }
@@ -135,7 +138,7 @@
       clearEntrance(state);
       return;
     }
-    if (motionPreference.matches) {
+    if (motionDisabled()) {
       clearEntrance(state);
       beginEntrance(state);
       return;
@@ -173,7 +176,7 @@
     cancelMotion(state);
     state.started = true;
     state.node.dataset.status = 'available';
-    if (motionPreference.matches || detailsAreBeingViewed() || !sufficientlyVisible(state.node)) {
+    if (motionDisabled() || detailsAreBeingViewed() || !sufficientlyVisible(state.node)) {
       settle(state);
       return;
     }
@@ -183,7 +186,7 @@
     const mix = (a, b, p) => a + (b - a) * p;
     function step(now) {
       if (state.motion !== motion) return;
-      if (!state.valid || !state.node.isConnected || !state.visible ||
+      if (motionDisabled() || !state.valid || !state.node.isConnected || !state.visible ||
           !sufficientlyVisible(state.node) || detailsAreBeingViewed()) {
         settle(state);
         return;
@@ -225,7 +228,7 @@
       pending.timer = 0;
       return;
     }
-    if (motionPreference.matches) {
+    if (motionDisabled()) {
       cancelPendingSelection();
       state.started = true;
       settle(state);
@@ -255,7 +258,7 @@
     clearEntrance(state);
     cancelMotion(state);
     pendingSelection = { key, timer: 0 };
-    if (motionPreference.matches) {
+    if (motionDisabled()) {
       cancelPendingSelection();
       state.started = true;
       settle(state);
@@ -310,6 +313,11 @@
       clearEntrance(state);
       cancelMotion(state);
       state.node.dataset.status = 'unavailable';
+      return;
+    }
+    if (motionDisabled()) {
+      state.started = true;
+      settle(state);
       return;
     }
     if (!state.started) {
@@ -403,11 +411,24 @@
       selectionDepth -= 1;
     }
     const key = args[0];
-    if (selectionDepth === 0 && typeof key === 'string' && activeParkKey === key && parkData?.parks?.[key]) {
-      queueSelection(key);
+    if (selectionDepth === 0 && typeof key === 'string' && activeParkKey === key) {
+      // Ordinary selection cancels an old park's flourish; it never starts a new one.
+      if (pendingSelection && pendingSelection.key !== key) cancelPendingSelection();
+      for (const state of states.values()) {
+        if (state.key !== key && state.motion?.kind === 'selection') settle(state);
+      }
     }
     return result;
   };
+
+  function celebratePark(key) {
+    if (motionDisabled()) return false;
+    if (typeof key !== 'string' || activeParkKey !== key || !parkData?.parks?.[key]) return false;
+    const state = states.get(key);
+    if (!state || !state.valid) return false;
+    queueSelection(key);
+    return true;
+  }
 
   // Also resume a held selection when expanded detail content scrolls out of view.
   window.addEventListener('scroll', scheduleFallbackVisibility, { passive: true });
@@ -434,16 +455,18 @@
     } else refreshVisibility();
   });
   const handleMotionPreference = () => {
-    if (motionPreference.matches) {
-      const selected = pendingSelection && states.get(pendingSelection.key);
+    if (motionDisabled()) {
       cancelPendingSelection();
-      if (selected?.valid) selected.started = true;
-      for (const state of states.values()) settle(state);
+      for (const state of states.values()) {
+        if (state.valid) state.started = true;
+        settle(state);
+      }
     }
     refreshVisibility();
   };
   if (motionPreference.addEventListener) motionPreference.addEventListener('change', handleMotionPreference);
   else motionPreference.addListener(handleMotionPreference);
+  window.addEventListener('parkpulse:motionchange', handleMotionPreference);
   window.addEventListener('pagehide', () => {
     if (pendingSelection?.timer) clearTimeout(pendingSelection.timer);
     if (pendingSelection) pendingSelection.timer = 0;
@@ -451,7 +474,7 @@
   });
   window.addEventListener('pageshow', refreshVisibility);
 
-  window.ParkPulseScoreGauge = Object.freeze({ version: '1.3.0', settings: SETTINGS });
+  window.ParkPulseScoreGauge = Object.freeze({ version: '1.5.0', settings: SETTINGS, celebrate: celebratePark });
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', syncGauges, { once: true });
   else syncGauges();
 })();

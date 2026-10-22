@@ -115,3 +115,8 @@
   font-size: .82rem;
   font-weight: 600;
 }
+
+/* Center N/A without reserving space for the hidden / 10. */
+#parkGrid .pp-score-gauge[data-status="unavailable"] .pp-score-denominator {
+  display: none;
+}

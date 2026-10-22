@@ -1,0 +1,99 @@
+/* Click-local decorative layer. No existing image, button, or card layout changes. */
+:root { --pp-park-fireworks-ready: 1; }
+
+.pp-park-firework {
+  --pp-fw-gold: #ffd166;
+  --pp-fw-pink: #ff80ad;
+  --pp-fw-teal: #75e0d1;
+  --pp-fw-purple: #c3a0ff;
+  position: fixed;
+  width: 0;
+  height: 0;
+  z-index: 150;
+  overflow: visible;
+  pointer-events: none;
+  user-select: none;
+}
+
+[data-theme="light"] .pp-park-firework {
+  --pp-fw-gold: #ba7900;
+  --pp-fw-pink: #c52d86;
+  --pp-fw-teal: #087f78;
+  --pp-fw-purple: #8252bb;
+}
+
+.pp-park-firework > span {
+  position: absolute;
+  display: block;
+  pointer-events: none;
+  background: currentColor;
+  transform-origin: center;
+  opacity: 0;
+  box-shadow: 0 0 0 .65px rgba(15, 37, 69, .28);
+}
+
+[data-theme="light"] .pp-park-firework > span {
+  box-shadow: 0 0 0 .75px rgba(255, 255, 255, .8);
+}
+
+.pp-park-firework .pp-fw-flight {
+  position: absolute;
+  display: block;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.pp-park-firework .pp-fw-trail,
+.pp-park-firework .pp-fw-trail-glow {
+  fill: none;
+  stroke-linecap: round;
+  opacity: 0;
+}
+
+.pp-park-firework .pp-fw-trail { stroke-width: 1.7; }
+.pp-park-firework .pp-fw-trail-glow { stroke-width: 4.5; }
+
+.pp-park-firework .pp-fw-comet-head {
+  left: -1.8px;
+  top: -1.8px;
+  width: 3.6px;
+  height: 3.6px;
+  border-radius: 50%;
+}
+
+.pp-park-firework .pp-fw-glint,
+.pp-park-firework .pp-fw-spark--star {
+  left: -3.5px;
+  top: -3.5px;
+  width: 7px;
+  height: 7px;
+  clip-path: polygon(50% 0, 65% 35%, 100% 50%, 65% 65%, 50% 100%, 35% 65%, 0 50%, 35% 35%);
+}
+
+.pp-park-firework .pp-fw-spark {
+  left: -1.4px;
+  top: -3.5px;
+  width: 2.8px;
+  height: 7px;
+  border-radius: 999px;
+}
+
+.pp-park-firework .pp-fw-spark.pp-fw-spark--star {
+  left: -3.5px;
+  width: 7px;
+  border-radius: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pp-park-firework { display: none; }
+}
+
+/* Stronger color without changing particle sizes or movement. */
+.pp-park-firework {
+  filter: saturate(1.5) contrast(1.5);
+}
+
+/* Give dark-mode fireworks a little extra luminosity. */
+[data-theme="dark"] .pp-park-firework {
+  filter: saturate(1.75) brightness(1.08);
+}

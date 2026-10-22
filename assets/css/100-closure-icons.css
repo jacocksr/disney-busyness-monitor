@@ -48,3 +48,8 @@
     padding: 4px;
   }
 }
+
+/* Match the shadow used by the other panel park selectors. */
+#pcClosureSummary .pc-closure-park-strip .park-select-btn img {
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.3));
+}

@@ -4,8 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="color-scheme" content="dark light" />
-<script src="assets/js/00-theme-bootstrap.js"></script>
-<script src="assets/js/150-animations-preference.js"></script>
+<script src="assets/js/boot.js"></script>
 <title>Park Pulse | Plan Your Magical Day</title>
 <!-- Browser tab icons -->
 <link rel="icon" href="images/favicon.ico">
@@ -53,27 +52,14 @@
 <meta name="twitter:image:alt"
       content="Promotional graphic for Disney World Park Pulse.">
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/00-foundation.css">
-
-<link rel="stylesheet" href="assets/css/10-weather-disclosure.css">
-<link rel="stylesheet" href="assets/css/20-weather-navigation.css">
-<link rel="stylesheet" href="assets/css/30-mobile-tables.css">
-
-<link rel="stylesheet" id="light-mode-wait-panel-contrast" href="assets/css/40-light-wait-contrast.css">
-
-<link rel="stylesheet" id="park-closure-visual-styles" href="assets/css/50-closure-panels.css">
-
-<link rel="stylesheet" id="park-card-pill-interactions" href="assets/css/60-card-interactions.css">
-
-<link rel="stylesheet" id="event-catalog-detail-styles" href="assets/css/70-event-details.css">
-
-<link rel="stylesheet" id="closure-card-layout-refinements" href="assets/css/80-closure-card-layout.css">
-
-<link rel="stylesheet" id="closure-direct-ride-refinements" href="assets/css/90-closure-direct-rides.css">
-<link rel="stylesheet" id="closure-park-icon-size" href="assets/css/100-closure-icons.css">
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="assets/css/weather-and-tables.css">
+<link rel="stylesheet" href="assets/css/park-cards-and-closures.css">
+<link rel="stylesheet" href="assets/css/history-calendar.css">
+<link rel="stylesheet" href="assets/css/effects.css">
+<link rel="stylesheet" href="assets/css/app-shell.css">
 </head>
 <body>
 <button type="button" class="theme-toggle-btn" id="themeToggleBtn"
@@ -342,43 +328,7 @@
     </div>
   </div>
 </div>
-<script src="assets/js/10-core.js"></script>
-<script src="assets/js/20-weather.js"></script>
-
-<!-- Park Pulse compact-card refinement (styles + scripts follow). -->
-<link rel="stylesheet" href="assets/css/110-card-score-layout.css">
-<script src="assets/js/30-card-descriptors.js"></script>
-<!-- Park Pulse: equal closure pills + clickable weather pill.
-Paste this entire block AFTER the previous card-refinement patch,
-immediately before </body>. This is NOT a complete replacement page.
--->
-<link rel="stylesheet" href="assets/css/120-card-closure-pills.css">
-<script src="assets/js/40-card-weather-actions.js"></script>
-<link rel="stylesheet" href="assets/css/130-heatmap-names.css">
-<!-- Park Pulse weather-glance repair.
-Paste this entire block immediately before the FINAL </body> tag,
-after all existing scripts. This is an additive patch, not a replacement page.
--->
-
-<!-- Park Pulse reusable smooth disclosures.
-Paste immediately before the FINAL </body>, after existing scripts.
-Applies to details.panel and details[data-smooth-expand]. No data/network changes.
--->
-<link rel="stylesheet" href="assets/css/140-disclosure-animation.css">
-<script src="assets/js/50-disclosure-animation.js"></script>
-
-<script src="assets/js/60-table-navigation.js"></script>
-<!-- Park Pulse positive-wait averages and compact secondary labels.
-Paste after all existing scripts, immediately before the FINAL </body>.
-Additive patch for the current compact/mobile implementation; not a replacement page.
--->
-<link rel="stylesheet" href="assets/css/150-card-label-wrapping.css">
-<script src="assets/js/70-comparison-and-card-labels.js"></script>
-
-<script src="assets/js/80-hours-and-park-trends.js"></script>
-
-
-<!-- Centered Modal: Simplified Park Wait Trend Curve -->
+<!-- Park wait-trend modal (opened from a park card's average wait) -->
 <div class="modal-overlay" id="parkWaitModalOverlay" onclick="if(event.target===this) closeParkWaitModal()">
   <div class="ride-modal" style="max-width: 520px;">
     <div class="ride-modal-header">
@@ -419,16 +369,11 @@ Additive patch for the current compact/mobile implementation; not a replacement 
   </div>
 </div>
 
-<script id="park-closure-visuals" src="assets/js/90-closure-history.js"></script>
-<script id="verified-park-event-catalog" src="assets/js/100-event-catalog.js"></script>
-<script id="park-card-event-details" src="assets/js/110-event-details.js"></script>
-<link rel="stylesheet" href="assets/css/160-history-calendar.css">
-<script src="assets/js/120-history-calendar.js"></script>
-<link rel="stylesheet" href="assets/css/170-header-layout.css">
-<link rel="stylesheet" href="assets/css/180-card-score-gauge.css">
-<script src="assets/js/130-card-score-gauge.js"></script>
-<link rel="stylesheet" href="assets/css/190-park-icon-fireworks.css">
-<script src="assets/js/140-park-icon-fireworks.js"></script>
-<link rel="stylesheet" href="assets/css/200-animations-preference.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.js"></script>
+<script src="assets/js/core.js"></script>
+<script src="assets/js/park-cards.js"></script>
+<script src="assets/js/history.js"></script>
+<script src="assets/js/effects.js"></script>
+<script src="assets/js/app-shell.js"></script>
 </body>
 </html>

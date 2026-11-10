@@ -1,0 +1,1617 @@
+/* Park Pulse — park-cards-and-closures.css
+   Ride Closures panel, park-card pills/interactions, event details, compact card score layout, heatmap names, smooth disclosures.
+   Sources consolidated: 50-closure-panels.css, 60-card-interactions.css, 70-event-details.css, 80-closure-card-layout.css, 90-closure-direct-rides.css, 100-closure-icons.css, 110-card-score-layout.css, 120-card-closure-pills.css, 130-heatmap-names.css, 140-disclosure-animation.css, 150-card-label-wrapping.css */
+
+/* ==== Closure panels ==== */
+
+.pc-panel>summary {
+  cursor: pointer;
+  display: grid;
+  grid-template-columns: minmax(0,1fr) auto;
+  gap: .55rem .8rem;
+  align-items: center;
+  list-style: none;
+  color: var(--text);
+}
+
+.pc-panel>summary::-webkit-details-marker {
+  display: none;
+}
+
+.pc-card-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.pc-card-title small {
+  display: block;
+  font-size: .73rem;
+  color: var(--text-muted);
+  font-weight: 400;
+  margin-top: .15rem;
+}
+
+.pc-collapsed-stats {
+  grid-column: 1/-1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: .35rem;
+}
+
+.pc-count-chip,
+.pc-subtle-tag,
+.pc-state {
+  display: inline-block;
+  border: 1px solid var(--card-border);
+  border-radius: 999px;
+  padding: .25rem .55rem;
+  font-size: .73rem;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.pc-count-chip.is-closed,
+.pc-state.is-closed {
+  color: var(--red);
+  background: rgba(255,93,122,.07);
+}
+
+.pc-state.is-open {
+  color: var(--green);
+}
+
+.pc-card-cue {
+  font-size: .75rem;
+  color: var(--teal);
+  white-space: nowrap;
+}
+
+.pc-panel[open] .pc-card-cue>span {
+  display: inline-block;
+  transform: rotate(180deg);
+}
+
+#pcAvailabilityBody {
+  padding-top: .8rem;
+}
+
+.pc-period-tabs {
+  display: flex;
+  gap: .35rem;
+  flex-wrap: wrap;
+}
+
+.pc-period-tab,
+.pc-action {
+  font: inherit;
+  font-size: .76rem;
+  min-height: 36px;
+  padding: .4rem .65rem;
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  color: var(--text);
+  background: var(--card-bg);
+  cursor: pointer;
+  text-align: left;
+  text-decoration: none;
+}
+
+.pc-period-tab[aria-pressed="true"] {
+  border-color: var(--teal);
+  color: var(--teal);
+  background: rgba(76,214,192,.08);
+}
+
+.pc-period-tab:hover,
+.pc-action:hover,
+.pc-current-ride:hover {
+  filter: brightness(1.12);
+}
+
+.pc-action:focus-visible,
+.pc-period-tab:focus-visible,
+.pc-text-action:focus-visible,
+.pc-current-ride:focus-visible,
+.pc-ride-row>summary:focus-visible,
+.pc-other summary:focus-visible,
+.pc-data-info summary:focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: 2px;
+}
+
+.pc-range-line {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: .4rem .7rem;
+  font-size: .73rem;
+  color: var(--text-muted);
+  margin: .6rem 0 .8rem;
+}
+
+.pc-text-action {
+  font: inherit;
+  font-size: .73rem;
+  color: var(--teal);
+  background: transparent;
+  border: 0;
+  min-height: 34px;
+  padding: .3rem .2rem;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.pc-current {
+  margin: .7rem 0 1rem;
+}
+
+.pc-current h4,
+.pc-list-heading {
+  font-size: .86rem;
+  color: var(--text);
+  margin: .5rem 0;
+}
+
+.pc-current h4 small {
+  font-size: .7rem;
+  font-weight: 400;
+  color: var(--text-muted);
+  margin-left: .35rem;
+}
+
+.pc-current-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(210px,1fr));
+  gap: .4rem;
+}
+
+.pc-current-ride {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .5rem;
+  border: 1px solid rgba(255,93,122,.3);
+  background: rgba(255,93,122,.06);
+  color: var(--text);
+  font: inherit;
+  font-size: .76rem;
+  min-height: 44px;
+  border-radius: 8px;
+  padding: .5rem .6rem;
+  cursor: pointer;
+  text-align: left;
+}
+
+.pc-current-ride span:last-child {
+  font-size: .69rem;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.pc-ride-list {
+  display: flex;
+  flex-direction: column;
+  gap: .4rem;
+}
+
+.pc-ride-row {
+  border: 1px solid var(--card-border);
+  border-radius: 9px;
+  overflow: hidden;
+}
+
+.pc-ride-row>summary {
+  display: grid;
+  grid-template-columns: minmax(0,1fr) auto auto;
+  align-items: center;
+  gap: .6rem;
+  min-height: 48px;
+  padding: .5rem .65rem;
+  cursor: pointer;
+  list-style: none;
+  color: var(--text);
+  font-size: .78rem;
+  background: var(--card-bg);
+}
+
+.pc-ride-row>summary::-webkit-details-marker {
+  display: none;
+}
+
+.pc-row-count {
+  font-size: .71rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.pc-row-action {
+  font-size: .71rem;
+  color: var(--teal);
+  white-space: nowrap;
+}
+
+.pc-ride-row>summary:hover {
+  background: rgba(76,214,192,.055);
+}
+
+.pc-ride-name {
+  overflow-wrap: anywhere;
+}
+
+.pc-ride-body {
+  padding: .6rem .75rem;
+  font-size: .76rem;
+  color: var(--text);
+}
+
+.pc-ride-body ul,
+.pc-other ul {
+  padding-left: 1.15rem;
+  line-height: 1.6;
+}
+
+.pc-state {
+  font-size: .69rem;
+}
+
+.pc-show-all {
+  margin-top: .6rem;
+}
+
+.pc-empty,
+.pc-small-note {
+  font-size: .76rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.pc-small-note {
+  display: block;
+  font-size: .69rem;
+}
+
+.pc-other,
+.pc-data-info {
+  margin-top: .9rem;
+  font-size: .76rem;
+  color: var(--text-muted);
+  border-top: 1px solid var(--card-border);
+  padding-top: .7rem;
+}
+
+.pc-other>summary,
+.pc-data-info>summary {
+  cursor: pointer;
+  min-height: 36px;
+  line-height: 1.6;
+}
+
+.pc-other>summary span {
+  font-size: .69rem;
+  margin-left: .35rem;
+}
+
+.pc-other-ride {
+  margin: .35rem 0;
+}
+
+.pc-other-ride>summary {
+  cursor: pointer;
+  min-height: 34px;
+  color: var(--text);
+}
+
+.pc-data-info p {
+  line-height: 1.6;
+  font-size: .72rem;
+}
+
+.pc-scheduled {
+  margin-top: .65rem;
+}
+
+.pc-combined-legend {
+  flex-wrap: wrap;
+}
+
+.pc-mini-legend {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: .35rem .8rem;
+  font-size: .72rem;
+  color: var(--text-muted);
+  margin: .3rem 0;
+}
+
+.pc-inline-warning {
+  color: var(--yellow);
+  font-size: .71rem;
+}
+
+button.pc-heatmap-action {
+  position: relative;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  min-width: 30px;
+  max-width: 30px;
+  height: 22px;
+  min-height: 22px;
+  max-height: 22px;
+  padding: 0;
+  font-family: inherit;
+  font-size: .62rem;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  border: 0;
+  border-radius: 4px;
+  vertical-align: middle;
+  appearance: none;
+}
+
+button.pc-heatmap-action:hover {
+  filter: brightness(1.1);
+}
+
+button.pc-heatmap-action:focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: -2px;
+}
+
+.pc-heatmap-badge {
+  position: absolute;
+  right: 2px;
+  top: 3px;
+  font-size: .58rem;
+  line-height: 1;
+  padding: 2px;
+  border-radius: 3px;
+  color: #fff;
+  background: #8e1830;
+}
+
+.pc-chart-note {
+  font-size: .72rem;
+  color: var(--text-muted);
+  margin: .45rem 0 .6rem;
+}
+
+.pc-chart-controls {
+  display: flex;
+  align-items: center;
+  gap: .4rem .6rem;
+  flex-wrap: wrap;
+}
+
+.pc-chart-controls .pc-action {
+  font-size: .7rem;
+  min-height: 34px;
+}
+
+.pc-chart-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: .25rem;
+  font-size: .7rem;
+  cursor: pointer;
+  min-height: 34px;
+}
+
+.pc-chart-toggle input {
+  accent-color: var(--teal);
+}
+
+[data-theme="light"] .pc-inline-warning {
+  color: #805000;
+}
+
+[data-theme="light"] .pc-count-chip,
+[data-theme="light"] .pc-subtle-tag {
+  background: #f3f6fa;
+  border-color: #a9b8c8;
+}
+
+[data-theme="light"] .pc-state.is-open {
+  color: #14603d;
+}
+
+[data-theme="light"] .pc-count-chip.is-closed,
+[data-theme="light"] .pc-state.is-closed {
+  color: #a91e36;
+}
+
+[data-theme="light"] .pc-action:hover,
+[data-theme="light"] .pc-period-tab:hover,
+[data-theme="light"] .pc-current-ride:hover {
+  filter: brightness(.97);
+}
+
+@media (max-width:500px) {
+  .pc-ride-row>summary {
+    grid-template-columns: minmax(0,1fr) auto;
+    gap: .25rem .4rem;
+  }
+  .pc-row-count {
+    grid-column: 1;
+    font-size: .68rem;
+  }
+  .pc-row-action {
+    grid-column: 2;
+    grid-row: 1/3;
+  }
+  .pc-current-list {
+    grid-template-columns: 1fr;
+  }
+  .pc-card-cue {
+    font-size: .69rem;
+  }
+  .pc-card-title {
+    font-size: 1rem;
+  }
+  .pc-count-chip {
+    font-size: .68rem;
+  }
+}
+
+@media (prefers-reduced-motion:reduce) {
+  .pc-action,
+  .pc-period-tab {
+    transition: none;
+  }
+}
+
+/* Park-wide chart interruption details. Existing closure card rules above stay intact. */
+.pc-chart-note-park {
+  font-size: .76rem;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.pc-chart-note-park [hidden] {
+  display: none !important;
+}
+
+.pc-chart-controls-park {
+  justify-content: space-between;
+  gap: .25rem .75rem;
+  margin: .5rem 0;
+}
+
+.pc-chart-marker-key {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  color: var(--text-muted);
+  font-size: .72rem;
+  line-height: 1.4;
+}
+
+.pc-chart-key-dot {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  flex: 0 0 12px;
+  border-radius: 50%;
+  background: #ff5d7a;
+  border: 2px solid var(--card-bg-solid);
+  box-shadow: 0 0 0 1px #ff5d7a;
+}
+
+.pc-chart-note-park .pc-chart-toggle {
+  min-height: 44px;
+  gap: .5rem;
+  font-size: .76rem;
+}
+
+.pc-chart-note-park .pc-chart-toggle input {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+}
+
+.pc-chart-disclosure {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .7rem;
+  width: 100%;
+  min-height: 56px;
+  box-sizing: border-box;
+  padding: .7rem .8rem;
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  background: var(--card-bg);
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.pc-chart-disclosure strong {
+  display: block;
+  font-size: .8rem;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.pc-chart-disclosure small {
+  display: block;
+  font-size: .71rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin-top: .15rem;
+}
+
+.pc-chart-disclosure[aria-expanded="true"] {
+  border-color: var(--teal);
+}
+
+.pc-chart-detail-panel {
+  margin-top: .5rem;
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  padding: .75rem;
+  min-width: 0;
+  box-sizing: border-box;
+  background: var(--card-bg);
+}
+
+.pc-chart-detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: .35rem .6rem;
+}
+
+.pc-chart-detail-header h4 {
+  margin: 0;
+  font-size: .84rem;
+  line-height: 1.5;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+
+.pc-chart-context {
+  font-size: .7rem;
+  line-height: 1.6;
+  color: var(--text-muted);
+  margin: .4rem 0 .7rem;
+}
+
+.pc-chart-ride-list {
+  display: flex;
+  flex-direction: column;
+  gap: .6rem;
+}
+
+.pc-chart-ride {
+  padding: .7rem;
+  border: 1px solid var(--card-border);
+  border-radius: 9px;
+  background: var(--card-bg-solid);
+  min-width: 0;
+}
+
+.pc-chart-ride-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: .35rem .5rem;
+}
+
+.pc-chart-ride-heading h5 {
+  font: 600 .8rem/1.5 "Poppins",sans-serif;
+  margin: 0;
+  min-width: 0;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+
+.pc-chart-ride-heading .pc-state {
+  font-size: .66rem;
+  line-height: 1.4;
+}
+
+.pc-chart-single-episode,
+.pc-chart-episodes {
+  font-size: .73rem;
+  line-height: 1.65;
+  color: var(--text);
+  margin: .4rem 0;
+  overflow-wrap: anywhere;
+}
+
+.pc-chart-episodes {
+  padding-left: 1.1rem;
+}
+
+.pc-chart-episodes li+li {
+  margin-top: .35rem;
+}
+
+.pc-chart-note-park button:not(.pc-chart-disclosure) {
+  font: inherit;
+  font-size: .74rem;
+  line-height: 1.4;
+  min-height: 44px;
+  box-sizing: border-box;
+  cursor: pointer;
+  border-radius: 8px;
+  padding: .5rem .65rem;
+}
+
+.pc-chart-episodes-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .6rem;
+  width: 100%;
+  margin-top: .4rem;
+  border: 1px solid var(--card-border);
+  background: var(--card-bg);
+  color: var(--text);
+  text-align: left;
+}
+
+.pc-chart-history {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .6rem;
+  width: 100%;
+  margin-top: .45rem;
+  border: 1px solid var(--teal);
+  background: rgba(76,214,192,.06);
+  color: var(--teal);
+  text-align: left;
+}
+
+.pc-chart-all {
+  border: 1px solid var(--card-border);
+  background: var(--card-bg-solid);
+  color: var(--teal);
+}
+
+.pc-chart-close {
+  margin-top: .6rem;
+  border: 1px solid var(--card-border);
+  background: transparent;
+  color: var(--text-muted);
+  width: 100%;
+}
+
+.pc-chart-about {
+  border-top: 1px solid var(--card-border);
+  margin-top: .7rem;
+  padding-top: .4rem;
+  color: var(--text-muted);
+  font-size: .72rem;
+}
+
+.pc-chart-about>summary {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  cursor: pointer;
+  color: var(--teal);
+}
+
+.pc-chart-about p {
+  font-size: .7rem;
+  line-height: 1.6;
+  margin: .4rem 0;
+  overflow-wrap: anywhere;
+}
+
+.pc-chart-note-park button:hover {
+  border-color: var(--teal);
+}
+
+.pc-chart-note-park button:focus-visible,
+.pc-chart-note-park input:focus-visible,
+.pc-chart-detail-panel:focus-visible,
+.pc-chart-about>summary:focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: 3px;
+}
+
+[data-theme="light"] .pc-chart-key-dot {
+  background: #a91e36;
+  box-shadow: 0 0 0 1px #a91e36;
+}
+
+[data-theme="light"] .pc-chart-disclosure,
+[data-theme="light"] .pc-chart-detail-panel {
+  background: #f5f8fc;
+  border-color: #b9c7d6;
+}
+
+[data-theme="light"] .pc-chart-disclosure[aria-expanded="true"] {
+  border-color: var(--teal);
+}
+
+@media (max-width:600px) {
+  .pc-chart-controls-park {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: .1rem;
+  }
+  .pc-chart-disclosure {
+    padding: .65rem .7rem;
+  }
+  .pc-chart-detail-panel {
+    padding: .6rem;
+  }
+  .pc-chart-ride {
+    padding: .6rem;
+  }
+  .pc-chart-detail-header {
+    align-items: flex-start;
+  }
+  .pc-chart-all {
+    width: 100%;
+  }
+  .pc-chart-ride-heading {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* Keep the park-wide trend popup inside the visible viewport. */
+#parkWaitModalOverlay {
+  box-sizing: border-box;
+  height: 100vh;
+  height: 100dvh;
+  padding: 12px;
+  padding-top: max(12px, env(safe-area-inset-top));
+  padding-bottom: max(12px, env(safe-area-inset-bottom));
+  overflow: hidden;
+}
+
+#parkWaitModalOverlay .ride-modal {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  max-height: 100%;
+  overflow: hidden;
+}
+
+/* Title and close button stay outside the scrolling content. */
+#parkWaitModalOverlay .ride-modal-header {
+  flex: 0 0 auto;
+}
+
+/* Only the modal body scrolls. */
+#parkWaitModalOverlay .ride-modal-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 600px) {
+  #parkWaitModalOverlay .ride-modal-header {
+    padding: 0.85rem 0.9rem;
+    align-items: center;
+  }
+  #parkWaitModalOverlay .ride-modal-close {
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+  }
+  #parkWaitModalOverlay .ride-modal-body {
+    padding: 0.85rem 0.9rem 1rem;
+  }
+  /* Keep all three metrics, but use the width more efficiently. */
+  #parkWaitModalOverlay .ride-modal-stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.4rem;
+    margin-bottom: 0.9rem;
+  }
+  #parkWaitModalOverlay .ride-modal-stat {
+    min-width: 0;
+    padding: 0.55rem 0.35rem;
+  }
+  #parkWaitModalOverlay .ride-modal-stat-label {
+    font-size: 0.6rem;
+    letter-spacing: 0.02em;
+  }
+  #parkWaitModalOverlay .ride-modal-stat-value {
+    font-size: 1rem;
+    line-height: 1.3;
+    overflow-wrap: anywhere;
+  }
+}
+
+.pc-chart-note-park .pc-chart-detail-panel {
+  background: var(--pc-detail-bg);
+  border: 1px solid var(--pc-detail-border);
+  border-top: 3px solid var(--pc-detail-accent);
+  border-radius: 12px;
+  box-shadow: var(--pc-detail-shadow);
+  color: var(--pc-detail-text);
+}
+
+.pc-chart-note-park .pc-chart-detail-header {
+  padding-bottom: .65rem;
+  margin-bottom: .6rem;
+  border-bottom: 1px solid var(--pc-detail-border);
+}
+
+.pc-chart-note-park .pc-chart-detail-header h4 {
+  color: var(--pc-detail-text);
+  font-weight: 700;
+  font-size: .88rem;
+}
+
+.pc-chart-note-park .pc-chart-context {
+  color: var(--pc-detail-muted);
+  line-height: 1.65;
+  margin-bottom: .8rem;
+}
+
+.pc-chart-note-park .pc-chart-ride-list {
+  gap: .8rem;
+}
+
+.pc-chart-note-park .pc-chart-ride {
+  background: var(--pc-detail-card-bg);
+  border: 1px solid var(--pc-detail-card-border);
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, .08);
+}
+
+.pc-chart-note-park .pc-chart-ride-heading h5 {
+  color: var(--pc-detail-text);
+  font-weight: 700;
+}
+
+.pc-chart-note-park .pc-chart-single-episode,
+.pc-chart-note-park .pc-chart-episodes {
+  color: var(--pc-detail-text);
+}
+
+.pc-chart-note-park button.pc-chart-history {
+  background: var(--pc-detail-action-bg);
+  border-color: var(--pc-detail-accent);
+  color: var(--pc-detail-accent);
+  font-weight: 600;
+}
+
+.pc-chart-note-park .pc-chart-episodes-toggle,
+.pc-chart-note-park .pc-chart-all {
+  background: var(--pc-detail-action-bg);
+  border-color: var(--pc-detail-card-border);
+  color: var(--pc-detail-text);
+}
+
+.pc-chart-note-park .pc-chart-about {
+  border-color: var(--pc-detail-border);
+  color: var(--pc-detail-muted);
+}
+
+.pc-chart-note-park .pc-chart-about p {
+  color: var(--pc-detail-muted);
+}
+
+.pc-chart-note-park .pc-chart-close {
+  border-color: var(--pc-detail-border);
+  color: var(--pc-detail-muted);
+}
+
+/* Neutral closure interiors; red identifies only the outer frames.
+   Replace the previous red/rose palette patch with this block.
+   Keep all layout, modal-sizing and visual-hierarchy rules above it. */
+.pc-chart-note-park {
+  --pc-detail-bg: #112c44;
+  --pc-detail-border: #668da5;
+  --pc-detail-accent: #65ddce;
+  --pc-detail-text: #f5f9fd;
+  --pc-detail-muted: #c0d2e0;
+  --pc-detail-card-bg: #21435e;
+  --pc-detail-card-border: #7895a9;
+  --pc-detail-action-bg: #17374d;
+  --pc-detail-shadow: 0 8px 22px rgba(0, 0, 0, .22);
+  --pc-closure-frame: #e38a9b;
+}
+
+[data-theme="light"] .pc-chart-note-park {
+  --pc-detail-bg: #e9f2f8;
+  --pc-detail-border: #819daf;
+  --pc-detail-accent: #066b65;
+  --pc-detail-text: #17324f;
+  --pc-detail-muted: #405a70;
+  --pc-detail-card-bg: #ffffff;
+  --pc-detail-card-border: #a1b7c8;
+  --pc-detail-action-bg: #e6f3f3;
+  --pc-detail-shadow: 0 6px 18px rgba(23, 50, 79, .10);
+  --pc-closure-frame: #b54a62;
+}
+
+.pc-chart-note-park .pc-chart-detail-panel {
+  border-color: var(--pc-closure-frame);
+  border-top-color: var(--pc-closure-frame);
+}
+
+.pc-chart-note-park .pc-chart-disclosure,
+.pc-chart-note-park .pc-chart-disclosure[aria-expanded="true"],
+.pc-chart-note-park .pc-chart-disclosure:hover {
+  background: var(--card-bg);
+  border-color: var(--pc-closure-frame);
+  color: var(--pc-detail-text);
+}
+
+.pc-chart-note-park .pc-chart-disclosure small {
+  color: var(--pc-detail-muted);
+}
+
+/* Smooth chart-closure disclosures. Wrapper-only rules preserve panel colors/layout. */
+.pc-chart-note-park .pc-chart-panel-motion,
+.pc-chart-note-park .pc-chart-episode-motion {
+  display: flow-root;
+  min-height: 0;
+}
+
+.pc-chart-note-park .pc-closure-animating {
+  overflow: clip;
+  will-change: height, opacity;
+}
+
+.pc-chart-note-park [data-pc-motion][hidden] {
+  display: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pc-chart-note-park [data-pc-motion] {
+    will-change: auto;
+  }
+}
+
+/* ==== Card interactions ==== */
+
+#parkGrid .park-card .pp-card-pill {
+  transition: background-color .18s ease,border-color .18s ease,box-shadow .18s ease,color .18s ease;
+  --pp-pill-wash: rgba(255,255,255,.065);
+}
+
+[data-theme="light"] #parkGrid .park-card .pp-card-pill {
+  --pp-pill-wash: rgba(20,45,75,.055);
+}
+
+#parkGrid .park-card .pp-card-pill:is(:hover,:focus-visible) {
+  filter: none;
+  box-shadow: inset 0 0 0 100vmax var(--pp-pill-wash);
+}
+
+#parkGrid .park-card .pp-card-pill:focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: 3px;
+}
+
+#parkGrid .park-card button.pp-event-trigger {
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  max-width: 100%;
+  white-space: normal;
+  flex-wrap: wrap;
+  appearance: none;
+}
+
+#parkGrid .pp-event-trigger .pp-event-chevron {
+  display: inline-block;
+  margin-left: auto;
+  font-size: .75rem;
+  transition: transform .18s ease;
+  flex: 0 0 auto;
+}
+
+#parkGrid .pp-event-trigger[aria-expanded="true"] .pp-event-chevron {
+  transform: rotate(180deg);
+}
+
+#parkGrid .pp-event-region {
+  box-sizing: border-box;
+  margin: .55rem 0 .7rem;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+#parkGrid .pp-event-region[hidden] {
+  display: none !important;
+}
+
+#parkGrid .pp-event-region-inner {
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  padding: .7rem .8rem;
+  background: rgba(255,255,255,.035);
+  color: var(--text);
+  font-size: .77rem;
+  line-height: 1.55;
+}
+
+[data-theme="light"] #parkGrid .pp-event-region-inner {
+  background: #f5f8fc;
+  border-color: #b9c7d6;
+}
+
+#parkGrid .pp-event-heading {
+  font-size: .9rem;
+  font-weight: 700;
+  margin: 0 0 .45rem;
+  color: var(--text);
+}
+
+#parkGrid .pp-event-link {
+  color: var(--teal);
+  text-decoration: underline;
+  display: inline-block;
+  margin-top: .5rem;
+}
+
+#parkGrid .pp-event-close {
+  display: block;
+  margin: .65rem 0 0;
+  padding: .25rem .45rem;
+  border: 1px solid var(--card-border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: .7rem;
+  cursor: pointer;
+}
+
+@media (prefers-reduced-motion:reduce) {
+  #parkGrid .pp-card-pill,
+  #parkGrid .pp-event-chevron {
+    transition: none !important;
+  }
+}
+
+/* ==== Closure card layout ==== */
+
+#pcClosureSummary .pc-card-title {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+#pcClosureSummary .pc-collapsed-stats {
+  grid-column: 1/-1;
+  grid-row: 3;
+}
+
+#pcClosureSummary .pc-details-pill {
+  grid-column: 2;
+  grid-row: 1;
+  justify-self: end;
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  white-space: nowrap;
+  min-height: 34px;
+  padding: .35rem .7rem;
+  border: 1px solid var(--gold);
+  border-radius: 999px;
+  background: rgba(255,209,102,.08);
+  color: var(--gold);
+  font: 600 .73rem "Poppins",sans-serif;
+  cursor: pointer;
+  transition: background .18s ease,border-color .18s ease;
+}
+
+#pcClosureSummary .pc-details-pill:hover {
+  background: rgba(255,209,102,.16);
+}
+
+#pcClosureSummary .pc-details-pill:focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: 3px;
+}
+
+#pcClosureSummary .pc-closure-park-strip {
+  grid-column: 1/-1;
+  grid-row: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: .55rem 0 .35rem;
+  cursor: default;
+}
+
+#pcClosureSummary .park-select-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 58px;
+  min-width: 58px;
+  padding: 5px;
+}
+
+#pcClosureSummary .park-select-btn img {
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+  transition: transform .18s ease;
+}
+
+#pcClosureSummary .park-select-btn:disabled {
+  opacity: .45;
+  cursor: default;
+}
+
+#heatmapTable .pc-heatmap-action .pc-heatmap-badge {
+  right: 1px;
+  top: 1px;
+  width: 7px;
+  height: 7px;
+  padding: 0;
+  font-size: 5px;
+  line-height: 7px;
+  text-align: center;
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+#heatmapTable .pc-heatmap-action:focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: 2px;
+}
+
+.pp-event-brief .pp-event-heading {
+  margin-bottom: .3rem !important;
+}
+
+.pp-event-brief-hours {
+  font-size: .78rem;
+  font-weight: 600;
+  margin: .2rem 0;
+}
+
+.pp-event-brief-admission,
+.pp-event-brief-entry {
+  font-size: .74rem;
+  line-height: 1.5;
+  margin: .25rem 0;
+}
+
+.pp-event-brief-entry {
+  color: var(--text-muted);
+}
+
+.pp-event-brief-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: .4rem .8rem;
+  margin-top: .5rem;
+}
+
+.pp-event-brief-actions .pp-event-link,
+.pp-event-brief-actions .pp-event-close {
+  margin: 0 !important;
+}
+
+.pp-event-brief-caution {
+  font-size: .7rem;
+  color: var(--yellow);
+  margin: .3rem 0;
+}
+
+[data-theme="light"] #pcClosureSummary .pc-details-pill {
+  color: #754600;
+  border-color: #ac701b;
+  background: #fff4de;
+}
+
+[data-theme="light"] #pcClosureSummary .pc-details-pill:hover {
+  background: #ffedc9;
+}
+
+[data-theme="light"] .pp-event-brief-caution {
+  color: #805000;
+}
+
+@media (max-width:600px) {
+  #heatmapTable .heatmap-cell.pc-heatmap-action {
+    width: 34px;
+    min-width: 34px;
+    max-width: 34px;
+    height: 26px;
+    min-height: 26px;
+    max-height: 26px;
+    font-size: .68rem;
+  }
+}
+
+@media (max-width:500px) {
+  #pcClosureSummary .pc-closure-park-strip {
+    gap: .7rem;
+  }
+  #pcClosureSummary .park-select-btn {
+    min-width: 48px;
+    min-height: 48px;
+    padding: 4px;
+  }
+  #pcClosureSummary .park-select-btn img {
+    width: 42px;
+    height: 42px;
+  }
+  #pcClosureSummary .pc-details-pill {
+    padding: .3rem .55rem;
+    font-size: .68rem;
+  }
+}
+
+@media (prefers-reduced-motion:reduce) {
+  #pcClosureSummary .park-select-btn img,
+  #pcClosureSummary .pc-details-pill {
+    transition: none;
+  }
+}
+
+/* ==== Closure direct rides ==== */
+
+#pcClosureSummary .pc-closure-park-strip .park-select-btn {
+  box-sizing: border-box;
+}
+
+#pcClosureSummary .pc-closure-park-strip .park-select-btn img {
+  display: block;
+  aspect-ratio: 1;
+  object-position: center;
+}
+
+.pc-chart-rides {
+  font-size: .72rem;
+  margin-top: .25rem;
+  color: var(--text-muted);
+}
+
+.pc-chart-rides>summary {
+  cursor: pointer;
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  color: var(--teal);
+}
+
+.pc-chart-rides>div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .35rem;
+}
+
+.pc-chart-rides .pc-action {
+  font-size: .72rem;
+}
+
+.pc-current-ride {
+  flex-wrap: wrap;
+}
+
+.pc-current-ride span:first-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width:500px) {
+  #pcClosureSummary .pc-closure-park-strip .park-select-btn {
+    flex-basis: 50px;
+    width: 50px;
+    min-width: 50px;
+    max-width: 50px;
+    height: 50px;
+    min-height: 50px;
+    max-height: 50px;
+    padding: 4px;
+  }
+  #pcClosureSummary .pc-closure-park-strip .park-select-btn img {
+    flex-basis: 42px;
+    width: 42px !important;
+    min-width: 42px;
+    max-width: 42px;
+    height: 42px !important;
+    min-height: 42px;
+    max-height: 42px;
+  }
+}
+
+/* ==== Closure icons ==== */
+
+/* Match the other panel park selectors. */
+#pcClosureSummary {
+  --closure-icon-size: 68px;
+  --closure-button-size: 80px;
+}
+
+#pcClosureSummary .pc-closure-park-strip .park-select-btn {
+  flex: 0 0 var(--closure-button-size);
+  width: var(--closure-button-size);
+  min-width: var(--closure-button-size);
+  max-width: var(--closure-button-size);
+  height: var(--closure-button-size);
+  min-height: var(--closure-button-size);
+  max-height: var(--closure-button-size);
+  padding: 6px;
+}
+
+#pcClosureSummary .pc-closure-park-strip .park-select-btn img {
+  flex: 0 0 var(--closure-icon-size);
+  width: var(--closure-icon-size) !important;
+  min-width: var(--closure-icon-size);
+  max-width: var(--closure-icon-size);
+  height: var(--closure-icon-size) !important;
+  min-height: var(--closure-icon-size);
+  max-height: var(--closure-icon-size);
+  object-fit: contain;
+}
+
+@media (max-width: 600px) {
+  /* Match the other cards' mobile image size. */
+  #pcClosureSummary {
+    --closure-icon-size: 48px;
+    --closure-button-size: 56px;
+  }
+  #pcClosureSummary .pc-closure-park-strip {
+    gap: 0.25rem;
+  }
+  #pcClosureSummary .pc-closure-park-strip .park-select-btn {
+    padding: 4px;
+  }
+}
+
+/* Match the shadow used by the other panel park selectors. */
+#pcClosureSummary .pc-closure-park-strip .park-select-btn img {
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.3));
+}
+
+/* ==== Card score layout ==== */
+
+.pulse-score-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .25rem;
+  flex-shrink: 0;
+}
+
+.pulse-score-group .pulse-descriptor {
+  margin: 0;
+  text-align: center;
+  font-size: .72rem;
+  font-weight: 600;
+  line-height: 1.3;
+  max-width: 110px;
+}
+
+.pulse-score-group .score-badge {
+  display: block;
+}
+
+.pulse-closures {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+  margin: .5rem 0 0;
+}
+
+.pulse-closures .pulse-closure-main {
+  display: block;
+  width: 100%;
+  padding: .42rem .6rem;
+  border-radius: 8px;
+  border: 1px solid rgba(53,208,138,.22);
+  background: rgba(53,208,138,.08);
+  color: var(--green);
+  font-size: .78rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.pulse-closures .pulse-closure-main.down {
+  background: rgba(255,93,122,.09);
+  border-color: rgba(255,93,122,.25);
+  color: var(--red);
+}
+
+.pulse-closures .pulse-secondary {
+  display: block;
+  width: 100%;
+  padding: .32rem .6rem;
+  border-radius: 8px;
+  border: 1px solid rgba(167,139,250,.20);
+  background: rgba(167,139,250,.07);
+  color: var(--purple);
+  font-size: .70rem;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.pulse-closures button {
+  cursor: pointer;
+  text-align: left;
+}
+
+.pulse-closures button:hover {
+  filter: brightness(1.08);
+}
+
+.pulse-insight {
+  padding: .5rem .65rem;
+  border-radius: 8px;
+  border: 1px solid rgba(76,214,192,.20);
+  background: rgba(76,214,192,.08);
+  margin: .5rem 0 0;
+  color: var(--teal);
+}
+
+.pulse-insight small {
+  color: var(--text-muted);
+}
+
+[data-theme="light"] .pulse-score-group .pulse-descriptor {
+  color: var(--text-muted);
+}
+
+@media (max-width:450px) {
+  .pulse-score-group .pulse-descriptor {
+    max-width: 90px;
+    font-size: .66rem;
+  }
+}
+
+/* ==== Card closure pills ==== */
+
+#parkGrid .pulse-closures .pulse-closure-main,
+#parkGrid .pulse-closures .pulse-secondary {
+  height: 40px;
+  min-height: 40px;
+  padding: 0 .65rem;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  box-sizing: border-box;
+  font-size: .73rem;
+  line-height: 1.3;
+}
+
+#parkGrid .pulse-secondary {
+  overflow: hidden;
+}
+
+#parkGrid .pulse-secondary .pulse-pill-label {
+  display: block;
+  min-width: 0;
+}
+
+#parkGrid .pulse-footer.pulse-weather-pill {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .6rem;
+  width: 100%;
+  min-height: 56px;
+  padding: .5rem .65rem;
+  margin-top: .5rem;
+  background: rgba(255,209,102,.075);
+  border: 1px solid rgba(255,209,102,.24);
+  border-radius: 8px;
+  color: var(--text);
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+  transition: background .2s ease, border-color .2s ease;
+}
+
+#parkGrid .pulse-weather-pill:hover {
+  background: rgba(255,209,102,.14);
+  border-color: var(--gold);
+}
+
+#parkGrid .pulse-weather-pill:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 3px;
+}
+
+#parkGrid .pulse-weather-pill .pulse-weather {
+  min-width: 0;
+  font-size: .8rem;
+  font-weight: 500;
+}
+
+#parkGrid .pulse-weather-pill .pulse-weather small {
+  font-size: .65rem;
+  font-weight: 400;
+}
+
+#parkGrid .pulse-weather-pill .pulse-weather-details {
+  padding: 0;
+  color: var(--gold);
+  font-size: .73rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+[data-theme="light"] #parkGrid .pulse-weather-pill {
+  background: rgba(201,130,0,.06);
+  border-color: rgba(201,130,0,.20);
+}
+
+[data-theme="light"] #parkGrid .pulse-weather-pill:hover {
+  background: rgba(201,130,0,.11);
+  border-color: var(--gold);
+}
+
+/* ==== Heatmap names ==== */
+
+/* Heatmap: preserve full attraction names in every view. */
+.heatmap-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.heatmap-table {
+  table-layout: auto;
+  width: max-content;
+  min-width: 100%;
+}
+
+.heatmap-table th.ride-col,
+.heatmap-table td.ride-name {
+  min-width: 340px;
+  max-width: none;
+  width: auto;
+  white-space: nowrap;
+  overflow: visible;
+  text-overflow: clip;
+  padding-right: 1rem;
+}
+
+.heatmap-table th:not(.ride-col) {
+  min-width: 84px;
+  padding-left: .45rem;
+  padding-right: .45rem;
+}
+
+/* ==== Disclosure animation ==== */
+
+details.pp-smooth-disclosure.pp-disclosure-animating {
+  overflow: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  details.pp-smooth-disclosure {
+    scroll-behavior: auto;
+  }
+}
+
+/* ==== Card label wrapping ==== */
+
+#parkGrid .pulse-secondary .pulse-pill-label {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+}
+
+#parkGrid .pulse-closures .pulse-secondary {
+  height: auto;
+  min-height: 40px;
+  padding: .4rem .65rem;
+  overflow: visible;
+}

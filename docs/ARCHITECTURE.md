@@ -1,6 +1,7 @@
+[Uploading ARCHITECTURE.md…]()
 # Architecture — Disney World Park Pulse
 
-Last updated: October 21, 2026. Covers the PR #3 release candidate plus the accepted PR #2 baseline. PR #3 remains unmerged at preparation; see [PROJECT_STATUS.md](PROJECT_STATUS.md) for reviewed SHAs, pending owner-pasted focus correction, deployment state and evidence limits.
+Last updated: November 9, 2026, after the frontend consolidation cleanup (24 scripts → 6; 21 stylesheets plus runtime-injected CSS → 6). PRs #3–#6 are merged; see [CHANGELOG.md](CHANGELOG.md).
 
 ## System Overview
 
@@ -20,55 +21,66 @@ The repository's Python collector is a separate static JSON/JSONL pipeline, not 
 
 ## Repository Boundaries
 
-- `index.html`: markup, inline event handlers and ordered asset references.
-- `assets/js/`: 13 classic scripts in the calendar candidate; original 12 plus `120-history-calendar.js`.
-- `assets/css/`: 18 presentation layers; original 16 plus calendar and header-layout styles.
-- `images/`: four original park PNGs; keep document-relative names and capitalization.
+- `index.html`: markup, inline event handlers and asset references. Only `assets/js/boot.js` loads in `<head>`; Chart.js and the five application scripts load at the end of `<body>`.
+- `assets/js/`: six feature-grouped classic scripts (see below). They replaced 24 numbered patch files in the November 2026 cleanup.
+- `assets/css/`: six feature-grouped stylesheets. They replaced 21 numbered layers, an unused `merged_css.css`, and the eight blocks of CSS that scripts used to inject at runtime.
+- `images/`: park PNGs, logos and icons; keep document-relative names and capitalization.
 - `docs/`: current state, architecture, preservation register and release history.
-- `tests/`: frozen original HTML, extraction verifier, HAR replay and historical results; not every chat-created test is installed here.
+- `tests/`: frozen original HTML, extraction verifier, HAR replay and historical results. These reference the pre-cleanup numbered files and are historical evidence, not a current regression suite.
 - `source-manifest.json` / `VALIDATION.md`: original extraction evidence, not current-release integrity or pass/fail claims.
-- `data/`, `scraper_collector.py`, `.github/workflows/update_wait_times.yml`: distinct Python collection path, outside this frontend change's intended scope.
-- Production backend source, nonsecret configuration and migrations are not made reproducible by this frontend PR. Public endpoint addresses are not credentials.
+- `data/`, `scraper_collector.py`, `.github/workflows/update_wait_times.yml`: separate Python collection path. The frontend does not read `data/`.
+- Production backend source, nonsecret configuration and migrations are not in this repository. Public endpoint addresses are not credentials.
 
 ## JavaScript Ownership and Loading
 
-Scripts are classic scripts, not ES modules. Shared lexical globals and inline handlers depend on execution order. Later files wrap/replace earlier functions; inspect the effective implementation rather than editing only the first definition. No casual async/defer/module conversion or reordering.
+Scripts are classic scripts, not ES modules, and share top-level globals (`parkData`, `currentPark`, `dayNavState`, etc.). Load order matters: `core.js` must load first because it defines the shared state and the `PPUI` hook registry.
 
-| File under `assets/js/` | Responsibility |
-|---|---|
-| `00-theme-bootstrap.js` | Saved/system theme before page styling |
-| `10-core.js` | Shared state, fetching, timestamps, park selection, queues, charts, legacy history/day navigation/heatmaps and best-park logic |
-| `20-weather.js` | Weather view model, glance/details, card weather, independent polling, freshness and missing observation-description presentation |
-| `30-card-descriptors.js` | Descriptor/insight refinements and score grouping |
-| `40-card-weather-actions.js` | Weather-pill/card interactions |
-| `50-disclosure-animation.js` | Existing native-details smooth expansion and Reduced Motion behavior |
-| `60-table-navigation.js` | Heatmap scrolling, mobile controls and sortable-header keyboard support |
-| `70-comparison-and-card-labels.js` | Effective positive-wait averages, equal-weight matched comparisons and compact labels |
-| `80-hours-and-park-trends.js` | Hours strips and park-wide trend popup |
-| `90-closure-history.js` | Closure normalization/UI, sampled timelines, marker/shading overlays, effective ride-chart renderer, panel state/motion, report timestamps and lifecycle wrappers |
-| `100-event-catalog.js` | Maintained event metadata/date matching |
-| `110-event-details.js` | Expandable event/admission briefs and official links |
-| `120-history-calendar.js` | Calendar, bounded session caches, historical lists and exact-date bridge to shared standby modal |
+| File under `assets/js/` | Loaded | Responsibility |
+|---|---|---|
+| `boot.js` | `<head>` | Saved/system theme before first paint; Animations preference (`window.ParkPulseMotion`) |
+| `core.js` | body | Shared state, API fetching, timestamps, park selection, queue table, charts, day navigation, heatmaps, best-park logic, positive-wait averages and matched comparisons, `PPUI` registry |
+| `park-cards.js` | body | Weather view model and polling, park cards (descriptors, weather pills, compact labels, hours strips), disclosure animation, table navigation, park-wide wait popup |
+| `history.js` | body | Closure history (`PPUI.closures`), event catalog (`ParkEventCatalog`), event detail briefs, monthly history calendar (`PPUI.history`) |
+| `effects.js` | body | Score/gauge animation and celebration effects (`PPUI.gauges`) |
+| `app-shell.js` | body | Navigation shell and tabs (`PPUI.navigation`), compact overview (`PPUI.overview`), header status badge and theme control (`PPUI.statusBadge`, `PPUI.theme`), settings, header logo, park picker and context cards (`PPUI.contextCards`) |
 
-The calendar script loads after the event-details script. Existing original modal markup must remain present. Presentation-only edits should not modify collection, weather polling, closure classification or live comparison mathematics.
+### One definition per function
+
+Earlier releases changed behavior by reassigning global functions in later files (`renderCards` was wrapped eight times). Each public function now has exactly one definition, and later features plug in through optional hooks on `PPUI`. A hook that is not installed is skipped, so each feature file can be removed or debugged in isolation.
+
+Effective call order:
+
+- `renderCards()`: unavailable state, or `renderParkCards` → `PPUI.refinePulseCards` → `PPUI.applyWeatherPills` → `PPUI.shortenCardLabels` → `PPUI.addHoursStrips`; then `closures.renderAvailability`, `enhanceEventCards`, `gauges.sync`, `overview.scheduleRefresh`.
+- `selectPark(key)`: `navigation.canSelect` guard → `gauges.enterSelection` → apply selection, weather, `closures.onParkSelected` → `gauges.exitSelection` → `gauges.afterSelection` → `history.syncPark` → `navigation.afterSelect`.
+- `renderAll()`: core renders (or unavailable state) → `navigation.afterRenderAll` → `overview.scheduleRefresh` → `statusBadge.queueRefresh`.
+- `updateTimestamp()`: timestamp badge, weather, `cards.refreshOnClockChange`, `closures.syncTimeZone`, `overview.scheduleRefresh`, then always `statusBadge.refresh`.
+- `fetchLatestData()`: live data, then always `closures.load`.
+- Charts and heatmaps: `renderChart` → `closures.attachParkChart`; `renderHeatmapTable` → `closures.decorateHeatmap`; ride-history charts render through `closures.renderRideChart`.
+- Day navigation: `initDayNav` asks `history.initDayNav` first; `renderDayNav` ends with `closures.afterDayNav` and `history.afterDayNav`; `closeRideModal(restore)` calls `history.afterRideModalClose`.
+- `openParkWaitModal()`: `closures.beforeParkWaitModal` → `showParkWaitModal` → `closures.afterParkWaitModal`.
+
+To change a behavior, edit the single function or hook named above rather than adding a wrapper in a new file.
+
+Some modules still use `MutationObserver` to re-decorate DOM written by another module (overview cards, park picker, header logo on theme change, heatmap headers). These are the remaining cross-module couplings; replace one with an explicit hook only after confirming every code path that mutates the observed element.
 
 ## Styles and Markup
 
-Preserve the original CSS cascade order:
+Stylesheets load at the end of `<head>` in this order; later files intentionally refine earlier ones:
 
-`00-foundation.css`, `10-weather-disclosure.css`, `20-weather-navigation.css`, `30-mobile-tables.css`, `40-light-wait-contrast.css`, `50-closure-panels.css`, `60-card-interactions.css`, `70-event-details.css`, `80-closure-card-layout.css`, `90-closure-direct-rides.css`, `100-closure-icons.css`, `110-card-score-layout.css`, `120-card-closure-pills.css`, `130-heatmap-names.css`, `140-disclosure-animation.css`, `150-card-label-wrapping.css`.
+| File under `assets/css/` | Contents |
+|---|---|
+| `base.css` | Tokens, layout, hero/header, panels, queue table, modals, light/dark theme |
+| `weather-and-tables.css` | Weather glance/details, mobile tables, wait-color contrast |
+| `park-cards-and-closures.css` | Park cards, score layout, closure panels, pills and icons, event details |
+| `history-calendar.css` | Heatmap names, disclosure animation, monthly calendar and history lists |
+| `effects.css` | Gauges, score animation, celebration effects, Reduced Motion |
+| `app-shell.css` | Navigation shell, compact overview, status badge, settings, header logo, park picker, context cards |
 
-The candidate additionally loads:
-- `160-history-calendar.css`: scoped calendar, historical queue-style table, mobile digit/unit layout, fit support, disclosures and top-right information icon.
-- `170-header-layout.css`: hero typography/gradients, compact mobile hero/banner spacing and `--card-gap:1.25rem`.
+No script injects `<style>` elements any more; all presentation lives in these files. Declarations that were always overridden later in the cascade, empty rules and selectors that matched nothing in any tested state were removed during consolidation.
 
-The original closure stylesheet retains accepted neutral blue/white interiors, red outer frames, mobile park-modal layout and disclosure motion. Do not replace it with an older attachment or remove apparent overrides without checking all states.
+The title-line spans supply their own theme-specific background-clipped gradients; the parent heading's old gradient is reset. Light cool endpoint is `#168bea`; dark gradients remain separate.
 
-The hero is nested INSIDE `.container`, and includes its badge, two-line heading, tagline, park icons, updated-time/timezone control and stale banner. Close `.hero` after the stale banner, not `.container`. The main container continues through the footer. Incorrect nesting disables `.hero` rules and direct-child section-spacing selectors.
-
-The title-line spans supply their own theme-specific background-clipped gradients; the parent heading's old gradient is reset. Hero/title/description rules apply across sizes, not only within a mobile media query. Light cool endpoint is `#168bea`; dark gradients remain separate. Title Case applies to headings, while the exact user-authored tagline remains sentence case.
-
-Spacing is scoped: the overview grid and `.content-grid` use the gap token; major direct-child panels own a top gap and no competing bottom gap. Do not blanket-reset all `.panel` margins or force equal card heights. Only the history information summary/icon is absolutely positioned; expanded text remains in normal flow.
+Spacing is scoped: the overview grid and `.content-grid` use the gap token; major direct-child panels own a top gap and no competing bottom gap. Do not blanket-reset all `.panel` margins or force equal card heights.
 
 ## Asset Paths
 
@@ -125,7 +137,7 @@ Calendar colors are fixed absolute minute bands. Cell text is rounded to whole m
 
 ## Shared Ride-Modal Bridge
 
-Existing core state is `dayNavState[kind]` with `rideId`, `archived`, `series`, `days`, `selected`. The calendar installs narrow wrappers after the closure renderer has installed its own wrappers.
+Existing core state is `dayNavState[kind]` with `rideId`, `archived`, `series`, `days`, `selected`. The calendar plugs into core day navigation through the `PPUI.history` hooks listed above.
 
 A synchronous pending calendar intent creates marked `_ppHistory` state for a requested ride/date. This avoids invoking the old limited archive loader on a calendar open. Original `renderDayNav` then renders through the same closure-aware `renderSparkline` implementation as standby clicks. The add-on does not create its own Chart or dialog.
 
@@ -135,7 +147,7 @@ The original arrows navigate the marked state's known summary/requested dates an
 
 Legacy dated comparison cells use the current Eastern seven-day column generation from core, not blindly a stale API `days` array. Weekday aggregates are explained as multi-date values; the modal plots an explicitly selected actual date, not a fictitious weekday time series.
 
-The owner's final focus correction forwards the restore flag to the wrapped close function. Normal close restores the originating control; park-change close can suppress it. This correction was reviewed in the owner's paste and must be confirmed in the final committed source.
+`closeRideModal(restore)` forwards the restore flag to `PPUI.history.afterRideModalClose`. Normal close restores the originating control; park-change close can suppress it.
 
 ## Closure Behavior and Coverage to Preserve
 
@@ -165,7 +177,7 @@ Preserve the closure revision guard and its nonnegative CHECK, archive chunking/
 
 ## Development, Evidence and Release Workflow
 
-Use `calendar_update` for the open PR #3 work; future tasks start from the actually accepted `main`. Serving static files locally still calls configured remote APIs. Optional server commands run in a shell, not a browser console: macOS `python3 -m http.server 8000 --bind 127.0.0.1`; Windows with Python launcher `py -m http.server 8000 --bind 127.0.0.1`.
+Future tasks start from the actually accepted `main` on a fresh task branch. Serving static files locally still calls configured remote APIs. Optional server commands run in a shell, not a browser console: macOS `python3 -m http.server 8000 --bind 127.0.0.1`; Windows with Python launcher `py -m http.server 8000 --bind 127.0.0.1`.
 
 Owner preference is local owner-led browser validation with assistant source review. Record actual checks and limitations; do not claim a passing test suite from syntax review, screenshots or zero GitHub check runs. Earlier fixture/HAR evidence is historical. The revision-2 browser attempt did not complete a passing regression sequence.
 

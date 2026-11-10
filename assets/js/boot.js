@@ -1,3 +1,28 @@
+/* Park Pulse boot: runs in <head> before first paint.
+   Theme (saved choice or system) and the decorative-animation preference. */
+
+/* ==========================================================================
+ * Theme bootstrap
+ * ========================================================================== */
+(() => {
+  let saved = null;
+  try {
+    saved = localStorage.getItem('wdw_theme');
+  } catch (e) {
+    /* storage unavailable */
+  }
+  const theme =
+    saved === 'light' || saved === 'dark'
+      ? saved
+      : window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches
+        ? 'light'
+        : 'dark';
+  document.documentElement.setAttribute('data-theme', theme);
+})();
+
+/* ==========================================================================
+ * Animations preference (window.ParkPulseMotion)
+ * ========================================================================== */
 /* Park Pulse decorative motion preference. Load early, after theme bootstrap. */
 (() => {
   'use strict';
@@ -42,8 +67,12 @@
   }
 
   function clearDecorativeClasses() {
-    document.querySelectorAll('.park-select-btn img.emoji-pulse').forEach(image => image.classList.remove('emoji-pulse'));
-    document.querySelectorAll('#parkGrid .park-card.just-clicked').forEach(card => card.classList.remove('just-clicked'));
+    document
+      .querySelectorAll('.park-select-btn img.emoji-pulse')
+      .forEach((image) => image.classList.remove('emoji-pulse'));
+    document
+      .querySelectorAll('#parkGrid .park-card.just-clicked')
+      .forEach((card) => card.classList.remove('just-clicked'));
   }
 
   function applyPreference() {
@@ -53,9 +82,11 @@
     syncControl();
     if (lastEffective !== effective) {
       lastEffective = effective;
-      window.dispatchEvent(new CustomEvent('parkpulse:motionchange', {
-        detail: { enabled: effective, preferredEnabled, systemReduced: systemPreference.matches }
-      }));
+      window.dispatchEvent(
+        new CustomEvent('parkpulse:motionchange', {
+          detail: { enabled: effective, preferredEnabled, systemReduced: systemPreference.matches },
+        }),
+      );
     }
   }
 
@@ -72,31 +103,14 @@
     return enabled();
   }
 
-  function wrapParkPulses() {
-    if (typeof pulseIconsForKey === 'function') {
-      const previous = pulseIconsForKey;
-      pulseIconsForKey = function(...args) {
-        if (!enabled()) return;
-        return previous.apply(this, args);
-      };
-    }
-    if (typeof pulseCardForKey === 'function') {
-      const previous = pulseCardForKey;
-      pulseCardForKey = function(...args) {
-        if (!enabled()) return;
-        return previous.apply(this, args);
-      };
-    }
-  }
-
   function initializeFooter() {
-    wrapParkPulses();
     const footer = document.querySelector('footer');
     if (!footer || document.getElementById('ppAnimationsSwitch')) return;
     const section = document.createElement('section');
     section.className = 'pp-motion-settings';
     section.setAttribute('aria-label', 'Display Preferences');
-    section.innerHTML = '<label class="pp-motion-control" for="ppAnimationsSwitch">' +
+    section.innerHTML =
+      '<label class="pp-motion-control" for="ppAnimationsSwitch">' +
       '<span class="pp-motion-label">Animations</span>' +
       '<input type="checkbox" role="switch" class="pp-motion-input" id="ppAnimationsSwitch" aria-describedby="ppAnimationsHelp">' +
       '<span class="pp-motion-track" aria-hidden="true"></span>' +
@@ -113,20 +127,27 @@
 
   window.ParkPulseMotion = Object.freeze({
     version: '1.0.0',
-    get enabled() { return enabled(); },
-    get preferredEnabled() { return preferredEnabled; },
-    get systemReduced() { return systemPreference.matches; },
-    setEnabled
+    get enabled() {
+      return enabled();
+    },
+    get preferredEnabled() {
+      return preferredEnabled;
+    },
+    get systemReduced() {
+      return systemPreference.matches;
+    },
+    setEnabled,
   });
   applyPreference();
   if (systemPreference.addEventListener) systemPreference.addEventListener('change', applyPreference);
   else systemPreference.addListener(applyPreference);
-  window.addEventListener('storage', event => {
+  window.addEventListener('storage', (event) => {
     if (event.key === STORAGE_KEY || event.key === null) {
       preferredEnabled = readPreference();
       applyPreference();
     }
   });
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initializeFooter, { once: true });
+  if (document.readyState === 'loading')
+    document.addEventListener('DOMContentLoaded', initializeFooter, { once: true });
   else initializeFooter();
 })();

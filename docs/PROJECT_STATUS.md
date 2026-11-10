@@ -2,6 +2,8 @@
 
 Last updated: October 21, 2026. Release-candidate documentation; PR #3 is not recorded as merged.
 
+> **November 9, 2026 note:** PRs #3–#6 have since been merged into `main` (latest: PR #6, October 22, 2026). The frontend was then consolidated into six scripts and six stylesheets; file names in the historical sections below refer to the pre-cleanup numbered files. See [ARCHITECTURE.md](ARCHITECTURE.md) for the current layout and [CHANGELOG.md](CHANGELOG.md) for the cleanup entry. The rest of this page has not been rewritten.
+
 ## Start Here
 
 The calendar and presentation milestone is under review in [PR #3](https://github.com/jacocksr/disney-busyness-monitor/pull/3), branch `calendar_update`, targeting `main`.

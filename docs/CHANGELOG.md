@@ -2,6 +2,24 @@
 
 This log records actual source/release milestones. Stored test results are local evidence for the stated stage, not automatic CI or proof that every later commit passed.
 
+## 2026-11-09 — Frontend Consolidation Cleanup
+
+Status: cleanup package prepared outside GitHub for owner review; not committed or deployed. No intended visual or behavioral change.
+
+### Changed
+- JavaScript: 24 numbered patch scripts consolidated into six feature files (`boot`, `core`, `park-cards`, `history`, `effects`, `app-shell`). Every function now has one definition; the eight stacked `renderCards` wrappers and the wrappers around `selectPark`, `renderAll`, `updateTimestamp`, `fetchLatestData`, chart, heatmap, day-navigation and modal functions were replaced by explicit `PPUI` hook calls (order documented in ARCHITECTURE.md).
+- Removed code that was always replaced later: original `renderCards`, `getBestTimeTip`, `renderSparkline`/heatmap sparkline, closure-row builder, default-hours estimate helpers, superseded live-stat/baseline/comparison versions, the motion-wrapper shim and an unused calendar clock helper.
+- CSS: 21 numbered stylesheets, an unused `merged_css.css` and eight blocks of runtime-injected `<style>` CSS consolidated into six stylesheets. Dropped 100 declarations that were always overridden, 19 empty rules and 15 selectors that matched nothing in any tested state.
+- `index.html`: only `boot.js` loads in `<head>` (Chart.js now loads with the app scripts at the end of `<body>`, so it no longer blocks first paint); leftover "paste this" patch comments removed; park-wait modal markup moved before the scripts.
+- Code formatted with Prettier (verified syntax-tree identical to the unformatted consolidation).
+- Images: park icons resized to 256 px and logos to 768 × 512 px, same file names; `images/` drops from about 5.2 MB to about 1 MB.
+- Docs: README pasted update instructions applied and removed; repository layout, API table and file references updated; ARCHITECTURE rewritten for the new layout.
+
+### Verification
+- Automated before/after screenshots and visible-text dumps with fixed clock and replayed API responses: 26 scenarios (overview, each park, queue, history, calendar, ride and park modals, closures, weather, events, settings, theme toggle) × 4 configurations (desktop/mobile × light/dark).
+- Result: no visible-text differences and no new console errors. Remaining pixel differences are anti-aliasing noise in the same scenarios where two runs of the original site also differ from each other.
+- This is not a substitute for owner browser review, live-data checks, or accessibility testing.
+
 ## 2026-10-21 — Calendar and Presentation Release Candidate (PR #3)
 
 Status: committed candidate on `calendar_update`; PR #3 open and unmerged at preparation. Final owner-pasted focus correction is source-reviewed but not commit-verified.

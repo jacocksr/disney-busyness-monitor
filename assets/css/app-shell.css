@@ -1413,6 +1413,64 @@ html[data-pp-animations="off"] #ppParkPicker button {
   }
 }
 
+/* Tab transition: while panes slide, the outgoing pane overlays the incoming one. */
+#ppNavigationContent.pp-panes-sliding {
+  position: relative;
+}
+
+#ppNavigationContent .pp-pane-leaving {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  pointer-events: none;
+}
+
+/* Dock: one outline glides between tabs (positioned by JS). */
+#ppNavigation .pp-dock-symbol {
+  position: relative;
+  z-index: 1;
+}
+
+#ppNavigation .pp-dock-indicator {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 0;
+  box-sizing: border-box;
+  width: 0;
+  height: 0;
+  border: 1px solid var(--teal);
+  border-radius: 12px;
+  background: rgba(76,214,192,.12);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform .34s cubic-bezier(.22,.61,.36,1), opacity .16s ease;
+}
+
+#ppNavigation .pp-dock-indicator.is-visible {
+  opacity: 1;
+}
+
+#ppNavigation .pp-dock-indicator.pp-no-glide {
+  transition: none;
+}
+
+#ppNavigation.pp-has-indicator a[aria-current="page"] .pp-dock-symbol {
+  border-color: transparent;
+  background: transparent;
+}
+
+html[data-pp-animations="off"] #ppNavigation .pp-dock-indicator {
+  transition: none !important;
+}
+
+@media (prefers-reduced-motion:reduce) {
+  #ppNavigation .pp-dock-indicator {
+    transition: none !important;
+  }
+}
+
 /* ==== Context cards ==== */
 
 /* Overview-only presentation; do not change the park images or freshness criteria. */

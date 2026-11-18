@@ -455,6 +455,7 @@ body.pp-overview-enabled {
   border-right: 2px solid var(--text-muted);
   border-bottom: 2px solid var(--text-muted);
   transform: rotate(45deg) translateY(-2px);
+  transition: transform .28s ease;
 }
 
 #bestParkBanner .pp-best-toggle[aria-expanded="true"] .pp-best-chevron {
@@ -462,7 +463,26 @@ body.pp-overview-enabled {
 }
 
 #bestParkBanner .pp-best-more {
-  padding: 0 12px 10px 44px;
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows .28s ease;
+}
+
+#bestParkBanner .pp-best-more[data-open="true"] {
+  grid-template-rows: 1fr;
+}
+
+#bestParkBanner .pp-best-more-inner {
+  min-height: 0;
+  overflow: hidden;
+  padding: 0 12px 0 44px;
+  opacity: 0;
+  transition: opacity .2s ease, padding-bottom .28s ease;
+}
+
+#bestParkBanner .pp-best-more[data-open="true"] .pp-best-more-inner {
+  padding-bottom: 10px;
+  opacity: 1;
 }
 
 #bestParkBanner .pp-best-more .best-park-sub {
@@ -504,6 +524,20 @@ body.pp-overview-enabled {
 #bestParkBanner .pp-best-link:focus-visible {
   outline: 3px solid var(--teal);
   outline-offset: 3px;
+}
+
+html[data-pp-animations="off"] #bestParkBanner .pp-best-more,
+html[data-pp-animations="off"] #bestParkBanner .pp-best-more-inner,
+html[data-pp-animations="off"] #bestParkBanner .pp-best-chevron {
+  transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #bestParkBanner .pp-best-more,
+  #bestParkBanner .pp-best-more-inner,
+  #bestParkBanner .pp-best-chevron {
+    transition: none;
+  }
 }
 
 @container (max-width:18.49rem) {

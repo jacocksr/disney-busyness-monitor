@@ -1223,6 +1223,7 @@ html[data-pp-animations="off"] #ppGlobalSettingsDialog::backdrop {
   box-shadow: 0 -4px 18px rgba(0,0,0,.12);
   gap: 2px;
   padding: 6px 6px max(6px,env(safe-area-inset-bottom));
+  transform: translateZ(0);
 }
 
 #ppNavigation a {
@@ -1416,6 +1417,7 @@ html[data-pp-animations="off"] #ppParkPicker button {
 /* Tab transition: while panes slide, the outgoing pane overlays the incoming one. */
 #ppNavigationContent.pp-panes-sliding {
   position: relative;
+  overflow-x: clip;
 }
 
 #ppNavigationContent .pp-pane-leaving {

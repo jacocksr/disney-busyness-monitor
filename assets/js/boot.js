@@ -21,6 +21,37 @@
 })();
 
 /* ==========================================================================
+ * Browser chrome color (iOS status bar / Android address bar)
+ * Keeps <meta name="theme-color"> equal to the active theme's --bg-1 token.
+ * ========================================================================== */
+(() => {
+  const FALLBACK = '#0f2545';
+  const root = document.documentElement;
+  let meta = document.querySelector('meta[name="theme-color"]');
+
+  function sync() {
+    if (!meta) {
+      meta = document.createElement('meta');
+      meta.name = 'theme-color';
+      document.head.appendChild(meta);
+    }
+    let color = '';
+    try {
+      color = getComputedStyle(root).getPropertyValue('--bg-1').trim();
+    } catch (e) {
+      /* fall back below */
+    }
+    const next = color || FALLBACK;
+    if (meta.getAttribute('content') !== next) meta.setAttribute('content', next);
+  }
+
+  sync();
+  document.addEventListener('DOMContentLoaded', sync, { once: true });
+  window.addEventListener('load', sync, { once: true });
+  new MutationObserver(sync).observe(root, { attributes: true, attributeFilter: ['data-theme'] });
+})();
+
+/* ==========================================================================
  * Animations preference (window.ParkPulseMotion)
  * ========================================================================== */
 /* Park Pulse decorative motion preference. Load early, after theme bootstrap. */

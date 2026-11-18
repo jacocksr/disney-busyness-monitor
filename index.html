@@ -2,8 +2,12 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="color-scheme" content="dark light" />
+<meta name="theme-color" content="#0f2545" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <script src="assets/js/boot.js"></script>
 <title>Park Pulse | Plan Your Magical Day</title>
 <!-- Browser tab icons -->
@@ -60,6 +64,13 @@
 <link rel="stylesheet" href="assets/css/history-calendar.css">
 <link rel="stylesheet" href="assets/css/effects.css">
 <link rel="stylesheet" href="assets/css/app-shell.css">
+<style>
+/* iOS top spacing: replace the 1.5rem body top padding; respect notch / Dynamic Island in standalone mode.
+   TODO: move into assets/css/app-shell.css (Navigation section). */
+body.pp-navigation-enabled {
+  padding-top: max(8px, env(safe-area-inset-top));
+}
+</style>
 </head>
 <body>
 <button type="button" class="theme-toggle-btn" id="themeToggleBtn"

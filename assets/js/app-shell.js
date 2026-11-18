@@ -21,7 +21,6 @@
 
   const VIEWS = ['overview', 'attractions', 'trends', 'more'];
   const panes = {};
-  const positions = new Map();
 
   let current = { view: 'overview', park: null };
   let chosenPark = null;
@@ -138,13 +137,89 @@
     historyPanel.hidden = current.view !== 'trends' || requiresChoice || missingReport;
   }
 
+  let routed = false;
+  let slide = null;
+  const SLIDE_MS = 240;
+  const SLIDE_PX = 28;
+
+  function motionOn() {
+    return window.ParkPulseMotion
+      ? window.ParkPulseMotion.enabled
+      : !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  }
+
+  function endSlide() {
+    if (!slide) return;
+    const { anims, outgoing } = slide;
+    slide = null;
+    anims.forEach((a) => a.cancel());
+    outgoing.classList.remove('pp-pane-leaving');
+    outgoing.inert = false;
+    outgoing.hidden = outgoing !== panes[current.view];
+    content.classList.remove('pp-panes-sliding');
+  }
+
+  // Shows the target pane. Neighbouring tabs slide horizontally in the direction of the dock order.
+  function showPane(nextView, previousView) {
+    endSlide();
+
+    for (const [view, pane] of Object.entries(panes)) {
+      pane.hidden = view !== nextView;
+    }
+
+    const incoming = panes[nextView];
+    const outgoing = panes[previousView];
+    const animate =
+      routed &&
+      previousView !== nextView &&
+      incoming &&
+      outgoing &&
+      typeof incoming.animate === 'function' &&
+      motionOn();
+
+    routed = true;
+    if (!animate) return;
+
+    const dir = VIEWS.indexOf(nextView) > VIEWS.indexOf(previousView) ? 1 : -1;
+    outgoing.hidden = false;
+    outgoing.inert = true;
+    outgoing.classList.add('pp-pane-leaving');
+    content.classList.add('pp-panes-sliding');
+
+    const timing = { duration: SLIDE_MS, easing: 'cubic-bezier(.22,.61,.36,1)', fill: 'forwards' };
+    const anims = [
+      outgoing.animate(
+        [
+          { opacity: 1, transform: 'translateX(0)' },
+          { opacity: 0, transform: `translateX(${-dir * SLIDE_PX}px)` },
+        ],
+        timing,
+      ),
+      incoming.animate(
+        [
+          { opacity: 0, transform: `translateX(${dir * SLIDE_PX}px)` },
+          { opacity: 1, transform: 'translateX(0)' },
+        ],
+        timing,
+      ),
+    ];
+    const mine = { anims, outgoing };
+    slide = mine;
+    Promise.all(anims.map((a) => a.finished))
+      .then(() => {
+        if (slide === mine) endSlide();
+      })
+      .catch(() => {});
+  }
+
   function applyRoute(next) {
     const previousKey = routeKey(current);
+    const previousView = current.view;
     const nextKey = routeKey(next);
     const changed = previousKey !== nextKey;
 
     if (changed) {
-      positions.set(previousKey, window.scrollY);
+      window.scrollTo({ top: 0, behavior: 'auto' });
       closeOpenDetails();
     }
 
@@ -161,9 +236,7 @@
         }
       }
 
-      for (const [view, pane] of Object.entries(panes)) {
-        pane.hidden = view !== next.view;
-      }
+      showPane(next.view, previousView);
 
       updateNavigation();
 
@@ -179,11 +252,6 @@
         }
 
         if (changed) {
-          window.scrollTo({
-            top: positions.get(nextKey) || 0,
-            behavior: 'auto',
-          });
-
           content.focus({ preventScroll: true });
         }
       });
@@ -593,6 +661,69 @@
     cards.set(key, nodes);
     return card;
   }
+  /* Best-park pill: one-line summary under the park cards; tap to expand. */
+  let bestParkExpanded = false;
+  function mountBestPark(banner) {
+    if (!banner) return;
+    const decorate = () => {
+      const title = banner.querySelector('.best-park-title');
+      const key = title
+        ? keys.find((k) => {
+            const n = parkData?.parks?.[k]?.name;
+            return n && title.textContent.includes(n);
+          })
+        : null;
+      banner.hidden = !key;
+      if (!key || banner.querySelector('.pp-best-toggle')) return;
+      const content = banner.querySelector('.best-park-content');
+      const icon = content.querySelector('.best-park-icon');
+      const eyebrow = content.querySelector('.best-park-eyebrow');
+      const sub = content.querySelector('.best-park-sub');
+      const note = content.querySelector('.best-park-note');
+
+      const toggle = document.createElement('button');
+      toggle.type = 'button';
+      toggle.className = 'pp-best-toggle';
+      toggle.setAttribute('aria-controls', 'ppBestParkMore');
+      toggle.setAttribute('aria-expanded', String(bestParkExpanded));
+      const label = document.createElement('span');
+      label.className = 'pp-best-label';
+      [eyebrow, title].forEach((n) => n && label.append(n));
+      const chevron = document.createElement('span');
+      chevron.className = 'pp-best-chevron';
+      chevron.setAttribute('aria-hidden', 'true');
+      if (icon) toggle.append(icon);
+      toggle.append(label, chevron);
+
+      const more = document.createElement('div');
+      more.id = 'ppBestParkMore';
+      more.className = 'pp-best-more';
+      more.dataset.open = String(bestParkExpanded);
+      more.inert = !bestParkExpanded;
+      const inner = document.createElement('div');
+      inner.className = 'pp-best-more-inner';
+      [sub, note].forEach((n) => n && inner.append(n));
+      const caveat = document.createElement('p');
+      caveat.className = 'pp-best-caveat';
+      caveat.textContent = 'A guide, not a guarantee of short waits.';
+      const link = document.createElement('a');
+      link.className = 'pp-best-link';
+      link.href = '#/park/' + key + '/trends';
+      link.textContent = 'See wait trends \u2192';
+      inner.append(caveat, link);
+      more.append(inner);
+
+      toggle.addEventListener('click', () => {
+        bestParkExpanded = !bestParkExpanded;
+        toggle.setAttribute('aria-expanded', String(bestParkExpanded));
+        more.dataset.open = String(bestParkExpanded);
+        more.inert = !bestParkExpanded;
+      });
+      banner.replaceChildren(toggle, more);
+    };
+    new MutationObserver(decorate).observe(banner, { childList: true });
+    decorate();
+  }
   function initialize() {
     if (mounted || document.getElementById('ppCompactOverview')) return;
     const overview = document.querySelector('[data-pp-pane="overview"]');
@@ -615,7 +746,7 @@
       '<summary>Detailed park cards, comparisons, hours and events</summary><div class="pp1b-legacy-body"></div>';
     const body = legacy.querySelector('.pp1b-legacy-body');
     [...overview.children].forEach((node) => {
-      if (node === home) return;
+      if (node === home || node.id === 'bestParkBanner') return;
       if (node.classList.contains('hero')) {
         node.hidden = true;
         node.inert = true;
@@ -662,6 +793,7 @@
     new MutationObserver(scheduleRefresh).observe(originalGrid, { childList: true });
     window.addEventListener('hashchange', scheduleRefresh);
     window.addEventListener('pageshow', scheduleRefresh);
+    mountBestPark(document.getElementById('bestParkBanner'));
     window.ParkPulsePart1B = Object.freeze({ version: '1.0.2', refresh: scheduleRefresh });
     refresh();
   }
@@ -1724,7 +1856,10 @@
     more: '<circle cx="5" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="19" cy="12" r="1.4"/>',
   };
   let nav,
-    queued = false;
+    queued = false,
+    indicator,
+    placeQueued = false,
+    placeAnimate = false;
   const svg = (body) =>
     '<svg viewBox="0 0 24 24" width="23" height="23" aria-hidden="true" focusable="false">' + body + '</svg>';
   function measure() {
@@ -1820,6 +1955,42 @@
       }
     }
   }
+  // Single outline that glides to the active dock icon instead of each tab drawing its own.
+  function placeIndicator(animate) {
+    if (!nav || !indicator) return;
+    const symbol = nav.querySelector('a[aria-current="page"] .pp-dock-symbol');
+    if (!symbol) {
+      indicator.classList.remove('is-visible');
+      nav.classList.remove('pp-has-indicator');
+      return;
+    }
+    const box = nav.getBoundingClientRect();
+    const rect = symbol.getBoundingClientRect();
+    if (!rect.width) return;
+    const glide = animate && indicator.classList.contains('is-visible');
+    if (!glide) indicator.classList.add('pp-no-glide');
+    indicator.style.width = rect.width + 'px';
+    indicator.style.height = rect.height + 'px';
+    indicator.style.transform =
+      'translate(' + (rect.left - box.left - nav.clientLeft) + 'px,' + (rect.top - box.top - nav.clientTop) + 'px)';
+    indicator.classList.add('is-visible');
+    nav.classList.add('pp-has-indicator');
+    if (!glide) {
+      void indicator.offsetWidth;
+      indicator.classList.remove('pp-no-glide');
+    }
+  }
+  function schedulePlace(animate) {
+    placeAnimate = placeAnimate || animate;
+    if (placeQueued) return;
+    placeQueued = true;
+    requestAnimationFrame(() => {
+      placeQueued = false;
+      const glide = placeAnimate;
+      placeAnimate = false;
+      placeIndicator(glide);
+    });
+  }
   function refresh() {
     decorateDock();
     decoratePicker();
@@ -1856,11 +2027,24 @@
     const headerLabel = document.querySelector('#ppNavigationHeader>label');
     if (headerLabel)
       new MutationObserver(schedule).observe(headerLabel, { attributes: true, attributeFilter: ['hidden'] });
-    new ResizeObserver(measure).observe(nav);
+    indicator = document.createElement('span');
+    indicator.className = 'pp-dock-indicator';
+    indicator.setAttribute('aria-hidden', 'true');
+    nav.append(indicator);
+    new MutationObserver(() => schedulePlace(true)).observe(nav, {
+      attributes: true,
+      subtree: true,
+      attributeFilter: ['aria-current'],
+    });
+    new ResizeObserver(() => {
+      measure();
+      schedulePlace(false);
+    }).observe(nav);
     window.addEventListener('hashchange', schedule);
     window.addEventListener('pageshow', schedule);
     window.ParkPulseDockPicker = Object.freeze({ version: '1.0.0', refresh: schedule });
     refresh();
+    schedulePlace(false);
   }
 
   const start = () => queueMicrotask(initialize);

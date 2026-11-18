@@ -387,6 +387,159 @@ body.pp-overview-enabled {
   font-size: 16px;
 }
 
+/* Best-park pill (Overview): collapsed summary under the park cards, tap to expand. */
+.pp-overview-enabled [data-pp-pane="overview"] > #bestParkBanner {
+  margin: 10px 0 0;
+  padding: 0;
+  border-radius: 14px;
+  overflow: hidden;
+  background: linear-gradient(135deg, rgba(255, 209, 102, .30), rgba(255, 111, 181, .22));
+  border: 1.5px solid rgba(255, 209, 102, .75);
+  box-shadow: 0 2px 10px rgba(255, 209, 102, .18);
+}
+
+[data-theme="light"] .pp-overview-enabled [data-pp-pane="overview"] > #bestParkBanner {
+  background: linear-gradient(135deg, #ffe5a8, #ffd3e8);
+  border-color: #c98200;
+  box-shadow: 0 2px 10px rgba(201, 130, 0, .22);
+}
+
+#bestParkBanner .pp-best-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 48px;
+  padding: 8px 12px;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+#bestParkBanner .pp-best-toggle:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: -3px;
+}
+
+#bestParkBanner .pp-best-toggle .best-park-icon {
+  flex: 0 0 auto;
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
+#bestParkBanner .pp-best-label {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+#bestParkBanner .pp-best-label .best-park-eyebrow {
+  margin: 0;
+  font-size: .62rem;
+}
+
+#bestParkBanner .pp-best-label .best-park-title {
+  margin: 0;
+  font-size: .92rem;
+  line-height: 1.25;
+  color: var(--text);
+}
+
+#bestParkBanner .pp-best-chevron {
+  flex: 0 0 8px;
+  width: 8px;
+  height: 8px;
+  margin-right: 4px;
+  border-right: 2px solid var(--text-muted);
+  border-bottom: 2px solid var(--text-muted);
+  transform: rotate(45deg) translateY(-2px);
+  transition: transform .28s ease;
+}
+
+#bestParkBanner .pp-best-toggle[aria-expanded="true"] .pp-best-chevron {
+  transform: rotate(225deg) translateY(-2px);
+}
+
+#bestParkBanner .pp-best-more {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows .28s ease;
+}
+
+#bestParkBanner .pp-best-more[data-open="true"] {
+  grid-template-rows: 1fr;
+}
+
+#bestParkBanner .pp-best-more-inner {
+  min-height: 0;
+  overflow: hidden;
+  padding: 0 12px 0 44px;
+  opacity: 0;
+  transition: opacity .2s ease, padding-bottom .28s ease;
+}
+
+#bestParkBanner .pp-best-more[data-open="true"] .pp-best-more-inner {
+  padding-bottom: 10px;
+  opacity: 1;
+}
+
+#bestParkBanner .pp-best-more .best-park-sub {
+  font-size: .8rem;
+  line-height: 1.45;
+}
+
+#bestParkBanner .pp-best-more .best-park-note {
+  margin-top: 4px;
+  font-size: .72rem;
+}
+
+#bestParkBanner .pp-best-caveat {
+  margin: 6px 0 0;
+  font-size: .72rem;
+  line-height: 1.4;
+  color: var(--text-muted);
+}
+
+[data-theme="light"] #bestParkBanner .pp-best-caveat,
+[data-theme="light"] #bestParkBanner .pp-best-more .best-park-sub {
+  color: var(--text);
+}
+
+#bestParkBanner .pp-best-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  margin-top: 6px;
+  padding: 4px 12px;
+  border: 1px solid var(--teal);
+  border-radius: 999px;
+  color: var(--teal);
+  font-size: .76rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+#bestParkBanner .pp-best-link:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 3px;
+}
+
+html[data-pp-animations="off"] #bestParkBanner .pp-best-more,
+html[data-pp-animations="off"] #bestParkBanner .pp-best-more-inner,
+html[data-pp-animations="off"] #bestParkBanner .pp-best-chevron {
+  transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #bestParkBanner .pp-best-more,
+  #bestParkBanner .pp-best-more-inner,
+  #bestParkBanner .pp-best-chevron {
+    transition: none;
+  }
+}
+
 @container (max-width:18.49rem) {
   #ppCompactOverview .pp1b-grid {
     grid-template-columns: 1fr;
@@ -1070,6 +1223,7 @@ html[data-pp-animations="off"] #ppGlobalSettingsDialog::backdrop {
   box-shadow: 0 -4px 18px rgba(0,0,0,.12);
   gap: 2px;
   padding: 6px 6px max(6px,env(safe-area-inset-bottom));
+  transform: translateZ(0);
 }
 
 #ppNavigation a {
@@ -1257,6 +1411,65 @@ html[data-pp-animations="off"] #ppParkPicker button {
   #ppParkPicker.pp-branded-picker button {
     transition: none !important;
     transform: none !important;
+  }
+}
+
+/* Tab transition: while panes slide, the outgoing pane overlays the incoming one. */
+#ppNavigationContent.pp-panes-sliding {
+  position: relative;
+  overflow-x: clip;
+}
+
+#ppNavigationContent .pp-pane-leaving {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  pointer-events: none;
+}
+
+/* Dock: one outline glides between tabs (positioned by JS). */
+#ppNavigation .pp-dock-symbol {
+  position: relative;
+  z-index: 1;
+}
+
+#ppNavigation .pp-dock-indicator {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 0;
+  box-sizing: border-box;
+  width: 0;
+  height: 0;
+  border: 1px solid var(--teal);
+  border-radius: 12px;
+  background: rgba(76,214,192,.12);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform .34s cubic-bezier(.22,.61,.36,1), opacity .16s ease;
+}
+
+#ppNavigation .pp-dock-indicator.is-visible {
+  opacity: 1;
+}
+
+#ppNavigation .pp-dock-indicator.pp-no-glide {
+  transition: none;
+}
+
+#ppNavigation.pp-has-indicator a[aria-current="page"] .pp-dock-symbol {
+  border-color: transparent;
+  background: transparent;
+}
+
+html[data-pp-animations="off"] #ppNavigation .pp-dock-indicator {
+  transition: none !important;
+}
+
+@media (prefers-reduced-motion:reduce) {
+  #ppNavigation .pp-dock-indicator {
+    transition: none !important;
   }
 }
 

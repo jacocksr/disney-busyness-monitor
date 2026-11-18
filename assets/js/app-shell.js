@@ -593,6 +593,64 @@
     cards.set(key, nodes);
     return card;
   }
+  /* Best-park pill: one-line summary under the park cards; tap to expand. */
+  let bestParkExpanded = false;
+  function mountBestPark(banner) {
+    if (!banner) return;
+    const decorate = () => {
+      const title = banner.querySelector('.best-park-title');
+      const key = title
+        ? keys.find((k) => {
+            const n = parkData?.parks?.[k]?.name;
+            return n && title.textContent.includes(n);
+          })
+        : null;
+      banner.hidden = !key;
+      if (!key || banner.querySelector('.pp-best-toggle')) return;
+      const content = banner.querySelector('.best-park-content');
+      const icon = content.querySelector('.best-park-icon');
+      const eyebrow = content.querySelector('.best-park-eyebrow');
+      const sub = content.querySelector('.best-park-sub');
+      const note = content.querySelector('.best-park-note');
+
+      const toggle = document.createElement('button');
+      toggle.type = 'button';
+      toggle.className = 'pp-best-toggle';
+      toggle.setAttribute('aria-controls', 'ppBestParkMore');
+      toggle.setAttribute('aria-expanded', String(bestParkExpanded));
+      const label = document.createElement('span');
+      label.className = 'pp-best-label';
+      [eyebrow, title].forEach((n) => n && label.append(n));
+      const chevron = document.createElement('span');
+      chevron.className = 'pp-best-chevron';
+      chevron.setAttribute('aria-hidden', 'true');
+      if (icon) toggle.append(icon);
+      toggle.append(label, chevron);
+
+      const more = document.createElement('div');
+      more.id = 'ppBestParkMore';
+      more.className = 'pp-best-more';
+      more.hidden = !bestParkExpanded;
+      [sub, note].forEach((n) => n && more.append(n));
+      const caveat = document.createElement('p');
+      caveat.className = 'pp-best-caveat';
+      caveat.textContent = 'A guide, not a guarantee of short waits.';
+      const link = document.createElement('a');
+      link.className = 'pp-best-link';
+      link.href = '#/park/' + key + '/trends';
+      link.textContent = 'See wait trends \u2192';
+      more.append(caveat, link);
+
+      toggle.addEventListener('click', () => {
+        bestParkExpanded = !bestParkExpanded;
+        toggle.setAttribute('aria-expanded', String(bestParkExpanded));
+        more.hidden = !bestParkExpanded;
+      });
+      banner.replaceChildren(toggle, more);
+    };
+    new MutationObserver(decorate).observe(banner, { childList: true });
+    decorate();
+  }
   function initialize() {
     if (mounted || document.getElementById('ppCompactOverview')) return;
     const overview = document.querySelector('[data-pp-pane="overview"]');
@@ -615,7 +673,7 @@
       '<summary>Detailed park cards, comparisons, hours and events</summary><div class="pp1b-legacy-body"></div>';
     const body = legacy.querySelector('.pp1b-legacy-body');
     [...overview.children].forEach((node) => {
-      if (node === home) return;
+      if (node === home || node.id === 'bestParkBanner') return;
       if (node.classList.contains('hero')) {
         node.hidden = true;
         node.inert = true;
@@ -662,6 +720,7 @@
     new MutationObserver(scheduleRefresh).observe(originalGrid, { childList: true });
     window.addEventListener('hashchange', scheduleRefresh);
     window.addEventListener('pageshow', scheduleRefresh);
+    mountBestPark(document.getElementById('bestParkBanner'));
     window.ParkPulsePart1B = Object.freeze({ version: '1.0.2', refresh: scheduleRefresh });
     refresh();
   }

@@ -387,6 +387,111 @@ body.pp-overview-enabled {
   font-size: 16px;
 }
 
+/* Best-park pill (Overview): collapsed summary under the park cards, tap to expand. */
+.pp-overview-enabled [data-pp-pane="overview"] > #bestParkBanner {
+  margin: 10px 0 0;
+  padding: 0;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+#bestParkBanner .pp-best-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 48px;
+  padding: 8px 12px;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+#bestParkBanner .pp-best-toggle:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: -3px;
+}
+
+#bestParkBanner .pp-best-toggle .best-park-icon {
+  flex: 0 0 auto;
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
+#bestParkBanner .pp-best-label {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+#bestParkBanner .pp-best-label .best-park-eyebrow {
+  margin: 0;
+  font-size: .62rem;
+}
+
+#bestParkBanner .pp-best-label .best-park-title {
+  margin: 0;
+  font-size: .92rem;
+  line-height: 1.25;
+  color: var(--text);
+}
+
+#bestParkBanner .pp-best-chevron {
+  flex: 0 0 8px;
+  width: 8px;
+  height: 8px;
+  margin-right: 4px;
+  border-right: 2px solid var(--text-muted);
+  border-bottom: 2px solid var(--text-muted);
+  transform: rotate(45deg) translateY(-2px);
+}
+
+#bestParkBanner .pp-best-toggle[aria-expanded="true"] .pp-best-chevron {
+  transform: rotate(225deg) translateY(-2px);
+}
+
+#bestParkBanner .pp-best-more {
+  padding: 0 12px 10px 44px;
+}
+
+#bestParkBanner .pp-best-more .best-park-sub {
+  font-size: .8rem;
+  line-height: 1.45;
+}
+
+#bestParkBanner .pp-best-more .best-park-note {
+  margin-top: 4px;
+  font-size: .72rem;
+}
+
+#bestParkBanner .pp-best-caveat {
+  margin: 6px 0 0;
+  font-size: .72rem;
+  line-height: 1.4;
+  color: var(--text-muted);
+}
+
+#bestParkBanner .pp-best-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  margin-top: 6px;
+  padding: 4px 12px;
+  border: 1px solid var(--teal);
+  border-radius: 999px;
+  color: var(--teal);
+  font-size: .76rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+#bestParkBanner .pp-best-link:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 3px;
+}
+
 @container (max-width:18.49rem) {
   #ppCompactOverview .pp1b-grid {
     grid-template-columns: 1fr;

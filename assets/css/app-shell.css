@@ -393,6 +393,15 @@ body.pp-overview-enabled {
   padding: 0;
   border-radius: 14px;
   overflow: hidden;
+  background: linear-gradient(135deg, rgba(255, 209, 102, .30), rgba(255, 111, 181, .22));
+  border: 1.5px solid rgba(255, 209, 102, .75);
+  box-shadow: 0 2px 10px rgba(255, 209, 102, .18);
+}
+
+[data-theme="light"] .pp-overview-enabled [data-pp-pane="overview"] > #bestParkBanner {
+  background: linear-gradient(135deg, #ffe5a8, #ffd3e8);
+  border-color: #c98200;
+  box-shadow: 0 2px 10px rgba(201, 130, 0, .22);
 }
 
 #bestParkBanner .pp-best-toggle {
@@ -471,6 +480,11 @@ body.pp-overview-enabled {
   font-size: .72rem;
   line-height: 1.4;
   color: var(--text-muted);
+}
+
+[data-theme="light"] #bestParkBanner .pp-best-caveat,
+[data-theme="light"] #bestParkBanner .pp-best-more .best-park-sub {
+  color: var(--text);
 }
 
 #bestParkBanner .pp-best-link {

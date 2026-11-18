@@ -630,8 +630,11 @@
       const more = document.createElement('div');
       more.id = 'ppBestParkMore';
       more.className = 'pp-best-more';
-      more.hidden = !bestParkExpanded;
-      [sub, note].forEach((n) => n && more.append(n));
+      more.dataset.open = String(bestParkExpanded);
+      more.inert = !bestParkExpanded;
+      const inner = document.createElement('div');
+      inner.className = 'pp-best-more-inner';
+      [sub, note].forEach((n) => n && inner.append(n));
       const caveat = document.createElement('p');
       caveat.className = 'pp-best-caveat';
       caveat.textContent = 'A guide, not a guarantee of short waits.';
@@ -639,12 +642,14 @@
       link.className = 'pp-best-link';
       link.href = '#/park/' + key + '/trends';
       link.textContent = 'See wait trends \u2192';
-      more.append(caveat, link);
+      inner.append(caveat, link);
+      more.append(inner);
 
       toggle.addEventListener('click', () => {
         bestParkExpanded = !bestParkExpanded;
         toggle.setAttribute('aria-expanded', String(bestParkExpanded));
-        more.hidden = !bestParkExpanded;
+        more.dataset.open = String(bestParkExpanded);
+        more.inert = !bestParkExpanded;
       });
       banner.replaceChildren(toggle, more);
     };

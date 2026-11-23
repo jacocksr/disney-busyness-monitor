@@ -33,19 +33,30 @@ body.pp-navigation-enabled {
   display: none !important;
 }
 
+/* Active indicator: JS sizes this box to the active tab; only a slim bar is drawn. */
 #ppNavigation .pp-dock-ind {
   position: absolute;
   left: 0;
   top: 0;
   width: 0;
   height: 0;
-  border-radius: 20px;
-  background: rgba(76, 214, 192, .14);
-  background: color-mix(in srgb, var(--teal) 14%, transparent);
-  box-shadow: inset 0 0 0 1.5px var(--teal);
+  background: transparent;
+  box-shadow: none;
   opacity: 0;
   pointer-events: none;
   z-index: 0;
+}
+
+#ppNavigation .pp-dock-ind::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 2px;
+  width: 22px;
+  height: 3px;
+  border-radius: 3px;
+  background: var(--teal);
+  transform: translateX(-50%);
 }
 
 #ppNavigation .pp-dock-ind.on {
@@ -80,11 +91,20 @@ body.pp-navigation-enabled {
   text-decoration: none;
   overflow-wrap: normal;
   transition: color .25s;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 #ppNavigation.pp-dock a.pp-tab[aria-current="page"] {
   color: var(--teal);
   font-weight: 700;
+}
+
+/* Mouse and touch taps show no outline or box; keyboard focus keeps a visible ring. */
+#ppNavigation.pp-dock a.pp-tab:focus:not(:focus-visible) {
+  outline: none;
 }
 
 #ppNavigation.pp-dock a.pp-tab:focus-visible {
@@ -115,7 +135,7 @@ body.pp-navigation-enabled {
   stroke: none;
 }
 
-/* Raised center tab: the icon is a theme-specific image (dark theme is the default). */
+/* Raised center tab: solid disc with the theme-specific logo image on top (dark theme is the default). */
 #ppNavigation.pp-dock a.pp-tab-center {
   color: var(--text);
 }
@@ -128,8 +148,13 @@ body.pp-navigation-enabled {
   width: 60px;
   height: 60px;
   margin-top: -34px;
+  border: 1px solid var(--card-border);
   border-radius: 50%;
-  background: url("../../images/darktheme-dock.png") center / cover no-repeat;
+  background-color: var(--card-bg-solid);
+  background-image: url("../../images/darktheme-dock.png");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
   box-shadow: 0 8px 18px rgba(0, 0, 0, .3);
   transition: box-shadow .3s, transform .3s cubic-bezier(.4, .1, .2, 1);
 }
@@ -143,7 +168,7 @@ html[data-theme="light"] #ppNavigation a.pp-tab-center .pp-tab-icon {
 }
 
 #ppNavigation a.pp-tab-center[aria-current="page"] .pp-tab-icon {
-  box-shadow: 0 0 0 3px var(--teal), 0 8px 18px rgba(0, 0, 0, .3);
+  box-shadow: 0 0 0 2px var(--teal), 0 8px 18px rgba(0, 0, 0, .3);
 }
 
 #ppNavigation a.pp-tab-center:active .pp-tab-icon {

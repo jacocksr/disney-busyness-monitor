@@ -277,6 +277,34 @@ html[data-pp-animations="off"] #ppNavigation .pp-tab-icon {
   background: color-mix(in srgb, var(--teal) 14%, transparent);
 }
 
+/* Calm taps. The shared park-icon styles in base.css lift the icon on hover (which sticks after a tap on a
+   phone, so the selected icon stays raised), pulse it to 135% on selection and add a gold glow. None of that
+   applies in the header. The teal ring is the only selected cue and a gentle press shrink is the only motion. */
+#ppHeaderParks .park-select-btn img,
+#ppHeaderParks .park-select-btn:hover img,
+#ppHeaderParks .park-select-btn:active img,
+#ppHeaderParks .park-select-btn:focus img,
+#ppHeaderParks .park-select-btn.active-park img {
+  transform: none !important;
+  translate: none !important;
+  transition: none !important;
+  animation: none !important;
+}
+
+#ppHeaderParks img.emoji-pulse {
+  animation: none !important;
+}
+
+#ppHeaderParks .park-select-btn.active-park {
+  box-shadow: none;
+}
+
+@media (hover: hover) {
+  #ppHeaderParks .park-select-btn:not([aria-pressed="true"]):hover {
+    background: rgba(255, 255, 255, .06);
+  }
+}
+
 /* ==========================================================================
    Sitewide interaction polish
    ========================================================================== */

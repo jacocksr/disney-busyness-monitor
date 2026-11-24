@@ -1,10 +1,11 @@
 /* Park Pulse easter egg: tap the center Pulse dock button 5 times within 2 seconds.
    Park emojis rain down and pile up with physics. A large firework button then appears.
    Pressing it fires a colored rocket straight down; it explodes on the floor and blasts the emojis away.
+   The floor stays closed until HOLD_MS after the last rocket explodes, then it drops away.
    Self-contained: no libraries, no CSS file. Respects reduced-motion and the Animations setting. */
 (function () {
   'use strict';
-  var NEED = 5, WINDOW = 2000, COUNT = 30, MAX_SETS = 10, SPAWN = 1000, CALM_MS = 1500, FLOOR_MAX = 7000, HARD_STOP = 16000;
+  var NEED = 5, WINDOW = 2000, COUNT = 30, MAX_SETS = 10, SPAWN = 1000, HOLD_MS = 1500, HARD_STOP = 16000;
   var G = 3800, E_BALL = 0.7, E_WALL = 0.7, E_FLOOR = 0.65, MU = 0.35, INERTIA = 2 / 3, KF = 1 + 1 / INERTIA;
   var BOUNCE_MIN = 40, STEP = 1 / 240, ITER = 5, SLOP = 0.2, PUSH = 0.8;
   var REST_V = 50, REST_W = 40, ROLL_K = 4, ROLL_DEC = 280, SPIN_K = 4;
@@ -99,7 +100,7 @@
     document.documentElement.style.touchAction = 'none';
 
     var balls = [], rockets = [], fxs = [], btns = [], box = null, btnArmed = true, ceilOn = false;
-    var t0 = performance.now(), last = t0, floorOn = true, calm = 0, acc = 0, raf = 0, lp = null, simT = 0, setAt = 0;
+    var t0 = performance.now(), last = t0, floorOn = true, closeAt = 0, acc = 0, raf = 0, lp = null, simT = 0, setAt = 0;
 
     function spawnSet(base) {
       for (var i = 0; i < COUNT; i++) {
@@ -120,7 +121,7 @@
       add: function () {
         var el = performance.now() - t0;
         show.sets++;
-        setAt = el; calm = 0; btnArmed = true; ceilOn = false;
+        setAt = el; btnArmed = true; ceilOn = false;
         spawnSet(el);
         if (!floorOn) {
           floorOn = true;
@@ -348,9 +349,8 @@
       var at = rockets.indexOf(b);
       if (at >= 0) rockets.splice(at, 1);
       b.gone = true;
-      calm = 0;
       ceilOn = true;
-      if (!rockets.length) floorOn = false;
+      closeAt = now + HOLD_MS;
       setAt = (now - t0) - SPAWN;
       balls.forEach(function (o) {
         if (o.gone || !o.live || o.rocket) return;
@@ -468,17 +468,10 @@
       });
       if (floorOn && btnArmed && (btns.length || el - setAt > BTN_DELAY)) showBtns();
       if (btns.length && !floorOn) hideBtns(true);
-      if (floorOn && !rockets.length) {
-        if (el - setAt > FLOOR_MAX) openFloor();
-        else if (el > setAt + SPAWN + 300) {
-          var busy = false;
-          for (k = 0; k < balls.length; k++) {
-            b = balls[k];
-            if (b.live && !b.gone && !b.sleep) { busy = true; break; }
-          }
-          calm = busy ? 0 : calm + dt * 1000;
-          if (calm > CALM_MS) openFloor();
-        }
+      /* The floor only opens HOLD_MS after the last rocket has exploded. Each new explosion restarts the timer. */
+      if (floorOn && closeAt && !rockets.length && now >= closeAt) {
+        closeAt = 0;
+        openFloor();
       }
       for (k = 0; k < balls.length; k++) {
         b = balls[k];

@@ -1,7 +1,7 @@
 /* Park Pulse: five Pulse taps rain park icons. Impact blasts launch curved aerial shells. */
 (function () {
   'use strict';
-  var NEED=5, WINDOW=2000, COUNT=30, MAX_SETS=10, SPAWN=1000, HOLD_MS=1000, FLOOR_MAX=7000, HARD_STOP=16000;
+  var NEED=5, WINDOW=2000, COUNT=30, MAX_SETS=10, SPAWN=1000, HOLD_MS=1250, FLOOR_MAX=7000, HARD_STOP=16000;
   var G=3800, E_BALL=.7, E_WALL=.7, E_FLOOR=.65, MU=.35, INERTIA=2/3, KF=1+1/INERTIA;
   var BOUNCE_MIN=40, STEP=1/240, ITER=5, SLOP=.2, PUSH=.8;
   var REST_V=50, REST_W=40, ROLL_K=4, ROLL_DEC=280, SPIN_K=4;

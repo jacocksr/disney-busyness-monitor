@@ -1,7 +1,8 @@
 /* Park Pulse easter egg: tap the center Pulse dock button 5 times within 2 seconds.
-   Park emojis rain down and pile up with physics. A large firework button then appears.
-   Pressing it fires one to three colored rockets that arc downward and explode on the floor,
-   blasting the emojis away. The floor stays closed until HOLD_MS after the last rocket explodes.
+   Park emojis rain down and pile up with physics. Firework buttons then appear.
+   Each button's emoji shows how many rockets it fires: sparkler = 1, firecracker = 2, fireworks = 3.
+   The rockets arc downward and explode on the floor, blasting the emojis away.
+   The floor stays closed until HOLD_MS after the last rocket explodes.
    If no firework is fired, the floor drops by itself FLOOR_MAX after the trigger.
    Self-contained: no libraries, no CSS file. Respects reduced-motion and the Animations setting. */
 (function () {
@@ -14,9 +15,9 @@
   var BTN_DELAY = 1000, BLAST = 3400, LIFT = 1200, MAXB = 3600, UPBIAS = 0.3;
   var ROCKET_R = 9, ROCKET_GRAV = 6000, ROCKET_V = 1800, SAFETY_S = 2;
   var DRIFT_MIN = 50, DRIFT_MAX = 130, TRAIL_N = 6;
-  var P_ONE = 0.5, P_TWO = 0.3, STAGGER_MIN = 80, STAGGER_MAX = 220;
+  var STAGGER_MIN = 80, STAGGER_MAX = 220;
   var FX_FLASH_MS = 600, FX_TOTAL_MS = 1100, SPARKS = 44;
-  var FW_EMOJI = ['\uD83C\uDF86', '\uD83C\uDF87', '\uD83E\uDDE8'];
+  var FW_EMOJI = ['\uD83C\uDF87', '\uD83E\uDDE8', '\uD83C\uDF86'];
   var EMOJI_FILES = ['MKEmoji_1_1023x1023.png', 'EPCOTEmoji_1_1023x1023.png', 'HSEmoji_1_1023x1023.png', 'AKEmoji_1_1023x1023.png'];
   var EMOJI_FILES_FIX = { 3: 'AKEmoji_1_1023x1022.png' };
   var FW_VARS = ['--pp-fw-gold', '--pp-fw-pink', '--pp-fw-teal', '--pp-fw-purple'];
@@ -65,9 +66,9 @@
   }
   function rgba(c, a) { return 'rgba(' + Math.round(c[0]) + ',' + Math.round(c[1]) + ',' + Math.round(c[2]) + ',' + a + ')'; }
   function mix(a, b, f) { return [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f, a[2] + (b[2] - a[2]) * f]; }
+  /* Equal 1/3 chance of 1, 2 or 3 rockets. */
   function pickCount() {
-    var r = Math.random();
-    return r < P_ONE ? 1 : (r < P_ONE + P_TWO ? 2 : 3);
+    return 1 + Math.floor(Math.random() * 3);
   }
 
   /* Reads the same theme-aware firework colors as the park-icon fireworks, as [r,g,b] arrays. */
@@ -303,6 +304,7 @@
     function pressBtn(el) {
       var at = btns.indexOf(el);
       if (at < 0) return;
+      var n = parseInt(el.dataset.fw, 10) || 1;
       btns.splice(at, 1);
       el.style.pointerEvents = 'none';
       if (el.animate) el.animate([{ opacity: 1, transform: 'scale(1)' }, { opacity: 0, transform: 'scale(0.6)' }], { duration: 180, fill: 'forwards' });
@@ -312,11 +314,11 @@
         box = null;
         setTimeout(function () { if (wrap.parentNode) wrap.parentNode.removeChild(wrap); }, 220);
       }
-      volley();
+      volley(n);
     }
     function showBtns() {
       var n = Math.max(1, Math.min(show ? show.sets : 1, MAX_SETS));
-      var add = n - btns.length, i, el;
+      var add = n - btns.length, i, el, cnt;
       btnArmed = false;
       if (add <= 0) return;
       if (!box) {
@@ -325,10 +327,13 @@
         document.body.appendChild(box);
       }
       for (i = 0; i < add; i++) {
+        /* The rocket count is decided now, and the emoji tells the player: sparkler 1, firecracker 2, fireworks 3. */
+        cnt = pickCount();
         el = document.createElement('button');
         el.type = 'button';
-        el.textContent = FW_EMOJI[Math.floor(Math.random() * FW_EMOJI.length)];
-        el.setAttribute('aria-label', 'Launch fireworks');
+        el.dataset.fw = String(cnt);
+        el.textContent = FW_EMOJI[cnt - 1];
+        el.setAttribute('aria-label', 'Launch ' + cnt + (cnt === 1 ? ' firework' : ' fireworks'));
         /* Theme variables make the button follow light and dark mode automatically. */
         el.style.cssText = 'width:64px;height:64px;padding:0;display:flex;align-items:center;justify-content:center;border-radius:50%;border:2px solid var(--teal,#4cd6c0);background:var(--card-bg-solid,#16294a);color:var(--text,#fff);font-size:2.1rem;line-height:1;box-shadow:0 6px 18px rgba(0,0,0,.35);cursor:pointer;touch-action:manipulation;pointer-events:auto';
         el.addEventListener('click', pressBtn.bind(null, el));
@@ -338,9 +343,9 @@
       }
     }
 
-    /* One press launches one to three rockets, a little apart in time, each with its own colors and landing spot. */
-    function volley() {
-      var n = pickCount(), i, delay = 0;
+    /* Launches n rockets, a little apart in time, each with its own colors and landing spot. */
+    function volley(n) {
+      var i, delay = 0;
       for (i = 0; i < n; i++) {
         dropRocket(delay);
         delay += STAGGER_MIN + Math.random() * (STAGGER_MAX - STAGGER_MIN);

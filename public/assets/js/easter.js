@@ -2,10 +2,11 @@
    Park emojis rain down and pile up with physics. A large firework button then appears.
    Pressing it fires one to three colored rockets that arc downward and explode on the floor,
    blasting the emojis away. The floor stays closed until HOLD_MS after the last rocket explodes.
+   If no firework is fired, the floor drops by itself FLOOR_MAX after the trigger.
    Self-contained: no libraries, no CSS file. Respects reduced-motion and the Animations setting. */
 (function () {
   'use strict';
-  var NEED = 5, WINDOW = 2000, COUNT = 30, MAX_SETS = 10, SPAWN = 1000, HOLD_MS = 1000, HARD_STOP = 16000;
+  var NEED = 5, WINDOW = 2000, COUNT = 30, MAX_SETS = 10, SPAWN = 1000, HOLD_MS = 1000, FLOOR_MAX = 7000, HARD_STOP = 16000;
   var G = 3800, E_BALL = 0.7, E_WALL = 0.7, E_FLOOR = 0.65, MU = 0.35, INERTIA = 2 / 3, KF = 1 + 1 / INERTIA;
   var BOUNCE_MIN = 40, STEP = 1 / 240, ITER = 5, SLOP = 0.2, PUSH = 0.8;
   var REST_V = 50, REST_W = 40, ROLL_K = 4, ROLL_DEC = 280, SPIN_K = 4;
@@ -15,6 +16,7 @@
   var DRIFT_MIN = 50, DRIFT_MAX = 130, TRAIL_N = 6;
   var P_ONE = 0.5, P_TWO = 0.3, STAGGER_MIN = 80, STAGGER_MAX = 220;
   var FX_FLASH_MS = 600, FX_TOTAL_MS = 1100, SPARKS = 44;
+  var FW_EMOJI = ['\uD83C\uDF86', '\uD83C\uDF87', '\uD83E\uDDE8'];
   var EMOJI_FILES = ['MKEmoji_1_1023x1023.png', 'EPCOTEmoji_1_1023x1023.png', 'HSEmoji_1_1023x1023.png', 'AKEmoji_1_1023x1023.png'];
   var EMOJI_FILES_FIX = { 3: 'AKEmoji_1_1023x1022.png' };
   var FW_VARS = ['--pp-fw-gold', '--pp-fw-pink', '--pp-fw-teal', '--pp-fw-purple'];
@@ -107,7 +109,7 @@
     document.documentElement.style.touchAction = 'none';
 
     var balls = [], rockets = [], fxs = [], btns = [], box = null, btnArmed = true, ceilOn = false;
-    var t0 = performance.now(), last = t0, floorOn = true, closeAt = 0, acc = 0, raf = 0, lp = null, simT = 0, setAt = 0;
+    var t0 = performance.now(), last = t0, floorOn = true, closeAt = 0, acc = 0, raf = 0, lp = null, simT = 0, setAt = 0, trigAt = 0;
 
     function spawnSet(base) {
       for (var i = 0; i < COUNT; i++) {
@@ -128,7 +130,7 @@
       add: function () {
         var el = performance.now() - t0;
         show.sets++;
-        setAt = el; btnArmed = true; ceilOn = false;
+        setAt = el; trigAt = el; btnArmed = true; ceilOn = false;
         spawnSet(el);
         if (!floorOn) {
           floorOn = true;
@@ -325,9 +327,10 @@
       for (i = 0; i < add; i++) {
         el = document.createElement('button');
         el.type = 'button';
-        el.textContent = '\uD83C\uDF86';
+        el.textContent = FW_EMOJI[Math.floor(Math.random() * FW_EMOJI.length)];
         el.setAttribute('aria-label', 'Launch fireworks');
-        el.style.cssText = 'width:64px;height:64px;padding:0;display:flex;align-items:center;justify-content:center;border-radius:50%;border:2px solid #fff;background:#d92d20;color:#fff;font-size:2.1rem;line-height:1;box-shadow:0 6px 18px rgba(217,45,32,.5);cursor:pointer;touch-action:manipulation;pointer-events:auto';
+        /* Theme variables make the button follow light and dark mode automatically. */
+        el.style.cssText = 'width:64px;height:64px;padding:0;display:flex;align-items:center;justify-content:center;border-radius:50%;border:2px solid var(--teal,#4cd6c0);background:var(--card-bg-solid,#16294a);color:var(--text,#fff);font-size:2.1rem;line-height:1;box-shadow:0 6px 18px rgba(0,0,0,.35);cursor:pointer;touch-action:manipulation;pointer-events:auto';
         el.addEventListener('click', pressBtn.bind(null, el));
         box.appendChild(el);
         btns.push(el);
@@ -493,11 +496,13 @@
       });
       if (floorOn && btnArmed && (btns.length || el - setAt > BTN_DELAY)) showBtns();
       if (btns.length && !floorOn) hideBtns(true);
-      /* The floor only opens HOLD_MS after the last rocket has exploded. Each new explosion restarts the timer. */
+      /* The floor opens HOLD_MS after the last rocket has exploded. Each new explosion restarts the timer. */
       if (floorOn && closeAt && !rockets.length && now >= closeAt) {
         closeAt = 0;
         openFloor();
       }
+      /* If nobody fires a rocket, the floor still drops FLOOR_MAX after the trigger so the emojis fall away. */
+      if (floorOn && !closeAt && !rockets.length && el - trigAt > FLOOR_MAX) openFloor();
       for (k = 0; k < balls.length; k++) {
         b = balls[k];
         if (!b.live || b.gone) continue;

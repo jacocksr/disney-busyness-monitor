@@ -1,0 +1,84 @@
+/* Park Pulse snapshot card (Attractions tab). Pairs with assets/js/snapshot.js.
+   The long original lines stay in the DOM but are hidden once the short version is active. */
+
+#ppSelectedParkSnapshot.pp-snap-lean [data-average],
+#ppSelectedParkSnapshot.pp-snap-lean [data-comparison],
+#ppSelectedParkSnapshot.pp-snap-lean [data-meta] {
+  display: none !important;
+}
+
+.pp-snap-headline {
+  flex: 1 1 auto;
+  min-width: 0;
+  color: var(--text);
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.pp-snap-headline strong {
+  font-size: 1.3rem;
+  font-weight: 800;
+}
+
+.pp-snap-trend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+  margin-top: 6px;
+}
+
+.pp-snap-trend:empty {
+  display: none;
+}
+
+.pp-pill {
+  --tone: var(--teal);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 11px 3px 9px;
+  border: 1px solid var(--tone);
+  border: 1px solid color-mix(in srgb, var(--tone) 55%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--tone) 14%, transparent);
+  color: var(--text);
+  font-size: .82rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.pp-pill::before {
+  content: "";
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--tone);
+}
+
+.pp-pill[data-tone="busy"] {
+  --tone: var(--red);
+}
+
+.pp-pill[data-tone="quiet"] {
+  --tone: var(--green);
+}
+
+.pp-pill[data-tone="typical"] {
+  --tone: var(--teal);
+}
+
+.pp-snap-muted {
+  color: var(--text-muted);
+  font-size: .78rem;
+  line-height: 1.35;
+}
+
+.pp-snap-meta {
+  margin-top: 6px;
+  color: var(--text-muted);
+  font-size: .8rem;
+  line-height: 1.35;
+}

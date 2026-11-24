@@ -1,7 +1,10 @@
 /* Park Pulse navigation: hash routes, content panes and the five-tab bottom dock.
    Owns PPUI.navigation. Loads after history.js and before app-shell.js. The older navigation code in
    app-shell.js returns early when #ppNavigation already exists, so only this module builds the shell.
-   Tab order below is also the slide direction between panes. */
+   Tab order below is also the slide direction between panes.
+   The header shows four park emoji buttons (#ppHeaderParks) on every tab except Pulse. The hidden park
+   select stays in the DOM as the single source of the selected park for older code.
+   The History tab shows two cards: the monthly calendar first, then a separate Weekly Patterns card. */
 (() => {
   'use strict';
 
@@ -10,6 +13,13 @@
     epcot: 'EPCOT',
     hollywood_studios: 'Hollywood Studios',
     animal_kingdom: 'Animal Kingdom',
+  };
+
+  const PARK_ICONS = {
+    magic_kingdom: 'MKEmoji_1_1023x1023.png',
+    epcot: 'EPCOTEmoji_1_1023x1023.png',
+    hollywood_studios: 'HSEmoji_1_1023x1023.png',
+    animal_kingdom: 'AKEmoji_1_1023x1022.png',
   };
 
   const TABS = [
@@ -59,12 +69,14 @@
   let nav;
   let indicator;
   let parkSelect;
+  let parksGroup;
   let picker;
   let unavailable;
   let content;
   let ridesPanel;
   let chartPanel;
   let historyPanel;
+  let weeklyCard;
 
   const validPark = (key) => Object.prototype.hasOwnProperty.call(PARKS, key);
   const parkAvailable = (key) => !parkData?.unavailable && !!parkData?.parks?.[key];
@@ -188,6 +200,45 @@
     if (button && button.getAttribute('aria-pressed') !== 'true') button.click();
   }
 
+  /* The weekly view (Last 7 days and By day of week) is built by history.js inside a collapsed section of the
+     monthly card. It is moved, not copied, into its own card so every id and listener keeps working. The
+     collapsed section stays in place but hidden. This also adds the unit label to the monthly card, where the
+     Recent 7 days button used to be (that button is hidden by CSS and left in the DOM because history.js still
+     binds it). Safe to call repeatedly; it does nothing until history.js has built its markup. */
+  function ensureWeeklyCard() {
+    if (weeklyCard) return true;
+
+    const host = document.getElementById('ppHistoryHost');
+    const body = document.getElementById('ppLegacyBody');
+    const patterns = document.getElementById('ppLegacyPatterns');
+    if (!host || !body || !patterns) return false;
+
+    const actions = host.querySelector('.pp-history-actions');
+    if (actions && !actions.querySelector('.pp-history-unit')) {
+      const unit = document.createElement('span');
+      unit.className = 'pp-history-unit';
+      unit.textContent = 'Average daily wait, in minutes';
+      actions.prepend(unit);
+    }
+
+    weeklyCard = document.createElement('section');
+    weeklyCard.id = 'ppWeeklyCard';
+    weeklyCard.className = 'panel pp-weekly-card';
+    weeklyCard.setAttribute('aria-labelledby', 'ppWeeklyTitle');
+    weeklyCard.hidden = true;
+
+    const header = document.createElement('div');
+    header.className = 'panel-header';
+    const title = document.createElement('h2');
+    title.id = 'ppWeeklyTitle';
+    title.textContent = 'Weekly Patterns';
+    header.appendChild(title);
+
+    weeklyCard.append(header, body);
+    patterns.hidden = true;
+    return true;
+  }
+
   /* ---- Dock ---- */
 
   function placeIndicator(animate) {
@@ -267,6 +318,13 @@
     parkSelect.value = current.park || chosenPark || '';
     parkSelect.parentElement.hidden = current.view === 'overview';
 
+    // Park emojis: shown on every tab except Pulse, with the selected park marked.
+    const activePark = current.park || chosenPark;
+    parksGroup.hidden = current.view === 'overview';
+    parksGroup.querySelectorAll('button').forEach((button) => {
+      button.setAttribute('aria-pressed', String(button.dataset.parkKey === activePark));
+    });
+
     const needsPark = NEEDS_PARK.includes(current.view);
     const requiresChoice = needsPark && !current.park;
 
@@ -288,6 +346,12 @@
     ridesPanel.hidden = current.view !== 'attractions' || blocked;
     chartPanel.hidden = current.view !== 'trends' || blocked;
     historyPanel.hidden = !['trends', 'history'].includes(current.view) || blocked;
+
+    // The Weekly Patterns card follows the history panel and shows only on the History tab.
+    if (ensureWeeklyCard()) {
+      if (weeklyCard.previousElementSibling !== historyPanel) historyPanel.after(weeklyCard);
+      weeklyCard.hidden = current.view !== 'history' || blocked;
+    }
 
     placeIndicator(true);
   }
@@ -358,15 +422,39 @@
           <option value="">Choose park</option>
         </select>
       </label>
+      <div id="ppHeaderParks" class="pp-header-parks" role="group" aria-label="Choose a park" hidden></div>
     `;
 
     parkSelect = header.querySelector('select');
+    parksGroup = header.querySelector('#ppHeaderParks');
 
     for (const [key, name] of Object.entries(PARKS)) {
       const option = document.createElement('option');
       option.value = key;
       option.textContent = name;
       parkSelect.appendChild(option);
+
+      // These buttons carry the park-select-btn class and data-park-key so the park-icon fireworks work on them too.
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'park-select-btn pp-header-park';
+      button.dataset.parkKey = key;
+      button.title = name;
+      button.setAttribute('aria-label', name);
+      button.setAttribute('aria-pressed', 'false');
+
+      const image = document.createElement('img');
+      image.src = 'images/' + PARK_ICONS[key];
+      image.alt = '';
+      image.width = 40;
+      image.height = 40;
+      image.decoding = 'async';
+      button.appendChild(image);
+
+      button.addEventListener('click', () => {
+        navigate(current.view === 'overview' ? 'attractions' : current.view, key);
+      });
+      parksGroup.appendChild(button);
     }
 
     content = document.createElement('main');
@@ -451,6 +539,16 @@
 
     window.addEventListener('hashchange', () => applyRoute(parseRoute(location.hash)));
     window.addEventListener('resize', () => placeIndicator(false));
+
+    /* "About closure data" in the heatmap legend. The closure details it opens live in the Ride Closures card on
+       the More tab. The existing click handler opens that card and its data-info section and schedules a scroll;
+       this listener runs right after it and switches to More, so the opened section is on screen when the
+       scroll fires. */
+    document.addEventListener('click', (event) => {
+      const help = event.target instanceof Element ? event.target.closest('[data-pc-help]') : null;
+      if (!help || current.view === 'more') return;
+      navigate('more', chosenPark);
+    });
 
     new ResizeObserver(() => {
       measureDock();

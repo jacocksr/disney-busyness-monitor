@@ -3,7 +3,8 @@
    app-shell.js returns early when #ppNavigation already exists, so only this module builds the shell.
    Tab order below is also the slide direction between panes.
    The header shows four park emoji buttons (#ppHeaderParks) on every tab except Pulse. The hidden park
-   select stays in the DOM as the single source of the selected park for older code. */
+   select stays in the DOM as the single source of the selected park for older code.
+   The History tab shows two cards: the monthly calendar first, then a separate Weekly Patterns card. */
 (() => {
   'use strict';
 
@@ -75,6 +76,7 @@
   let ridesPanel;
   let chartPanel;
   let historyPanel;
+  let weeklyCard;
 
   const validPark = (key) => Object.prototype.hasOwnProperty.call(PARKS, key);
   const parkAvailable = (key) => !parkData?.unavailable && !!parkData?.parks?.[key];
@@ -198,6 +200,45 @@
     if (button && button.getAttribute('aria-pressed') !== 'true') button.click();
   }
 
+  /* The weekly view (Last 7 days and By day of week) is built by history.js inside a collapsed section of the
+     monthly card. It is moved, not copied, into its own card so every id and listener keeps working. The
+     collapsed section stays in place but hidden. This also adds the unit label to the monthly card, where the
+     Recent 7 days button used to be (that button is hidden by CSS and left in the DOM because history.js still
+     binds it). Safe to call repeatedly; it does nothing until history.js has built its markup. */
+  function ensureWeeklyCard() {
+    if (weeklyCard) return true;
+
+    const host = document.getElementById('ppHistoryHost');
+    const body = document.getElementById('ppLegacyBody');
+    const patterns = document.getElementById('ppLegacyPatterns');
+    if (!host || !body || !patterns) return false;
+
+    const actions = host.querySelector('.pp-history-actions');
+    if (actions && !actions.querySelector('.pp-history-unit')) {
+      const unit = document.createElement('span');
+      unit.className = 'pp-history-unit';
+      unit.textContent = 'Average daily wait, in minutes';
+      actions.prepend(unit);
+    }
+
+    weeklyCard = document.createElement('section');
+    weeklyCard.id = 'ppWeeklyCard';
+    weeklyCard.className = 'panel pp-weekly-card';
+    weeklyCard.setAttribute('aria-labelledby', 'ppWeeklyTitle');
+    weeklyCard.hidden = true;
+
+    const header = document.createElement('div');
+    header.className = 'panel-header';
+    const title = document.createElement('h2');
+    title.id = 'ppWeeklyTitle';
+    title.textContent = 'Weekly Patterns';
+    header.appendChild(title);
+
+    weeklyCard.append(header, body);
+    patterns.hidden = true;
+    return true;
+  }
+
   /* ---- Dock ---- */
 
   function placeIndicator(animate) {
@@ -305,6 +346,12 @@
     ridesPanel.hidden = current.view !== 'attractions' || blocked;
     chartPanel.hidden = current.view !== 'trends' || blocked;
     historyPanel.hidden = !['trends', 'history'].includes(current.view) || blocked;
+
+    // The Weekly Patterns card follows the history panel and shows only on the History tab.
+    if (ensureWeeklyCard()) {
+      if (weeklyCard.previousElementSibling !== historyPanel) historyPanel.after(weeklyCard);
+      weeklyCard.hidden = current.view !== 'history' || blocked;
+    }
 
     placeIndicator(true);
   }

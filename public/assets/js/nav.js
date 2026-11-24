@@ -540,6 +540,16 @@
     window.addEventListener('hashchange', () => applyRoute(parseRoute(location.hash)));
     window.addEventListener('resize', () => placeIndicator(false));
 
+    /* "About closure data" in the heatmap legend. The closure details it opens live in the Ride Closures card on
+       the More tab. The existing click handler opens that card and its data-info section and schedules a scroll;
+       this listener runs right after it and switches to More, so the opened section is on screen when the
+       scroll fires. */
+    document.addEventListener('click', (event) => {
+      const help = event.target instanceof Element ? event.target.closest('[data-pc-help]') : null;
+      if (!help || current.view === 'more') return;
+      navigate('more', chosenPark);
+    });
+
     new ResizeObserver(() => {
       measureDock();
       placeIndicator(false);

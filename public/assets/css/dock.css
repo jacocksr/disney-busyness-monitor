@@ -1,5 +1,6 @@
 /* Park Pulse dock: floating five-tab pill with a raised center Pulse tab.
-   Loads after app-shell.css and replaces its older full-width dock rules for #ppNavigation. */
+   Loads after app-shell.css and replaces its older full-width dock rules for #ppNavigation.
+   The last section holds sitewide interaction polish (gear rotation, tap highlight, press animation). */
 
 #ppNavigation.pp-dock {
   position: fixed;
@@ -215,5 +216,74 @@ html[data-pp-animations="off"] #ppNavigation .pp-tab-icon {
   #ppNavigation .pp-tab-icon {
     transition: none !important;
     animation: none !important;
+  }
+}
+
+/* ==========================================================================
+   Sitewide interaction polish
+   ========================================================================== */
+
+/* 1. No browser tap highlight on any element. */
+html,
+body,
+*,
+*::before,
+*::after {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* 2. Mouse and touch taps leave no focus ring; keyboard focus keeps the app's own focus-visible rings. */
+:where(a, button, summary, select, [role="button"], [tabindex]):focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* 3. Settings gear: turns 180 degrees clockwise while the settings dialog is open and turns back when it closes.
+   global settings sets data-motion on the dialog: opening, open, closing, closed. */
+#ppGlobalSettingsButton svg {
+  transform-origin: 50% 50%;
+  transition: transform .45s cubic-bezier(.4, .1, .2, 1);
+}
+
+html:has(#ppGlobalSettingsDialog[data-motion="opening"], #ppGlobalSettingsDialog[data-motion="open"]) #ppGlobalSettingsButton svg {
+  transform: rotate(180deg);
+}
+
+@supports not selector(:has(*)) {
+  #ppGlobalSettingsButton[aria-expanded="true"] svg {
+    transform: rotate(180deg);
+  }
+}
+
+/* 4. Press feedback like the center Pulse button: the control shrinks a little while pressed and springs back.
+   Uses the separate scale property, so existing transforms and layouts are untouched.
+   :where() keeps specificity at zero, so any component that styles its own transition still wins. */
+:where(button, [role="button"], .heatmap-tab, .info-btn, .day-nav-btn, .tz-option, .pp-best-link, .pp-open-display-settings) {
+  transition: scale .25s cubic-bezier(.4, .1, .2, 1);
+}
+
+:where(button, [role="button"], .heatmap-tab, .info-btn, .day-nav-btn, .tz-option, .pp-best-link, .pp-open-display-settings):where(:not(:disabled, [aria-disabled="true"])):active {
+  scale: .94;
+}
+
+/* Large tappable surfaces shrink less so they do not look jumpy. */
+:where(summary, a.pp1b-card, .park-card) {
+  transition: scale .25s cubic-bezier(.4, .1, .2, 1);
+}
+
+:where(summary, a.pp1b-card, .park-card):active {
+  scale: .985;
+}
+
+html[data-pp-animations="off"] #ppGlobalSettingsButton svg,
+html[data-pp-animations="off"] :where(button, [role="button"], .heatmap-tab, .info-btn, .day-nav-btn, .tz-option, .pp-best-link, .pp-open-display-settings, summary, a.pp1b-card, .park-card) {
+  transition: none !important;
+  scale: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #ppGlobalSettingsButton svg,
+  :where(button, [role="button"], .heatmap-tab, .info-btn, .day-nav-btn, .tz-option, .pp-best-link, .pp-open-display-settings, summary, a.pp1b-card, .park-card) {
+    transition: none !important;
+    scale: none !important;
   }
 }

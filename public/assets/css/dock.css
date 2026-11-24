@@ -1,0 +1,289 @@
+/* Park Pulse dock: floating five-tab pill with a raised center Pulse tab.
+   Loads after app-shell.css and replaces its older full-width dock rules for #ppNavigation.
+   The last section holds sitewide interaction polish (gear rotation, tap highlight, press animation). */
+
+#ppNavigation.pp-dock {
+  position: fixed;
+  left: 50%;
+  right: auto;
+  bottom: calc(10px + env(safe-area-inset-bottom));
+  width: min(580px, calc(100% - 20px));
+  transform: translateX(-50%);
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  align-items: end;
+  gap: 0;
+  padding: 8px 6px;
+  border: 1px solid var(--card-border);
+  border-radius: 30px;
+  background: var(--header-bg-solid);
+  background: color-mix(in srgb, var(--header-bg-solid) 88%, transparent);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 6px 22px rgba(0, 0, 0, .18);
+  container-type: normal;
+  z-index: 100;
+}
+
+body.pp-navigation-enabled {
+  padding-bottom: calc(var(--pp-bottom, 72px) + 48px + env(safe-area-inset-bottom));
+}
+
+/* The previous dock's gliding outline is replaced by .pp-dock-ind below. */
+#ppNavigation .pp-dock-indicator {
+  display: none !important;
+}
+
+/* Active indicator: JS sizes this box to the active tab; only a slim bar is drawn. */
+#ppNavigation .pp-dock-ind {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  background: transparent;
+  box-shadow: none;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+#ppNavigation .pp-dock-ind::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 2px;
+  width: 22px;
+  height: 3px;
+  border-radius: 3px;
+  background: var(--teal);
+  transform: translateX(-50%);
+}
+
+#ppNavigation .pp-dock-ind.on {
+  opacity: 1;
+}
+
+#ppNavigation .pp-dock-ind.anim {
+  transition: transform .34s cubic-bezier(.4, .1, .2, 1), width .34s cubic-bezier(.4, .1, .2, 1),
+    height .34s cubic-bezier(.4, .1, .2, 1), opacity .2s;
+}
+
+#ppNavigation.pp-dock a.pp-tab {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 3px;
+  min-width: 0;
+  min-height: 56px;
+  margin: 0 3px;
+  padding: 7px 4px;
+  border-radius: 20px;
+  background: transparent;
+  box-shadow: none;
+  color: var(--text-muted);
+  font-size: .72rem;
+  font-weight: 700;
+  line-height: 1.2;
+  text-align: center;
+  text-decoration: none;
+  overflow-wrap: normal;
+  transition: color .25s;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+#ppNavigation.pp-dock a.pp-tab[aria-current="page"] {
+  color: var(--teal);
+  font-weight: 700;
+}
+
+/* Mouse and touch taps show no outline or box; keyboard focus keeps a visible ring. */
+#ppNavigation.pp-dock a.pp-tab:focus:not(:focus-visible) {
+  outline: none;
+}
+
+#ppNavigation.pp-dock a.pp-tab:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+}
+
+#ppNavigation .pp-tab-icon {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+}
+
+#ppNavigation .pp-ico {
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex: none;
+}
+
+#ppNavigation .pp-ico-fill circle {
+  fill: currentColor;
+  stroke: none;
+}
+
+/* Raised center tab: solid disc with the theme-specific logo image on top (dark theme is the default). */
+#ppNavigation.pp-dock a.pp-tab-center {
+  color: var(--text);
+}
+
+#ppNavigation.pp-dock a.pp-tab-center[aria-current="page"] {
+  color: var(--teal);
+}
+
+#ppNavigation a.pp-tab-center .pp-tab-icon {
+  width: 60px;
+  height: 60px;
+  margin-top: -34px;
+  border: 1px solid var(--card-border);
+  border-radius: 50%;
+  background-color: var(--card-bg-solid);
+  background-image: url("../../images/darktheme-dock.png");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, .3);
+  transition: box-shadow .3s, transform .3s cubic-bezier(.4, .1, .2, 1);
+}
+
+html[data-theme="light"] #ppNavigation a.pp-tab-center .pp-tab-icon {
+  background-image: url("../../images/lighttheme-dock.png");
+}
+
+#ppNavigation a.pp-tab-center .pp-ico {
+  display: none;
+}
+
+#ppNavigation a.pp-tab-center[aria-current="page"] .pp-tab-icon {
+  box-shadow: 0 0 0 2px var(--teal), 0 8px 18px rgba(0, 0, 0, .3);
+}
+
+#ppNavigation a.pp-tab-center:active .pp-tab-icon {
+  transform: scale(.94);
+}
+
+#ppNavigation a.pp-tab-center.pp-pop .pp-tab-icon {
+  animation: ppDockPop .38s cubic-bezier(.4, .1, .2, 1);
+}
+
+@keyframes ppDockPop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.12); }
+  100% { transform: scale(1); }
+}
+
+/* The Today / Explore History switch is driven by the Trends and History tabs. */
+.pp-history-primary {
+  display: none !important;
+}
+
+@media (max-width: 400px) {
+  #ppNavigation.pp-dock {
+    padding: 8px 3px;
+  }
+
+  #ppNavigation.pp-dock a.pp-tab {
+    margin: 0 1px;
+    padding: 7px 2px;
+    font-size: .65rem;
+  }
+}
+
+html[data-pp-animations="off"] #ppNavigation .pp-dock-ind,
+html[data-pp-animations="off"] #ppNavigation a.pp-tab,
+html[data-pp-animations="off"] #ppNavigation .pp-tab-icon {
+  transition: none !important;
+  animation: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #ppNavigation .pp-dock-ind,
+  #ppNavigation a.pp-tab,
+  #ppNavigation .pp-tab-icon {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* ==========================================================================
+   Sitewide interaction polish
+   ========================================================================== */
+
+/* 1. No browser tap highlight on any element. */
+html,
+body,
+*,
+*::before,
+*::after {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* 2. Mouse and touch taps leave no focus ring; keyboard focus keeps the app's own focus-visible rings. */
+:where(a, button, summary, select, [role="button"], [tabindex]):focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* 3. Settings gear: turns 180 degrees clockwise while the settings dialog is open and turns back when it closes.
+   global settings sets data-motion on the dialog: opening, open, closing, closed. */
+#ppGlobalSettingsButton svg {
+  transform-origin: 50% 50%;
+  transition: transform .45s cubic-bezier(.4, .1, .2, 1);
+}
+
+html:has(#ppGlobalSettingsDialog[data-motion="opening"], #ppGlobalSettingsDialog[data-motion="open"]) #ppGlobalSettingsButton svg {
+  transform: rotate(180deg);
+}
+
+@supports not selector(:has(*)) {
+  #ppGlobalSettingsButton[aria-expanded="true"] svg {
+    transform: rotate(180deg);
+  }
+}
+
+/* 4. Press feedback like the center Pulse button: the control shrinks a little while pressed and springs back.
+   Uses the separate scale property, so existing transforms and layouts are untouched.
+   :where() keeps specificity at zero, so any component that styles its own transition still wins. */
+:where(button, [role="button"], .heatmap-tab, .info-btn, .day-nav-btn, .tz-option, .pp-best-link, .pp-open-display-settings) {
+  transition: scale .25s cubic-bezier(.4, .1, .2, 1);
+}
+
+:where(button, [role="button"], .heatmap-tab, .info-btn, .day-nav-btn, .tz-option, .pp-best-link, .pp-open-display-settings):where(:not(:disabled, [aria-disabled="true"])):active {
+  scale: .94;
+}
+
+/* Large tappable surfaces shrink less so they do not look jumpy. */
+:where(summary, a.pp1b-card, .park-card) {
+  transition: scale .25s cubic-bezier(.4, .1, .2, 1);
+}
+
+:where(summary, a.pp1b-card, .park-card):active {
+  scale: .985;
+}
+
+html[data-pp-animations="off"] #ppGlobalSettingsButton svg,
+html[data-pp-animations="off"] :where(button, [role="button"], .heatmap-tab, .info-btn, .day-nav-btn, .tz-option, .pp-best-link, .pp-open-display-settings, summary, a.pp1b-card, .park-card) {
+  transition: none !important;
+  scale: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #ppGlobalSettingsButton svg,
+  :where(button, [role="button"], .heatmap-tab, .info-btn, .day-nav-btn, .tz-option, .pp-best-link, .pp-open-display-settings, summary, a.pp1b-card, .park-card) {
+    transition: none !important;
+    scale: none !important;
+  }
+}

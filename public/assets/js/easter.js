@@ -1,7 +1,7 @@
 /* Park Pulse easter egg: tap the center Pulse dock button 5 times within 2 seconds.
    Park emojis rain down and pile up with physics. A large firework button then appears.
-   Pressing it fires a colored rocket straight down; it explodes on the floor and blasts the emojis away.
-   The floor stays closed until HOLD_MS after the last rocket explodes, then it drops away.
+   Pressing it fires one to three colored rockets that arc downward and explode on the floor,
+   blasting the emojis away. The floor stays closed until HOLD_MS after the last rocket explodes.
    Self-contained: no libraries, no CSS file. Respects reduced-motion and the Animations setting. */
 (function () {
   'use strict';
@@ -12,6 +12,8 @@
   var WAKE_V = 80, SWIPE_R = 16, MAX_V = 2200, MIN_SWIPE = 150;
   var BTN_DELAY = 1000, BLAST = 3400, LIFT = 1200, MAXB = 3600, UPBIAS = 0.3;
   var ROCKET_R = 9, ROCKET_GRAV = 6000, ROCKET_V = 1800, SAFETY_S = 2;
+  var DRIFT_MIN = 50, DRIFT_MAX = 130, TRAIL_N = 6;
+  var P_ONE = 0.5, P_TWO = 0.3, STAGGER_MIN = 80, STAGGER_MAX = 220;
   var FX_FLASH_MS = 600, FX_TOTAL_MS = 1100, SPARKS = 44;
   var EMOJI_FILES = ['MKEmoji_1_1023x1023.png', 'EPCOTEmoji_1_1023x1023.png', 'HSEmoji_1_1023x1023.png', 'AKEmoji_1_1023x1023.png'];
   var EMOJI_FILES_FIX = { 3: 'AKEmoji_1_1023x1022.png' };
@@ -59,7 +61,12 @@
     t = Math.max(0, Math.min(1, t));
     return Math.hypot(px - (ax + t * dx), py - (ay + t * dy));
   }
-  function rgba(c, a) { return 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + a + ')'; }
+  function rgba(c, a) { return 'rgba(' + Math.round(c[0]) + ',' + Math.round(c[1]) + ',' + Math.round(c[2]) + ',' + a + ')'; }
+  function mix(a, b, f) { return [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f, a[2] + (b[2] - a[2]) * f]; }
+  function pickCount() {
+    var r = Math.random();
+    return r < P_ONE ? 1 : (r < P_ONE + P_TWO ? 2 : 3);
+  }
 
   /* Reads the same theme-aware firework colors as the park-icon fireworks, as [r,g,b] arrays. */
   function toRGB(color, fallback) {
@@ -205,6 +212,7 @@
         if (b.gone || b.sleep) continue;
         if (!b.live) { if (el >= b.at) b.live = true; else continue; }
         b.vy += (b.rocket ? ROCKET_GRAV : G) * h;
+        if (b.rocket) b.vx += b.ax * h;
         if (!b.rocket) {
           b.vx *= 1 - 0.1 * h;
           b.w *= 1 - 0.1 * h;
@@ -302,7 +310,7 @@
         box = null;
         setTimeout(function () { if (wrap.parentNode) wrap.parentNode.removeChild(wrap); }, 220);
       }
-      dropRocket();
+      volley();
     }
     function showBtns() {
       var n = Math.max(1, Math.min(show ? show.sets : 1, MAX_SETS));
@@ -318,7 +326,7 @@
         el = document.createElement('button');
         el.type = 'button';
         el.textContent = '\uD83C\uDF86';
-        el.setAttribute('aria-label', 'Launch a firework');
+        el.setAttribute('aria-label', 'Launch fireworks');
         el.style.cssText = 'width:64px;height:64px;padding:0;display:flex;align-items:center;justify-content:center;border-radius:50%;border:2px solid #fff;background:#d92d20;color:#fff;font-size:2.1rem;line-height:1;box-shadow:0 6px 18px rgba(217,45,32,.5);cursor:pointer;touch-action:manipulation;pointer-events:auto';
         el.addEventListener('click', pressBtn.bind(null, el));
         box.appendChild(el);
@@ -327,18 +335,31 @@
       }
     }
 
-    /* A rocket falls fast, ignores the emojis on the way down, and explodes the moment it hits the floor. */
-    function dropRocket() {
+    /* One press launches one to three rockets, a little apart in time, each with its own colors and landing spot. */
+    function volley() {
+      var n = pickCount(), i, delay = 0;
+      for (i = 0; i < n; i++) {
+        dropRocket(delay);
+        delay += STAGGER_MIN + Math.random() * (STAGGER_MAX - STAGGER_MIN);
+      }
+    }
+
+    /* A rocket falls fast on a gentle arc, ignores the emojis on the way down, and explodes the moment it hits the floor. */
+    function dropRocket(delayMs) {
       var pal = fwPalette();
       var i = Math.floor(Math.random() * pal.length);
       var j = (i + 1 + Math.floor(Math.random() * (pal.length - 1))) % pal.length;
       var r = ROCKET_R, d = H + 10;
       var tFall = (-ROCKET_V + Math.sqrt(ROCKET_V * ROCKET_V + 2 * ROCKET_GRAV * d)) / ROCKET_GRAV;
+      var x0 = W * 0.1 + Math.random() * W * 0.8;
+      var drift = (Math.random() < 0.5 ? -1 : 1) * (DRIFT_MIN + Math.random() * (DRIFT_MAX - DRIFT_MIN));
+      if (x0 + drift < 20 || x0 + drift > W - 20) drift = -drift;
+      var vx0 = drift / (0.6 * tFall);
       var b = {
-        x: W * 0.1 + Math.random() * W * 0.8, y: -r - 10, vx: 0, vy: ROCKET_V,
-        r: r, m: 1, a: 0, w: 0, at: 0, live: true, gone: false, floor: false, touch: false,
-        sleep: false, rest: 0, freed: false, rocket: true, hitAt: null, born: simT, fuse: tFall + SAFETY_S,
-        c1: pal[i], c2: pal[j], pal: pal
+        x: x0, y: -r - 10, vx: vx0, vy: ROCKET_V, ax: -0.8 * vx0 / tFall,
+        r: r, m: 1, a: 0, w: 0, at: (performance.now() - t0) + delayMs, live: false, gone: false, floor: false, touch: false,
+        sleep: false, rest: 0, freed: false, rocket: true, hitAt: null, born: simT + delayMs / 1000, fuse: tFall + SAFETY_S,
+        c1: pal[i], c2: pal[j], pal: pal, trail: []
       };
       rockets.push(b);
       balls.push(b);
@@ -389,20 +410,24 @@
       ctx.restore();
     }
 
+    /* The trail follows the rocket's recent positions, so it bends with the arc. */
     function drawRocket(b) {
-      var len = Math.min(170, b.y + 40);
-      var g = ctx.createLinearGradient(b.x, b.y - len, b.x, b.y);
-      g.addColorStop(0, rgba(b.c2, 0));
-      g.addColorStop(0.6, rgba(b.c1, 0.55));
-      g.addColorStop(1, rgba(b.c1, 0.95));
+      var tr = b.trail, i, f, n;
+      tr.push([b.x, b.y]);
+      if (tr.length > TRAIL_N) tr.shift();
+      n = tr.length;
       ctx.save();
       ctx.lineCap = 'round';
-      ctx.strokeStyle = g;
-      ctx.lineWidth = 6;
-      ctx.beginPath(); ctx.moveTo(b.x, b.y - len); ctx.lineTo(b.x, b.y); ctx.stroke();
-      ctx.strokeStyle = 'rgba(255,255,255,0.85)';
-      ctx.lineWidth = 2.5;
-      ctx.beginPath(); ctx.moveTo(b.x, b.y - len * 0.45); ctx.lineTo(b.x, b.y); ctx.stroke();
+      ctx.lineJoin = 'round';
+      for (i = 1; i < n; i++) {
+        f = i / (n - 1);
+        ctx.strokeStyle = rgba(mix(b.c2, b.c1, f), 0.15 + 0.8 * f);
+        ctx.lineWidth = 2 + 5 * f;
+        ctx.beginPath(); ctx.moveTo(tr[i - 1][0], tr[i - 1][1]); ctx.lineTo(tr[i][0], tr[i][1]); ctx.stroke();
+        ctx.strokeStyle = 'rgba(255,255,255,' + (0.1 + 0.75 * f) + ')';
+        ctx.lineWidth = 1 + 1.6 * f;
+        ctx.beginPath(); ctx.moveTo(tr[i - 1][0], tr[i - 1][1]); ctx.lineTo(tr[i][0], tr[i][1]); ctx.stroke();
+      }
       var h = ctx.createRadialGradient(b.x, b.y, 0, b.x, b.y, b.r * 1.8);
       h.addColorStop(0, '#ffffff');
       h.addColorStop(0.35, rgba(b.c2, 0.9));

@@ -123,6 +123,13 @@
   display: none !important;
 }
 
+/* The long explanatory box above the heatmap (the Last 7 days note and the By day of week note) is not shown here.
+   It is the same #heatmapCaveat element the old heatmap code fills in, so it is hidden, not removed. */
+.pp-weekly-card .heatmap-caveat,
+.pp-weekly-card .heatmap-caveat.visible {
+  display: none !important;
+}
+
 .pp-weekly-card .panel-header {
   margin-bottom: .5rem;
 }

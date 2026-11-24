@@ -1,7 +1,8 @@
 /* Park Pulse easter egg: tap the center Pulse dock button 5 times within 2 seconds.
    Park emojis rain down and pile up with physics. Firework buttons then appear.
    Each button's emoji shows how many rockets it fires: sparkler = 1, firecracker = 2, fireworks = 3.
-   The rockets arc downward and explode on the floor, blasting the emojis away.
+   The rockets arc downward and explode on the floor as real firework shells (peony, chrysanthemum, willow, ring,
+   crossette), blasting the emojis away. Some shells get a second burst a moment later.
    The floor stays closed until HOLD_MS after the last rocket explodes.
    If no firework is fired, the floor drops by itself FLOOR_MAX after the trigger.
    Self-contained: no libraries, no CSS file. Respects reduced-motion and the Animations setting. */
@@ -16,12 +17,14 @@
   var ROCKET_R = 9, ROCKET_GRAV = 6000, ROCKET_V = 1800, SAFETY_S = 2;
   var DRIFT_MIN = 50, DRIFT_MAX = 130, TRAIL_N = 6;
   var STAGGER_MIN = 80, STAGGER_MAX = 220;
-  var FX_FLASH_MS = 600, FX_TOTAL_MS = 1100, SPARKS = 44;
+  var FX_FLASH_S = 0.5, SECOND_BURST_P = 0.5;
+  var SHELLS = ['peony', 'chrysanthemum', 'willow', 'ring', 'crossette'];
   var FW_EMOJI = ['\uD83C\uDF87', '\uD83E\uDDE8', '\uD83C\uDF86'];
   var EMOJI_FILES = ['MKEmoji_1_1023x1023.png', 'EPCOTEmoji_1_1023x1023.png', 'HSEmoji_1_1023x1023.png', 'AKEmoji_1_1023x1023.png'];
   var EMOJI_FILES_FIX = { 3: 'AKEmoji_1_1023x1022.png' };
   var FW_VARS = ['--pp-fw-gold', '--pp-fw-pink', '--pp-fw-teal', '--pp-fw-purple'];
   var FW_FALLBACK = [[255, 209, 102], [255, 111, 181], [76, 214, 192], [180, 140, 255]];
+  var WHITE = [255, 255, 255];
   var taps = [], running = false, show = null, imgs = null, probe = null;
 
   function motionOff() {
@@ -66,6 +69,7 @@
   }
   function rgba(c, a) { return 'rgba(' + Math.round(c[0]) + ',' + Math.round(c[1]) + ',' + Math.round(c[2]) + ',' + a + ')'; }
   function mix(a, b, f) { return [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f, a[2] + (b[2] - a[2]) * f]; }
+  function rnd(a, b) { return a + Math.random() * (b - a); }
   /* Equal 1/3 chance of 1, 2 or 3 rockets. */
   function pickCount() {
     return 1 + Math.floor(Math.random() * 3);
@@ -99,6 +103,8 @@
     running = true;
     var dpr = Math.min(window.devicePixelRatio || 1, 2);
     var W = window.innerWidth, H = window.innerHeight;
+    /* Shells scale with the screen so a burst fills a phone without leaving it. */
+    var FXS = Math.max(0.7, Math.min(1.3, Math.min(W, H * 0.8) / 600));
     var cv = document.createElement('canvas');
     cv.setAttribute('aria-hidden', 'true');
     cv.style.cssText = 'position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:101';
@@ -373,6 +379,63 @@
       balls.push(b);
     }
 
+    /* ---- Firework shells ----
+       Every spark is a particle with drag, gravity, a fading trail and an optional glitter flicker. Most sparks
+       fly upward because the shell goes off on the floor. */
+
+    function upDir() {
+      return Math.random() < 0.85 ? -Math.PI * (0.03 + Math.random() * 0.94) : Math.random() * 6.2832;
+    }
+
+    function spark(list, x, y, ang, speed, o) {
+      list.push({
+        x: x, y: y, vx: Math.cos(ang) * speed, vy: Math.sin(ang) * speed,
+        col: o.col, size: o.size || 2.4, drag: o.drag || 1.5, grav: o.grav === undefined ? 380 : o.grav,
+        life: o.life, max: o.life, age: 0, trail: [], trailN: o.trailN === undefined ? 10 : o.trailN,
+        glitter: !!o.glitter, hot: !!o.hot, ph: Math.random() * 6.2832,
+        splitAt: o.splitAt || 0, splitCol: o.splitCol || null
+      });
+    }
+
+    function burst(f, type, scale, swap) {
+      var x = f.x, y = f.y - 4, S = FXS * scale, list = f.parts, i, n, a;
+      var c1 = swap ? f.c2 : f.c1, c2 = swap ? f.c1 : f.c2;
+      var pale1 = mix(c1, WHITE, 0.35), pale2 = mix(c2, WHITE, 0.35);
+
+      if (type === 'pistil') {
+        /* Small white core that pops first. */
+        for (i = 0; i < 24; i++) spark(list, x, y, upDir(), rnd(90, 260) * S, { col: WHITE, size: 2, drag: 2.4, grav: 300, life: rnd(0.35, 0.7), trailN: 4, hot: true });
+      } else if (type === 'peony') {
+        /* Clean round burst in two colors with a few white stars. */
+        n = Math.round(72 * scale);
+        for (i = 0; i < n; i++) spark(list, x, y, upDir(), rnd(380, 560) * S, { col: i % 5 === 0 ? WHITE : (i % 2 ? c1 : c2), size: 2.6, drag: 1.5, life: rnd(1.1, 1.6), trailN: 8 });
+      } else if (type === 'chrysanthemum') {
+        /* Dense burst with long trails and glittering tips. */
+        n = Math.round(88 * scale);
+        for (i = 0; i < n; i++) spark(list, x, y, upDir(), rnd(300, 580) * S, { col: i % 2 ? c1 : pale2, size: 2.2, drag: 1.35, life: rnd(1.5, 2.2), trailN: 16, glitter: i % 4 === 0 });
+      } else if (type === 'willow') {
+        /* Slow pale sparks that droop in long golden streamers. */
+        n = Math.round(58 * scale);
+        for (i = 0; i < n; i++) spark(list, x, y, upDir(), rnd(260, 470) * S, { col: i % 3 ? pale1 : WHITE, size: 2.4, drag: 2.1, grav: 240, life: rnd(2.2, 3), trailN: 22 });
+      } else if (type === 'ring') {
+        /* An outer arch and an inner arch in the two colors. */
+        n = Math.max(8, Math.round(40 * scale));
+        for (i = 0; i < n; i++) {
+          a = -Math.PI - 0.12 + (i / (n - 1)) * (Math.PI + 0.24);
+          spark(list, x, y, a, 520 * S, { col: c1, size: 2.8, drag: 1.6, life: rnd(1.1, 1.4), trailN: 9 });
+        }
+        n = Math.max(6, Math.round(26 * scale));
+        for (i = 0; i < n; i++) {
+          a = -Math.PI - 0.12 + (i / (n - 1)) * (Math.PI + 0.24);
+          spark(list, x, y, a, 300 * S, { col: c2, size: 2.4, drag: 1.6, life: rnd(1, 1.3), trailN: 7 });
+        }
+      } else if (type === 'crossette') {
+        /* Bright stars that each split into four smaller glittering stars. */
+        n = Math.round(18 * scale);
+        for (i = 0; i < n; i++) spark(list, x, y, upDir(), rnd(380, 520) * S, { col: c1, size: 3, drag: 1.5, life: 1.4, trailN: 10, splitAt: rnd(0.5, 0.7), splitCol: c2 });
+      }
+    }
+
     function explode(b, now) {
       var bx = b.x, by = b.y, reach = Math.max(W, H) * 0.9;
       var at = rockets.indexOf(b);
@@ -395,12 +458,16 @@
         o.w += (Math.random() - 0.5) * 20;
         o.freed = false;
       });
-      var cols = [b.c1, b.c2, [255, 255, 255], b.pal[Math.floor(Math.random() * b.pal.length)]];
-      var sparks = [];
-      for (var s = 0; s < SPARKS; s++) {
-        sparks.push({ a: Math.random() * 6.2832, v: 250 + Math.random() * 650, s: 2 + Math.random() * 2.5, c: cols[Math.floor(Math.random() * cols.length)] });
+
+      var fx = { x: bx, y: by, t: now, last: now, c1: b.c1, c2: b.c2, pal: b.pal, parts: [], queue: [] };
+      var main = SHELLS[Math.floor(Math.random() * SHELLS.length)];
+      burst(fx, 'pistil', 1, false);
+      burst(fx, main, 1, false);
+      if (Math.random() < SECOND_BURST_P) {
+        var other = SHELLS[(SHELLS.indexOf(main) + 1 + Math.floor(Math.random() * (SHELLS.length - 1))) % SHELLS.length];
+        fx.queue.push({ at: 0.18 + Math.random() * 0.14, type: other, scale: 0.65, done: false });
       }
-      fxs.push({ x: bx, y: by, t: now, c1: b.c1, c2: b.c2, sp: sparks });
+      fxs.push(fx);
       if (navigator.vibrate) { try { navigator.vibrate(80); } catch (e) {} }
     }
 
@@ -445,33 +512,112 @@
       ctx.restore();
     }
 
+    /* Advances and draws one explosion: the flash and shock ring first, then every spark with its trail.
+       Returns false when nothing is left to show. */
     function drawFx(f, now) {
-      var el = now - f.t;
-      if (el >= FX_TOTAL_MS) return false;
-      var p = el / FX_FLASH_MS, k, s;
-      if (p < 1) {
-        var rad = p * Math.max(W, H) * 0.7 + 1;
+      var el = (now - f.t) / 1000, dt = Math.min(0.05, (now - f.last) / 1000);
+      var i, j, p, q, a, fade, tr, from, drag, keep = [], born = [], pending = false;
+      f.last = now;
+
+      for (i = 0; i < f.queue.length; i++) {
+        q = f.queue[i];
+        if (!q.done && el >= q.at) {
+          q.done = true;
+          burst(f, q.type, q.scale, true);
+          f.flashAt = el;
+        }
+        if (!q.done) pending = true;
+      }
+
+      var fl = el / FX_FLASH_S;
+      if (fl < 1) {
+        var rad = fl * Math.max(W, H) * 0.55 + 1;
         var g = ctx.createRadialGradient(f.x, f.y, 0, f.x, f.y, rad);
-        g.addColorStop(0, 'rgba(255,255,255,' + 0.9 * (1 - p) + ')');
-        g.addColorStop(0.35, rgba(f.c1, 0.6 * (1 - p)));
+        g.addColorStop(0, 'rgba(255,255,255,' + 0.85 * (1 - fl) + ')');
+        g.addColorStop(0.35, rgba(f.c1, 0.5 * (1 - fl)));
         g.addColorStop(1, rgba(f.c2, 0));
         ctx.fillStyle = g;
         ctx.fillRect(0, 0, W, H);
-        ctx.strokeStyle = rgba(f.c2, 0.8 * (1 - p));
-        ctx.lineWidth = 6 * (1 - p) + 1;
+        ctx.strokeStyle = rgba(f.c2, 0.8 * (1 - fl));
+        ctx.lineWidth = 5 * (1 - fl) + 1;
         ctx.beginPath();
         ctx.arc(f.x, f.y, rad * 0.9, 0, 6.2832);
         ctx.stroke();
       }
-      var t = el / 1000, fade = 1 - el / FX_TOTAL_MS;
-      for (k = 0; k < f.sp.length; k++) {
-        s = f.sp[k];
-        ctx.fillStyle = rgba(s.c, fade);
+      /* A small soft flash when the second burst goes off. */
+      if (f.flashAt !== undefined && el - f.flashAt < 0.18) {
+        var k2 = (el - f.flashAt) / 0.18;
+        var g2 = ctx.createRadialGradient(f.x, f.y, 0, f.x, f.y, 90 + 140 * k2);
+        g2.addColorStop(0, 'rgba(255,255,255,' + 0.5 * (1 - k2) + ')');
+        g2.addColorStop(1, rgba(f.c2, 0));
+        ctx.fillStyle = g2;
         ctx.beginPath();
-        ctx.arc(f.x + Math.cos(s.a) * s.v * t, f.y + Math.sin(s.a) * s.v * t + 450 * t * t, s.s * (0.5 + 0.5 * fade), 0, 6.2832);
+        ctx.arc(f.x, f.y, 90 + 140 * k2, 0, 6.2832);
         ctx.fill();
       }
-      return true;
+
+      ctx.save();
+      ctx.globalCompositeOperation = 'lighter';
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+
+      for (i = 0; i < f.parts.length; i++) {
+        p = f.parts[i];
+        p.age += dt;
+        p.life -= dt;
+        drag = Math.exp(-p.drag * dt);
+        p.vx *= drag;
+        p.vy = p.vy * drag + p.grav * dt;
+        p.x += p.vx * dt;
+        p.y += p.vy * dt;
+        if (p.trailN) {
+          p.trail.push(p.x, p.y);
+          if (p.trail.length > p.trailN * 2) p.trail.splice(0, 2);
+        }
+
+        if (p.splitAt && p.age >= p.splitAt) {
+          a = Math.atan2(p.vy, p.vx);
+          for (j = 0; j < 4; j++) {
+            spark(born, p.x, p.y, a + 0.785 + j * 1.5708, 190 * FXS, { col: p.splitCol || p.col, size: 2.2, drag: 1.8, life: rnd(0.5, 0.85), trailN: 7, glitter: true });
+          }
+          continue;
+        }
+        if (p.life <= 0 || p.y > H + 4) continue;
+        keep.push(p);
+
+        a = Math.max(0, p.life / p.max);
+        fade = p.glitter
+          ? (0.3 + 0.7 * Math.abs(Math.sin(p.age * 26 + p.ph))) * Math.min(1, a * 2)
+          : Math.min(1, a * 1.7);
+
+        tr = p.trail;
+        if (tr.length >= 4) {
+          ctx.beginPath();
+          ctx.moveTo(tr[0], tr[1]);
+          for (j = 2; j < tr.length; j += 2) ctx.lineTo(tr[j], tr[j + 1]);
+          ctx.lineTo(p.x, p.y);
+          ctx.strokeStyle = rgba(p.col, 0.22 * fade);
+          ctx.lineWidth = p.size * 1.8;
+          ctx.stroke();
+
+          from = (tr.length >> 2) << 1;
+          ctx.beginPath();
+          ctx.moveTo(tr[from], tr[from + 1]);
+          for (j = from + 2; j < tr.length; j += 2) ctx.lineTo(tr[j], tr[j + 1]);
+          ctx.lineTo(p.x, p.y);
+          ctx.strokeStyle = rgba(p.col, 0.6 * fade);
+          ctx.lineWidth = p.size * 0.9;
+          ctx.stroke();
+        }
+        ctx.fillStyle = rgba(p.hot ? WHITE : mix(p.col, WHITE, 0.4), fade);
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size * (0.55 + 0.45 * a), 0, 6.2832);
+        ctx.fill();
+      }
+      ctx.restore();
+
+      f.parts = keep.concat(born);
+      return f.parts.length > 0 || pending || fl < 1;
     }
 
     function finish() {

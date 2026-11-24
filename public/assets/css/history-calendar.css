@@ -96,6 +96,16 @@
   width: min(100%,25rem);
 }
 
+/* Keep the implicit accessible label without a visible Explore caption or empty gap. */
+.pp-history-select:has(> #ppHistoryAttraction) {
+  font-size: 0;
+  gap: 0;
+}
+
+.pp-history-select > #ppHistoryAttraction {
+  font-size: .8rem;
+}
+
 .pp-history-actions {
   font-size: .8rem;
 }

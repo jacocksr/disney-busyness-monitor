@@ -458,32 +458,60 @@
     width: 100%;
     justify-content: space-between;
   }
+
+  /* Compact calendar: every day is an even rounded square, so a five-week month takes about 40% less height.
+     The day number sits top left and the wait sits below it, centered. */
   .pp-calendar {
-    gap: .25rem;
+    gap: .2rem;
   }
   .pp-calendar-cell,
   #ppCalendar>button.pp-calendar-cell {
-    min-height: 88px;
-    padding: .35rem .2rem;
-    border-radius: 7px;
+    position: relative;
+    aspect-ratio: 1;
+    min-height: 0;
+    gap: 0;
+    padding: 3px 2px 2px;
+    border-radius: 10px;
+    overflow: hidden;
   }
   .pp-calendar-cell time {
-    font-size: .72rem;
+    align-self: flex-start;
+    padding-left: 2px;
+    font-size: .6rem;
+    line-height: 1.1;
+  }
+  .pp-cell-value {
+    margin-top: auto;
+    text-align: center;
   }
   .pp-cell-number {
-    font-size: clamp(.8rem,3.3vw,1.1rem);
+    font-size: clamp(.78rem,3.6vw,1rem);
+    line-height: 1.1;
   }
   .pp-cell-unit {
-    font-size: .58rem;
+    font-size: .5rem;
+    line-height: 1.1;
+    margin-top: 0;
   }
+  /* "Today · partial" does not fit in a square. It stays available to screen readers, and the partial day
+     is marked with a dashed inner outline instead. */
   .pp-cell-partial {
-    font-size: .53rem;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    white-space: nowrap;
+  }
+  #ppCalendar>button.pp-calendar-cell:has(.pp-cell-partial) {
+    outline: 1.5px dashed rgba(16,42,67,.6);
+    outline-offset: -4px;
   }
   .pp-weekday {
     font-size: .63rem;
   }
   .pp-future .pp-cell-value {
-    font-size: .6rem;
+    font-size: .55rem;
   }
   #ppHistoryFilter {
     font-size: 16px;

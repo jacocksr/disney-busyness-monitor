@@ -100,7 +100,7 @@
     const tail = label === 'Average posted wait' ? ' avg wait' : label ? SEP + label : '';
     head.replaceChildren(strong, document.createTextNode(tail));
 
-    // Comparison pill. The matched-rides detail moves into the info popover unless some rides are missing.
+    // Comparison pill. The matched-rides detail is not shown on the card; it lives only in the info popover.
     const cmp = cmpSrc.textContent.trim();
     const mm = cmp.match(/^(.*?) \u00b7 matched (\d+)\/(\d+) qualifying attractions$/);
     const phrase = mm ? mm[1] : cmp;
@@ -118,12 +118,6 @@
         pill.textContent = phrase;
         trend.append(pill);
       }
-    }
-    if (mm && Number(mm[2]) < Number(mm[3])) {
-      const part = document.createElement('span');
-      part.className = 'pp-snap-muted';
-      part.textContent = mm[2] + ' of ' + mm[3] + ' rides';
-      trend.append(part);
     }
     if (mm) {
       matchNote.textContent = 'This comparison covers ' + mm[2] + ' of ' + mm[3] + ' qualifying attractions.';

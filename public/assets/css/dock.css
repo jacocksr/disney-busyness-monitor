@@ -1,6 +1,7 @@
 /* Park Pulse dock: floating five-tab pill with a raised center Pulse tab.
    Loads after app-shell.css and replaces its older full-width dock rules for #ppNavigation.
-   The last section holds sitewide interaction polish (gear rotation, tap highlight, press animation). */
+   Later sections: the header park-emoji chooser, then sitewide interaction polish
+   (gear rotation, tap highlight, press animation). */
 
 #ppNavigation.pp-dock {
   position: fixed;
@@ -217,6 +218,63 @@ html[data-pp-animations="off"] #ppNavigation .pp-tab-icon {
     transition: none !important;
     animation: none !important;
   }
+}
+
+/* ==========================================================================
+   Header park chooser
+   Four park emojis sit in the header row between the logo and the gear on every tab except Pulse,
+   where the last-updated pill is shown instead. The old dropdown stays in the DOM but is hidden. */
+
+#ppNavigationHeader > label {
+  display: none !important;
+}
+
+#ppHeaderParks {
+  grid-column: 2;
+  grid-row: 1;
+  justify-self: end;
+  align-self: center;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  width: 100%;
+  min-width: 0;
+}
+
+#ppHeaderParks[hidden] {
+  display: none !important;
+}
+
+#ppHeaderParks .park-select-btn {
+  flex: 0 1 44px;
+  width: 44px;
+  min-width: 0;
+  height: auto;
+  aspect-ratio: 1;
+  margin: 0;
+  padding: 3px;
+  display: grid;
+  place-items: center;
+  border: 1px solid transparent;
+  border-radius: 14px;
+  background: transparent;
+  box-shadow: none;
+  cursor: pointer;
+  transition: scale .25s cubic-bezier(.4, .1, .2, 1), background-color .2s, border-color .2s;
+}
+
+#ppHeaderParks .park-select-btn img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+#ppHeaderParks .park-select-btn[aria-pressed="true"] {
+  border-color: var(--teal);
+  background: color-mix(in srgb, var(--teal) 14%, transparent);
 }
 
 /* ==========================================================================

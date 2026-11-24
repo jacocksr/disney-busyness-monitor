@@ -1,7 +1,9 @@
 /* Park Pulse navigation: hash routes, content panes and the five-tab bottom dock.
    Owns PPUI.navigation. Loads after history.js and before app-shell.js. The older navigation code in
    app-shell.js returns early when #ppNavigation already exists, so only this module builds the shell.
-   Tab order below is also the slide direction between panes. */
+   Tab order below is also the slide direction between panes.
+   The header shows four park emoji buttons (#ppHeaderParks) on every tab except Pulse. The hidden park
+   select stays in the DOM as the single source of the selected park for older code. */
 (() => {
   'use strict';
 
@@ -10,6 +12,13 @@
     epcot: 'EPCOT',
     hollywood_studios: 'Hollywood Studios',
     animal_kingdom: 'Animal Kingdom',
+  };
+
+  const PARK_ICONS = {
+    magic_kingdom: 'MKEmoji_1_1023x1023.png',
+    epcot: 'EPCOTEmoji_1_1023x1023.png',
+    hollywood_studios: 'HSEmoji_1_1023x1023.png',
+    animal_kingdom: 'AKEmoji_1_1023x1022.png',
   };
 
   const TABS = [
@@ -59,6 +68,7 @@
   let nav;
   let indicator;
   let parkSelect;
+  let parksGroup;
   let picker;
   let unavailable;
   let content;
@@ -267,6 +277,13 @@
     parkSelect.value = current.park || chosenPark || '';
     parkSelect.parentElement.hidden = current.view === 'overview';
 
+    // Park emojis: shown on every tab except Pulse, with the selected park marked.
+    const activePark = current.park || chosenPark;
+    parksGroup.hidden = current.view === 'overview';
+    parksGroup.querySelectorAll('button').forEach((button) => {
+      button.setAttribute('aria-pressed', String(button.dataset.parkKey === activePark));
+    });
+
     const needsPark = NEEDS_PARK.includes(current.view);
     const requiresChoice = needsPark && !current.park;
 
@@ -358,15 +375,39 @@
           <option value="">Choose park</option>
         </select>
       </label>
+      <div id="ppHeaderParks" class="pp-header-parks" role="group" aria-label="Choose a park" hidden></div>
     `;
 
     parkSelect = header.querySelector('select');
+    parksGroup = header.querySelector('#ppHeaderParks');
 
     for (const [key, name] of Object.entries(PARKS)) {
       const option = document.createElement('option');
       option.value = key;
       option.textContent = name;
       parkSelect.appendChild(option);
+
+      // These buttons carry the park-select-btn class and data-park-key so the park-icon fireworks work on them too.
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'park-select-btn pp-header-park';
+      button.dataset.parkKey = key;
+      button.title = name;
+      button.setAttribute('aria-label', name);
+      button.setAttribute('aria-pressed', 'false');
+
+      const image = document.createElement('img');
+      image.src = 'images/' + PARK_ICONS[key];
+      image.alt = '';
+      image.width = 40;
+      image.height = 40;
+      image.decoding = 'async';
+      button.appendChild(image);
+
+      button.addEventListener('click', () => {
+        navigate(current.view === 'overview' ? 'attractions' : current.view, key);
+      });
+      parksGroup.appendChild(button);
     }
 
     content = document.createElement('main');

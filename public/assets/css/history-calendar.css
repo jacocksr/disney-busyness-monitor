@@ -138,41 +138,6 @@
   margin: .2rem 0 .8rem;
 }
 
-/* "About closure data" in the heatmap legend, as a pill in the same style as the other outlined teal pills
-   (for example See wait trends). It opens the Ride Closures details on the More tab. */
-.pc-mini-legend button[data-pc-help] {
-  display: inline-flex;
-  align-items: center;
-  gap: .4rem;
-  min-height: 34px;
-  padding: .3rem .85rem .3rem .65rem;
-  border: 1px solid var(--teal,#4cd6c0);
-  border-radius: 999px;
-  background: rgba(76,214,192,.1);
-  background: color-mix(in srgb, var(--teal,#4cd6c0) 10%, transparent);
-  color: var(--teal,#4cd6c0);
-  font: inherit;
-  font-size: .76rem;
-  font-weight: 600;
-  line-height: 1.2;
-  text-decoration: none;
-  cursor: pointer;
-}
-
-.pc-mini-legend button[data-pc-help]::before {
-  content: "i";
-  display: inline-grid;
-  place-items: center;
-  flex: none;
-  width: 15px;
-  height: 15px;
-  border: 1px solid currentColor;
-  border-radius: 50%;
-  font-size: .6rem;
-  font-weight: 700;
-  line-height: 1;
-}
-
 .pp-history-info {
   color: var(--text-muted);
 }

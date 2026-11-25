@@ -5,7 +5,7 @@
   var G=3800, E_BALL=.7, E_WALL=.7, E_FLOOR=.65, MU=.35, INERTIA=2/3, KF=1+1/INERTIA;
   var BOUNCE_MIN=40, STEP=1/240, ITER=5, SLOP=.2, PUSH=.8;
   var REST_V=50, REST_W=40, ROLL_K=4, ROLL_DEC=280, SPIN_K=4;
-  var WAKE_V=80, SWIPE_R=16, MAX_V=2200, MIN_SWIPE=150;
+  var WAKE_V=80, SWIPE_R=24, TOUCH_SWIPE_R=36, MAX_V=2200, MIN_SWIPE=35, SWIPE_GAIN=1.25, SWIPE_RESPONSE=.85;
   var BTN_DELAY=1000, BLAST=3400, LIFT=1200, MAXB=3600, UPBIAS=.3;
   var ROCKET_R=9, ROCKET_GRAV=6000, ROCKET_V=1500, SAFETY_S=2;
   var DRIFT_MIN=50, DRIFT_MAX=130, TRAIL_N=6, STAGGER_MIN=80, STAGGER_MAX=220;
@@ -84,9 +84,9 @@
       }
       for(it=0;it<ITER;it++){for(k=0;k<balls.length;k++){if(!balls[k].live||balls[k].gone)continue;for(m=k+1;m<balls.length;m++)if(balls[m].live&&!balls[m].gone)collide(balls[k],balls[m]);}bounds();}
     }
-    function hit(ax,ay,px,py,pvx,pvy){balls.forEach(function(b){if(!b.live||b.gone||b.rocket||segDist(b.x,b.y,ax,ay,px,py)>b.r+SWIPE_R)return;wake(b);b.vx+=(pvx*.8-b.vx)*.6;b.vy+=(pvy*.8-b.vy)*.6;var sp=Math.hypot(b.vx,b.vy);if(sp>MAX_V){b.vx*=MAX_V/sp;b.vy*=MAX_V/sp;}b.w+=((px-b.x)*pvy-(py-b.y)*pvx)/(b.r*b.r)*.3;if(sp>500)b.freed=true;});}
+    function hit(ax,ay,px,py,pvx,pvy,reach){balls.forEach(function(b){if(!b.live||b.gone||b.rocket||segDist(b.x,b.y,ax,ay,px,py)>b.r+reach)return;wake(b);b.rest=0;b.vx+=(pvx*SWIPE_GAIN-b.vx)*SWIPE_RESPONSE;b.vy+=(pvy*SWIPE_GAIN-b.vy)*SWIPE_RESPONSE;var sp=Math.hypot(b.vx,b.vy);if(sp>MAX_V){b.vx*=MAX_V/sp;b.vy*=MAX_V/sp;}b.w+=((px-b.x)*pvy-(py-b.y)*pvx)/(b.r*b.r)*.3;if(sp>500)b.freed=true;});}
     function onDown(e){lp={x:e.clientX,y:e.clientY,t:performance.now()};}
-    function onMove(e){var now=performance.now(),x=e.clientX,y=e.clientY;if(lp&&now>lp.t){var dt=Math.max(now-lp.t,8)/1000,vx=(x-lp.x)/dt,vy=(y-lp.y)/dt;if(Math.hypot(vx,vy)>MIN_SWIPE)hit(lp.x,lp.y,x,y,vx,vy);}lp={x:x,y:y,t:now};}
+    function onMove(e){var now=performance.now(),x=e.clientX,y=e.clientY;if(lp&&now>lp.t){var dt=Math.max(now-lp.t,8)/1000,vx=(x-lp.x)/dt,vy=(y-lp.y)/dt;if(Math.hypot(vx,vy)>MIN_SWIPE)hit(lp.x,lp.y,x,y,vx,vy,e.pointerType==='touch'?TOUCH_SWIPE_R:SWIPE_R);}lp={x:x,y:y,t:now};}
     function onEnd(){lp=null;}
     window.addEventListener('pointerdown',onDown,{passive:true});window.addEventListener('pointermove',onMove,{passive:true});window.addEventListener('pointerup',onEnd,{passive:true});window.addEventListener('pointercancel',onEnd,{passive:true});
     function openFloor(){floorOn=false;ceilOn=false;balls.forEach(function(b){if(b.gone)return;wake(b);b.vx+=rnd(-60,60);});}

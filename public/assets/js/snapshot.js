@@ -131,7 +131,7 @@
     if (!body) {
       body = document.createElement('div');
       body.className = 'pp-best-evidence';
-      body.innerHTML = '<p class="pp-best-reason"></p><dl class="pp-best-facts"><div><dt data-best-average-label>Average wait</dt><dd data-best-average></dd></div><div data-best-runner-row><dt data-best-runner-label>Next closest</dt><dd data-best-runner></dd></div></dl><p class="pp-best-hours"></p><p class="pp-best-freshness"></p><p class="pp-best-caveat">Best relative to usual\u2014not necessarily the shortest waits.</p><details class="pp-best-method"><summary>How this pick is made</summary><p data-best-method></p></details><a class="pp-best-link"></a>';
+      body.innerHTML = '<p class="pp-best-reason"></p><dl class="pp-best-facts"><div data-best-runner-row><dt data-best-runner-label>Next closest</dt><dd data-best-runner></dd></div></dl><p class="pp-best-hours"></p><p class="pp-best-freshness"></p><a class="pp-best-link"></a>';
       inner.replaceChildren(body);
     }
     banner.classList.add('pp-best-evidence-card');
@@ -139,21 +139,14 @@
     setText(banner.querySelector('.best-park-eyebrow'), delayed ? 'Best Park \u00b7 Last Available Report' : 'Best Park Right Now');
     const reason = pickReason(rows);
     setText(body.querySelector('.pp-best-reason'), delayed ? 'Last report: ' + reason.charAt(0).toLowerCase() + reason.slice(1) : reason);
-    const avg = computeLiveStats(best.park).avgWait;
-    setText(body.querySelector('[data-best-average-label]'), delayed ? 'Last average wait' : 'Average wait');
-    setText(body.querySelector('[data-best-average]'), Number.isFinite(avg) ? avg + ' min' : 'Unavailable');
     body.querySelector('[data-best-runner-row]').hidden = !runner;
     if (runner) {
       setText(body.querySelector('[data-best-runner-label]'), runner.comp.pctDiff === best.comp.pctDiff ? 'Also tied' : 'Next closest');
       setText(body.querySelector('[data-best-runner]'), runner.park.name + SEP + relativeWait(runner.comp.pctDiff));
     }
     setText(body.querySelector('.pp-best-hours'), closingContext(best.key, best.park));
-    const scope = rows.length === 1 ? '1 park with comparison data' : rows.length + ' parks compared';
     const freshness = !known ? 'Report age unknown' : olderDay ? 'Previous-day report' : age > STALE_THRESHOLD_MINUTES ? 'Reports delayed' + SEP + age + ' min old' : 'Updated ' + age + ' min ago';
-    setText(body.querySelector('.pp-best-freshness'), scope + SEP + freshness);
-    const coverage = Number.isFinite(best.comp.matchedRides) && Number.isFinite(best.comp.eligibleRides)
-      ? ' This park\u2019s comparison covers ' + best.comp.matchedRides + ' of ' + best.comp.eligibleRides + ' currently qualifying attractions.' : '';
-    setText(body.querySelector('[data-best-method]'), 'Parks rank by the lowest percentage above, or furthest below, their own usual waits for this weekday and Eastern hour. Comparisons match qualifying attractions and weight them equally.' + coverage + ' The displayed average uses all qualifying open attractions with positive posted waits, so its ride set can differ from the comparison. Closing time is context, not a ranking factor. A narrow lead means 1\u20133 percentage points; ties use rounded percentages. Missing comparisons are excluded. Posted waits are not attendance or guaranteed actual waits.');
+    setText(body.querySelector('.pp-best-freshness'), freshness);
     const link = body.querySelector('.pp-best-link');
     const href = '#/park/' + best.key + '/trends';
     if (link.getAttribute('href') !== href) link.setAttribute('href', href);

@@ -597,7 +597,7 @@
           data.schedule +
           '. ' +
           data.freshness +
-          '. View attractions.',
+          '. Opens park details.',
       );
     });
     const age = snapshotAge(parkData?.updated_at);
@@ -740,11 +740,13 @@
     home.innerHTML = `<h1 id="pp1bOverviewTitle">Your Disney day, at a glance.</h1><p class="pp1b-intro">Compare posted waits. Choose a park.</p><p class="pp1b-source" data-source></p><div class="pp1b-grid"></div><details class="pp1b-method"><summary>About these averages</summary><p>Averages use the existing qualifying standard attractions reported open with positive standby waits. Open zero-minute readings are not closures, but do not enter this average.</p><p>Missing or closed attractions can change which rides contribute. Averages are not attendance, complete-coverage claims, or guaranteed actual waits. Snapshot age describes the feed snapshot, not the exact observation time of every attraction.</p><p>Schedules use Eastern time. Historical context is not a forecast.</p></details><a class="pp1b-more" href="#/more">Detailed park conditions and tools →</a>`;
     keys.forEach((key) => home.querySelector('.pp1b-grid').append(makeCard(key)));
     overview.prepend(home);
-    const legacy = document.createElement('details');
+    // Hidden holding area for #parkGrid, #hoursNote and the crowd-info label.
+    // Renderers and the park-card expansion borrow them. It is never shown.
+    const legacy = document.createElement('div');
     legacy.id = 'ppDetailedParkConditions';
-    legacy.innerHTML =
-      '<summary>Detailed park cards, comparisons, hours and events</summary><div class="pp1b-legacy-body"></div>';
-    const body = legacy.querySelector('.pp1b-legacy-body');
+    legacy.hidden = true;
+    legacy.inert = true;
+    const body = legacy;
     [...overview.children].forEach((node) => {
       if (node === home || node.id === 'bestParkBanner') return;
       if (node.classList.contains('hero')) {
@@ -2301,7 +2303,7 @@
         ': ' +
         longest.value +
         (longest.name ? ', ' + longest.name : '') +
-        '. View attractions.';
+        '. Opens park details.';
       if (card.getAttribute('aria-label') !== aria) card.setAttribute('aria-label', aria);
     }
   }

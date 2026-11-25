@@ -184,3 +184,49 @@ html[data-pp-animations="off"] #bestParkBanner.pp-best-evidence-card::before {
     transition: none;
   }
 }
+
+/* Light mode: soften the artwork, add a white wash behind the text and use full-strength text color. */
+[data-theme="light"] #bestParkBanner.pp-best-evidence-card:has(.pp-best-toggle[aria-expanded="true"])::before {
+  opacity: .26;
+}
+
+[data-theme="light"] #bestParkBanner.pp-best-evidence-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(90deg, rgba(255, 255, 255, .58), rgba(255, 255, 255, .3));
+  opacity: 0;
+  transition: opacity .28s ease;
+}
+
+[data-theme="light"] #bestParkBanner.pp-best-evidence-card:has(.pp-best-toggle[aria-expanded="true"])::after {
+  opacity: 1;
+}
+
+[data-theme="light"] #bestParkBanner.pp-best-evidence-card .pp-best-evidence,
+[data-theme="light"] #bestParkBanner.pp-best-evidence-card .pp-best-label {
+  text-shadow: 0 0 6px rgba(255, 255, 255, .75);
+}
+
+[data-theme="light"] #bestParkBanner.pp-best-evidence-card .pp-best-facts dt,
+[data-theme="light"] #bestParkBanner.pp-best-evidence-card .pp-best-hours {
+  color: var(--text);
+  font-weight: 500;
+}
+
+[data-theme="light"] #bestParkBanner.pp-best-evidence-card .pp-best-link {
+  background: rgba(255, 255, 255, .72);
+  text-shadow: none;
+}
+
+html[data-pp-animations="off"] [data-theme="light"] #bestParkBanner.pp-best-evidence-card::after {
+  transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-theme="light"] #bestParkBanner.pp-best-evidence-card::after {
+    transition: none;
+  }
+}

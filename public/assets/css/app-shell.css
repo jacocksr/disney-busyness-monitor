@@ -285,23 +285,6 @@ body.pp-overview-enabled {
   font-size: .85rem;
 }
 
-#ppDetailedParkConditions {
-  margin: 12px 0;
-  border: 1px solid var(--card-border);
-  border-radius: 12px;
-  padding: 12px;
-}
-
-#ppDetailedParkConditions>summary {
-  min-height: 44px;
-  cursor: pointer;
-  font-weight: 600;
-}
-
-#ppDetailedParkConditions .pp1b-legacy-body {
-  padding-top: 12px;
-}
-
 #pp1bDisplayPreferences {
   margin: 12px 0;
 }
@@ -626,59 +609,6 @@ html[data-pp-animations="off"] #bestParkBanner .pp-best-chevron {
   text-align: center;
   margin: 0 0 14px;
   color: var(--text-muted);
-}
-
-#ppDetailedParkConditions #parkGrid .pulse-identity {
-  min-width: 0;
-  align-items: center;
-}
-
-#ppDetailedParkConditions #parkGrid .pulse-identity>img {
-  display: block;
-  width: 80px;
-  height: 80px;
-  min-width: 80px;
-  max-width: 80px;
-  flex: 0 0 80px;
-  object-fit: contain;
-  opacity: 1;
-  visibility: visible;
-}
-
-#ppDetailedParkConditions #parkGrid .pulse-identity>img.pp-icon-failed {
-  display: none;
-}
-
-#ppDetailedParkConditions .pp-icon-fallback {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 80px;
-  height: 80px;
-  flex: 0 0 80px;
-  border: 1px dashed var(--card-border);
-  border-radius: 12px;
-  font-weight: 700;
-  color: var(--text-muted);
-}
-
-#ppDetailedParkConditions .pp-icon-fallback[hidden] {
-  display: none !important;
-}
-
-@media (max-width:600px) {
-  #ppDetailedParkConditions #parkGrid .pulse-identity>img {
-    width: 60px;
-    height: 60px;
-    min-width: 60px;
-    max-width: 60px;
-    flex-basis: 60px;
-  }
-  #ppDetailedParkConditions .pp-icon-fallback {
-    width: 60px;
-    height: 60px;
-    flex-basis: 60px;
-  }
 }
 
 /* ==== Status theme ==== */

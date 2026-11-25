@@ -120,7 +120,10 @@
       .map((row) => ({ ...row, comp: getParkComparison(row.key, row.park) }))
       .filter((row) => row.comp.status === 'ready' && Number.isFinite(row.comp.pctDiff))
       .sort((a, b) => a.comp.pctDiff - b.comp.pctDiff);
-    if (!rows.length) return;
+    if (!rows.length) {
+      delete banner.dataset.bestPark;
+      return;
+    }
     const best = rows[0], runner = rows[1];
     const stamp = Date.parse(parkData.updated_at), now = Date.now();
     const known = Number.isFinite(stamp) && stamp <= now + 60000;
@@ -131,10 +134,11 @@
     if (!body) {
       body = document.createElement('div');
       body.className = 'pp-best-evidence';
-      body.innerHTML = '<p class="pp-best-reason"></p><dl class="pp-best-facts"><div data-best-runner-row><dt data-best-runner-label>Next closest</dt><dd data-best-runner></dd></div></dl><p class="pp-best-hours"></p><p class="pp-best-freshness"></p><a class="pp-best-link"></a>';
+      body.innerHTML = '<p class="pp-best-reason"></p><dl class="pp-best-facts"><div data-best-runner-row><dt data-best-runner-label>Next closest</dt><dd data-best-runner></dd></div></dl><p class="pp-best-hours"></p><a class="pp-best-link"></a>';
       inner.replaceChildren(body);
     }
     banner.classList.add('pp-best-evidence-card');
+    if (banner.dataset.bestPark !== best.key) banner.dataset.bestPark = best.key;
     setText(banner.querySelector('.best-park-title'), best.park.name);
     setText(banner.querySelector('.best-park-eyebrow'), delayed ? 'Best Park \u00b7 Last Available Report' : 'Best Park Right Now');
     const reason = pickReason(rows);
@@ -145,8 +149,6 @@
       setText(body.querySelector('[data-best-runner]'), runner.park.name + SEP + relativeWait(runner.comp.pctDiff));
     }
     setText(body.querySelector('.pp-best-hours'), closingContext(best.key, best.park));
-    const freshness = !known ? 'Report age unknown' : olderDay ? 'Previous-day report' : age > STALE_THRESHOLD_MINUTES ? 'Reports delayed' + SEP + age + ' min old' : 'Updated ' + age + ' min ago';
-    setText(body.querySelector('.pp-best-freshness'), freshness);
     const link = body.querySelector('.pp-best-link');
     const href = '#/park/' + best.key + '/trends';
     if (link.getAttribute('href') !== href) link.setAttribute('href', href);

@@ -452,7 +452,7 @@ html[data-pp-animations="off"] [data-theme="light"] #bestParkBanner.pp-best-evid
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
-  opacity: .3;
+  opacity: .26;
 }
 
 #ppParkExpand[data-park="magic_kingdom"] #parkGrid .park-card::before {
@@ -473,9 +473,64 @@ html[data-pp-animations="off"] [data-theme="light"] #bestParkBanner.pp-best-evid
 
 /* Light mode: no wash over the art (it hid the image); stronger opacity and a faint glow keep text crisp. */
 [data-theme="light"] #ppParkExpand #parkGrid .park-card::before {
-  opacity: .5;
+  opacity: .45;
 }
 
 [data-theme="light"] #ppParkExpand #parkGrid .park-card {
   text-shadow: 0 0 6px rgba(255, 255, 255, .7);
+}
+
+/* Legibility over the art: pills, rows and the wait box get a frosted backing (blur + semi-opaque layer).
+   background-image layers on top of each element's own tint, so the tint/border colors still read. */
+#ppParkExpand #parkGrid .park-card :is(
+  .pp-card-pill,
+  .closure-row,
+  .pulse-hours-main,
+  .pulse-hours-ee,
+  .pulse-hours-event,
+  .pulse-hours-festival,
+  .park-status-banner,
+  .best-time-strip,
+  .pulse-weather,
+  .pulse-weather-row,
+  .pulse-weather-card,
+  .pp-card-weather
+) {
+  background-image: linear-gradient(
+    color-mix(in srgb, var(--card-bg-solid) 55%, transparent),
+    color-mix(in srgb, var(--card-bg-solid) 55%, transparent)
+  );
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+#ppParkExpand #parkGrid .park-card .pulse-waits {
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+[data-theme="light"] #ppParkExpand #parkGrid .park-card :is(
+  .pp-card-pill,
+  .closure-row,
+  .pulse-hours-main,
+  .pulse-hours-ee,
+  .pulse-hours-event,
+  .pulse-hours-festival,
+  .park-status-banner,
+  .best-time-strip,
+  .pulse-weather,
+  .pulse-weather-row,
+  .pulse-weather-card,
+  .pp-card-weather
+) {
+  background-image: linear-gradient(rgba(255, 255, 255, .62), rgba(255, 255, 255, .62));
+}
+
+/* Light mode: the Average/Longest wait box was a solid cream; let the art show through like dark mode. */
+[data-theme="light"] #ppParkExpand #parkGrid .park-card .pulse-waits.pulse-waits-clickable {
+  background: rgba(255, 244, 222, .55);
+}
+
+[data-theme="light"] #ppParkExpand #parkGrid .park-card .pulse-waits.pulse-waits-clickable:hover {
+  background: rgba(255, 237, 201, .7);
 }

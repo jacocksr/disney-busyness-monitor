@@ -1,8 +1,5 @@
-/* Park Pulse snapshot card (Attractions tab): short wording and a colored comparison pill.
-   The original app code still writes its longer text into the hidden [data-average], [data-comparison]
-   and [data-meta] nodes. This module reads that text and shows a shorter version beside them, so no data
-   logic changes and the old wording comes back if this file fails to load.
-   Load after app-shell.js. */
+/* Park Pulse lean-card presentation: Attractions snapshot and Best Park evidence.
+   Load after app-shell.js. Uses existing live stats/comparisons without changing ranking or API logic. */
 (() => {
   'use strict';
 
@@ -22,8 +19,7 @@
     return text.replace(/^Scheduled close/, 'Closes').replace(/\b(\d{1,2}):00 ([AP]M)/g, '$1 $2');
   }
 
-  /* "Today \u00b7 9:00 AM EST" becomes "Updated 9:00 AM". A zone is shown only when it is not Eastern, because
-     park hours are already labelled ET. */
+  /* "Today · 9:00 AM EST" becomes "Updated 9:00 AM". */
   function leanFresh(text) {
     const m = text.match(
       /^(Today|Yesterday|[A-Z][a-z]{2} \d{1,2}(?:, \d{4})?) \u00b7 (\d{1,2}:\d{2} [AP]M)(?: ([A-Za-z]{2,5}))?$/,
@@ -57,40 +53,117 @@
       avgSrc = a;
       cmpSrc = c;
       metaSrc = m;
-
       head = document.createElement('div');
       head.className = 'pp-snap-headline';
       trend = document.createElement('div');
       trend.className = 'pp-snap-trend';
       meta = document.createElement('div');
       meta.className = 'pp-snap-meta';
-
       const explanation = snap.querySelector('.pp1b-explanation');
       matchNote = document.createElement('p');
       matchNote.className = 'pp-snap-match';
       matchNote.hidden = true;
       if (explanation) explanation.append(matchNote);
-
       const watcher = new MutationObserver(schedule);
       [a, c, m].forEach((node) => watcher.observe(node, { childList: true, characterData: true, subtree: true }));
       new MutationObserver(schedule).observe(snap, { childList: true });
-
       snap.classList.add('pp-snap-lean');
       ready = true;
     }
-
-    // The original code may move the average into the park-icon row, so keep the new lines next to their sources.
     if (head.previousElementSibling !== avgSrc) avgSrc.after(head);
     if (trend.previousElementSibling !== cmpSrc) cmpSrc.after(trend);
     if (meta.previousElementSibling !== metaSrc) metaSrc.after(meta);
     return true;
   }
 
+  function setText(node, value) {
+    if (node && node.textContent !== value) node.textContent = value;
+  }
+
+  function relativeWait(pct) {
+    if (pct === 0) return 'At usual levels';
+    return Math.abs(pct) + '% ' + (pct < 0 ? 'below' : 'above') + ' usual';
+  }
+
+  function pickReason(rows) {
+    const pct = rows[0].comp.pctDiff;
+    const prefix = pct === 0 ? 'Waits match usual levels' : 'Waits are ' + relativeWait(pct);
+    if (rows.length === 1) return prefix + '. Only park with sufficient comparison data.';
+    const gap = rows[1].comp.pctDiff - pct;
+    if (gap === 0) return prefix + '. Tied for the lowest relative waits on the rounded comparison.';
+    if (gap <= 3) return prefix + '. Narrow lead: ' + gap + ' percentage point' + (gap === 1 ? '' : 's') + ' ahead of the next park.';
+    if (rows.every((row) => row.comp.pctDiff > 0)) return prefix + '. All compared parks are above usual; this is the smallest increase.';
+    return prefix + '\u2014the lowest relative waits among the parks compared.';
+  }
+
+  function closingContext(key, park) {
+    const hours = normalizeHours(park.hours);
+    if (!hours || hours.day !== curveET(new Date()).day) return 'Today\u2019s closing time unverified';
+    const match = String(hours.close).match(/^(\d{1,2}):(\d{2})$/);
+    if (!match || Number(match[1]) > 47 || Number(match[2]) > 59) return 'Today\u2019s closing time unverified';
+    const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/New_York' }));
+    const remaining = Number(match[1]) * 60 + Number(match[2]) - now.getHours() * 60 - now.getMinutes();
+    const phase = getParkPhase(key, park);
+    if (remaining <= 0 || phase.isSpecialEvent || phase.clearingQueues) return 'Regular hours ended; check event/admission details';
+    const h = Math.floor(remaining / 60), m = remaining % 60;
+    const left = [h ? h + 'h' : '', m ? m + 'm' : ''].filter(Boolean).join(' ');
+    return 'Closes ' + fmtClock(hours.close).replace(':00 ', ' ') + ' ET' + SEP + left + ' left';
+  }
+
+  /* Enhance the existing collapsible card after app-shell mounts it. No global function wrapping. */
+  function renderBestEvidence() {
+    const banner = document.getElementById('bestParkBanner');
+    const inner = banner?.querySelector('.pp-best-more-inner');
+    if (!inner || isDataUnavailable()) return;
+    const rows = PARK_ORDER.map((key) => ({ key, park: parkData.parks[key] }))
+      .filter((row) => row.park)
+      .map((row) => ({ ...row, comp: getParkComparison(row.key, row.park) }))
+      .filter((row) => row.comp.status === 'ready' && Number.isFinite(row.comp.pctDiff))
+      .sort((a, b) => a.comp.pctDiff - b.comp.pctDiff);
+    if (!rows.length) return;
+    const best = rows[0], runner = rows[1];
+    const stamp = Date.parse(parkData.updated_at), now = Date.now();
+    const known = Number.isFinite(stamp) && stamp <= now + 60000;
+    const age = known ? Math.max(0, Math.floor((now - stamp) / 60000)) : null;
+    const olderDay = known && curveET(new Date(stamp)).day !== curveET(new Date(now)).day;
+    const delayed = !known || olderDay || age > STALE_THRESHOLD_MINUTES;
+    let body = inner.querySelector('.pp-best-evidence');
+    if (!body) {
+      body = document.createElement('div');
+      body.className = 'pp-best-evidence';
+      body.innerHTML = '<p class="pp-best-reason"></p><dl class="pp-best-facts"><div><dt data-best-average-label>Average wait</dt><dd data-best-average></dd></div><div data-best-runner-row><dt data-best-runner-label>Next closest</dt><dd data-best-runner></dd></div></dl><p class="pp-best-hours"></p><p class="pp-best-freshness"></p><p class="pp-best-caveat">Best relative to usual\u2014not necessarily the shortest waits.</p><details class="pp-best-method"><summary>How this pick is made</summary><p data-best-method></p></details><a class="pp-best-link"></a>';
+      inner.replaceChildren(body);
+    }
+    banner.classList.add('pp-best-evidence-card');
+    setText(banner.querySelector('.best-park-title'), best.park.name);
+    setText(banner.querySelector('.best-park-eyebrow'), delayed ? 'Best Park \u00b7 Last Available Report' : 'Best Park Right Now');
+    const reason = pickReason(rows);
+    setText(body.querySelector('.pp-best-reason'), delayed ? 'Last report: ' + reason.charAt(0).toLowerCase() + reason.slice(1) : reason);
+    const avg = computeLiveStats(best.park).avgWait;
+    setText(body.querySelector('[data-best-average-label]'), delayed ? 'Last average wait' : 'Average wait');
+    setText(body.querySelector('[data-best-average]'), Number.isFinite(avg) ? avg + ' min' : 'Unavailable');
+    body.querySelector('[data-best-runner-row]').hidden = !runner;
+    if (runner) {
+      setText(body.querySelector('[data-best-runner-label]'), runner.comp.pctDiff === best.comp.pctDiff ? 'Also tied' : 'Next closest');
+      setText(body.querySelector('[data-best-runner]'), runner.park.name + SEP + relativeWait(runner.comp.pctDiff));
+    }
+    setText(body.querySelector('.pp-best-hours'), closingContext(best.key, best.park));
+    const scope = rows.length === 1 ? '1 park with comparison data' : rows.length + ' parks compared';
+    const freshness = !known ? 'Report age unknown' : olderDay ? 'Previous-day report' : age > STALE_THRESHOLD_MINUTES ? 'Reports delayed' + SEP + age + ' min old' : 'Updated ' + age + ' min ago';
+    setText(body.querySelector('.pp-best-freshness'), scope + SEP + freshness);
+    const coverage = Number.isFinite(best.comp.matchedRides) && Number.isFinite(best.comp.eligibleRides)
+      ? ' This park\u2019s comparison covers ' + best.comp.matchedRides + ' of ' + best.comp.eligibleRides + ' currently qualifying attractions.' : '';
+    setText(body.querySelector('[data-best-method]'), 'Parks rank by the lowest percentage above, or furthest below, their own usual waits for this weekday and Eastern hour. Comparisons match qualifying attractions and weight them equally.' + coverage + ' The displayed average uses all qualifying open attractions with positive posted waits, so its ride set can differ from the comparison. Closing time is context, not a ranking factor. A narrow lead means 1\u20133 percentage points; ties use rounded percentages. Missing comparisons are excluded. Posted waits are not attendance or guaranteed actual waits.');
+    const link = body.querySelector('.pp-best-link');
+    const href = '#/park/' + best.key + '/trends';
+    if (link.getAttribute('href') !== href) link.setAttribute('href', href);
+    setText(link, 'See ' + best.park.name + ' wait trends \u2192');
+  }
+
   function render() {
     queued = false;
+    renderBestEvidence();
     if (!connect()) return;
-
-    // Headline: "32 min avg wait". Other states keep their full wording because they are warnings.
     const avg = avgSrc.textContent.trim();
     const i = avg.indexOf(SEP);
     const value = i < 0 ? avg : avg.slice(0, i);
@@ -99,8 +172,6 @@
     strong.textContent = value;
     const tail = label === 'Average posted wait' ? ' avg wait' : label ? SEP + label : '';
     head.replaceChildren(strong, document.createTextNode(tail));
-
-    // Comparison pill. The matched-rides detail is not shown on the card; it lives only in the info popover.
     const cmp = cmpSrc.textContent.trim();
     const mm = cmp.match(/^(.*?) \u00b7 matched (\d+)\/(\d+) qualifying attractions$/);
     const phrase = mm ? mm[1] : cmp;
@@ -125,8 +196,6 @@
     } else {
       matchNote.hidden = true;
     }
-
-    // Schedule and freshness: "Closes 9 PM ET \u00b7 Updated 9:00 AM".
     const mt = metaSrc.textContent.trim();
     const j = mt.indexOf(SEP);
     const schedule = j < 0 ? mt : mt.slice(0, j);
@@ -141,10 +210,13 @@
   }
 
   function start() {
+    const banner = document.getElementById('bestParkBanner');
+    if (banner) new MutationObserver(schedule).observe(banner, { childList: true, characterData: true, subtree: true });
+    const source = document.querySelector('#ppCompactOverview [data-source]');
+    if (source) new MutationObserver(schedule).observe(source, { childList: true, characterData: true, subtree: true });
     if (connect()) {
       render();
     } else {
-      // The snapshot is created by app-shell.js; wait for it if it is not there yet.
       const waiter = new MutationObserver(() => {
         if (connect()) {
           waiter.disconnect();

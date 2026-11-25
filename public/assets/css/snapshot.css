@@ -82,3 +82,75 @@
   font-size: .8rem;
   line-height: 1.35;
 }
+
+/* Evidence inside the existing Best Park disclosure; its toggle and motion stay owned by app-shell. */
+#bestParkBanner .pp-best-evidence {
+  min-width: 0;
+  color: var(--text);
+  font-size: .8rem;
+  line-height: 1.45;
+}
+
+#bestParkBanner .pp-best-reason {
+  margin: 0 0 .65rem;
+  color: var(--text);
+}
+
+#bestParkBanner .pp-best-facts {
+  display: grid;
+  grid-template-columns: minmax(0, .75fr) minmax(0, 1.25fr);
+  gap: .5rem .8rem;
+  margin: 0 0 .6rem;
+}
+
+#bestParkBanner .pp-best-facts > div {
+  min-width: 0;
+}
+
+#bestParkBanner .pp-best-facts > div[hidden] {
+  display: none;
+}
+
+#bestParkBanner .pp-best-facts dt {
+  color: var(--text-muted);
+  font-size: .72rem;
+}
+
+#bestParkBanner .pp-best-facts dd {
+  margin: .12rem 0 0;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+#bestParkBanner .pp-best-hours,
+#bestParkBanner .pp-best-freshness,
+#bestParkBanner .pp-best-caveat {
+  margin: .35rem 0;
+  color: var(--text-muted);
+  font-size: .74rem;
+}
+
+#bestParkBanner .pp-best-method {
+  margin: .5rem 0 .65rem;
+  color: var(--text-muted);
+  font-size: .72rem;
+}
+
+#bestParkBanner .pp-best-method summary {
+  cursor: pointer;
+}
+
+#bestParkBanner .pp-best-method p {
+  margin: .4rem 0 0;
+}
+
+#bestParkBanner .pp-best-method summary:focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: 3px;
+}
+
+@media (max-width: 340px) {
+  #bestParkBanner .pp-best-facts {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

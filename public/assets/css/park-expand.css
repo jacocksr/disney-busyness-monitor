@@ -1,12 +1,23 @@
 /* Park Pulse expanded park card refinements. Loads after snapshot.css.
-   A backing nested inside another backing shows as a rectangle (blur inside blur), so only the outermost keeps it. */
-html body #ppParkExpand #parkGrid .park-card :is(.pp-card-pill, .closure-row, .pulse-hours-main, .pulse-hours-ee, .pulse-hours-event, .pulse-hours-festival, .park-status-banner, .best-time-strip, .pulse-weather, .pulse-weather-row, .pulse-weather-card, .pp-card-weather) :is(.pp-card-pill, .closure-row, .pulse-hours-main, .pulse-hours-ee, .pulse-hours-event, .pulse-hours-festival, .park-status-banner, .best-time-strip, .pulse-weather, .pulse-weather-row, .pulse-weather-card, .pp-card-weather) {
+   The weather row is .pulse-footer; .pulse-weather is only the text inside it. The backing belongs on the row,
+   because a backing on the inner text shows as a rectangle. The html body prefix wins over snapshot.css. */
+html body #ppParkExpand #parkGrid .park-card .pulse-weather {
   background-image: none;
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
 }
 
-/* Tap for hourly wait trend pill: much lighter so the art reads through. */
+html body #ppParkExpand #parkGrid .park-card .pulse-footer {
+  background-image: linear-gradient(color-mix(in srgb, var(--card-bg-solid) 55%, transparent), color-mix(in srgb, var(--card-bg-solid) 55%, transparent));
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+html[data-theme=light] body #ppParkExpand #parkGrid .park-card .pulse-footer {
+  background-image: linear-gradient(rgba(255, 255, 255, .62), rgba(255, 255, 255, .62));
+}
+
+/* Tap for hourly wait trend pill: much lighter so the art reads through; border and text unchanged. */
 html body #ppParkExpand #parkGrid .park-card .pulse-waits .pulse-waits-pill-btn {
   background: rgba(255, 209, 102, .08);
 }

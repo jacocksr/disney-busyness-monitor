@@ -230,3 +230,307 @@ html[data-pp-animations="off"] [data-theme="light"] #bestParkBanner.pp-best-evid
     transition: none;
   }
 }
+
+/* ==== Park card expansion (Overview) ==== */
+
+#ppCompactOverview .pp1b-card[data-pp-expand] {
+  cursor: pointer;
+}
+
+.pp1b-card.pp-expand-source {
+  visibility: hidden;
+}
+
+#ppParkExpand {
+  position: fixed;
+  inset: 0;
+  z-index: 150;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  padding: max(12px, env(safe-area-inset-top)) 12px max(12px, env(safe-area-inset-bottom));
+}
+
+#ppParkExpand[hidden] {
+  display: none !important;
+}
+
+#ppParkExpand .pp-expand-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 20, 40, .48);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+#ppParkExpand .pp-expand-panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: min(100%, 460px);
+  max-height: 100%;
+  overflow: hidden;
+  border: 1px solid var(--card-border);
+  border-radius: 24px;
+  background: var(--card-bg-solid);
+  color: var(--text);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, .45);
+}
+
+#ppParkExpand .pp-expand-panel:focus {
+  outline: none;
+}
+
+#ppParkExpand .pp-expand-toolbar {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 4px 6px 0 16px;
+}
+
+#ppParkExpand .pp-expand-eyebrow {
+  color: var(--text-muted);
+  font-size: .7rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+#ppParkExpand .pp-expand-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+#ppParkExpand .pp-expand-close:hover {
+  background: var(--card-bg);
+}
+
+#ppParkExpand .pp-expand-close:focus-visible,
+#ppParkExpand .pp-expand-action:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+}
+
+#ppParkExpand .pp-expand-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding: 4px 12px 14px;
+}
+
+#ppParkExpand .pp-expand-actions {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 8px;
+  padding: 10px 12px calc(12px + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid var(--card-border);
+}
+
+#ppParkExpand .pp-expand-action {
+  flex: 1 1 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 6px 10px;
+  border: 1px solid var(--teal);
+  border-radius: 999px;
+  color: var(--teal);
+  font-size: .8rem;
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+}
+
+#ppParkExpand .pp-expand-action:hover {
+  background: color-mix(in srgb, var(--teal) 12%, transparent);
+}
+
+/* The real park grid lives in the panel while it is open: one column, only the chosen park's card. */
+#ppParkExpand #parkGrid {
+  display: block;
+  margin: 0;
+}
+
+#ppParkExpand[data-park="magic_kingdom"] #parkGrid > .park-card:not([data-park-key="magic_kingdom"]),
+#ppParkExpand[data-park="epcot"] #parkGrid > .park-card:not([data-park-key="epcot"]),
+#ppParkExpand[data-park="hollywood_studios"] #parkGrid > .park-card:not([data-park-key="hollywood_studios"]),
+#ppParkExpand[data-park="animal_kingdom"] #parkGrid > .park-card:not([data-park-key="animal_kingdom"]) {
+  display: none;
+}
+
+#ppParkExpand #parkGrid .park-card,
+#ppParkExpand #parkGrid .park-card:hover {
+  transform: none !important;
+  box-shadow: none;
+  cursor: default;
+}
+
+/* Icon sizing that used to be scoped to #ppDetailedParkConditions. */
+#ppParkExpand #parkGrid .pulse-identity {
+  min-width: 0;
+  align-items: center;
+}
+
+#ppParkExpand #parkGrid .pulse-identity > img {
+  display: block;
+  width: 80px;
+  height: 80px;
+  min-width: 80px;
+  max-width: 80px;
+  flex: 0 0 80px;
+  object-fit: contain;
+  opacity: 1;
+  visibility: visible;
+}
+
+#ppParkExpand #parkGrid .pulse-identity > img.pp-icon-failed {
+  display: none;
+}
+
+#ppParkExpand .pp-icon-fallback {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  flex: 0 0 80px;
+  border: 1px dashed var(--card-border);
+  border-radius: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+#ppParkExpand .pp-icon-fallback[hidden] {
+  display: none !important;
+}
+
+@media (max-width: 600px) {
+  #ppParkExpand #parkGrid .pulse-identity > img {
+    width: 60px;
+    height: 60px;
+    min-width: 60px;
+    max-width: 60px;
+    flex-basis: 60px;
+  }
+  #ppParkExpand .pp-icon-fallback {
+    width: 60px;
+    height: 60px;
+    flex-basis: 60px;
+  }
+}
+
+/* Park artwork on the expanded park card only. The panel, toolbar and footer keep the plain themed background;
+   the compact 2x2 cards stay plain too. The art sits behind the card's content (z-index -1 inside an isolated card). */
+#ppParkExpand #parkGrid .park-card {
+  isolation: isolate;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+#ppParkExpand #parkGrid .park-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  opacity: .26;
+}
+
+#ppParkExpand[data-park="magic_kingdom"] #parkGrid .park-card::before {
+  background-image: url("../../images/MKCard.png");
+}
+
+#ppParkExpand[data-park="epcot"] #parkGrid .park-card::before {
+  background-image: url("../../images/EPCOTCard.png");
+}
+
+#ppParkExpand[data-park="hollywood_studios"] #parkGrid .park-card::before {
+  background-image: url("../../images/HSCard.png");
+}
+
+#ppParkExpand[data-park="animal_kingdom"] #parkGrid .park-card::before {
+  background-image: url("../../images/AKCard.png");
+}
+
+/* Light mode: no wash over the art (it hid the image); stronger opacity and a faint glow keep text crisp. */
+[data-theme="light"] #ppParkExpand #parkGrid .park-card::before {
+  opacity: .45;
+}
+
+[data-theme="light"] #ppParkExpand #parkGrid .park-card {
+  text-shadow: 0 0 6px rgba(255, 255, 255, .7);
+}
+
+/* Legibility over the art: pills, rows and the wait box get a frosted backing (blur + semi-opaque layer).
+   background-image layers on top of each element's own tint, so the tint/border colors still read. */
+#ppParkExpand #parkGrid .park-card :is(
+  .pp-card-pill,
+  .closure-row,
+  .pulse-hours-main,
+  .pulse-hours-ee,
+  .pulse-hours-event,
+  .pulse-hours-festival,
+  .park-status-banner,
+  .best-time-strip,
+  .pulse-weather,
+  .pulse-weather-row,
+  .pulse-weather-card,
+  .pp-card-weather
+) {
+  background-image: linear-gradient(
+    color-mix(in srgb, var(--card-bg-solid) 55%, transparent),
+    color-mix(in srgb, var(--card-bg-solid) 55%, transparent)
+  );
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+#ppParkExpand #parkGrid .park-card .pulse-waits {
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+[data-theme="light"] #ppParkExpand #parkGrid .park-card :is(
+  .pp-card-pill,
+  .closure-row,
+  .pulse-hours-main,
+  .pulse-hours-ee,
+  .pulse-hours-event,
+  .pulse-hours-festival,
+  .park-status-banner,
+  .best-time-strip,
+  .pulse-weather,
+  .pulse-weather-row,
+  .pulse-weather-card,
+  .pp-card-weather
+) {
+  background-image: linear-gradient(rgba(255, 255, 255, .62), rgba(255, 255, 255, .62));
+}
+
+/* Light mode: the Average/Longest wait box was a solid cream; let the art show through like dark mode. */
+[data-theme="light"] #ppParkExpand #parkGrid .park-card .pulse-waits.pulse-waits-clickable {
+  background: rgba(255, 244, 222, .55);
+}
+
+[data-theme="light"] #ppParkExpand #parkGrid .park-card .pulse-waits.pulse-waits-clickable:hover {
+  background: rgba(255, 237, 201, .7);
+}

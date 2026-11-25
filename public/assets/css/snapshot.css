@@ -82,3 +82,151 @@
   font-size: .8rem;
   line-height: 1.35;
 }
+
+/* Evidence inside the existing Best Park disclosure; its toggle and motion stay owned by app-shell. */
+#bestParkBanner .pp-best-evidence {
+  min-width: 0;
+  color: var(--text);
+  font-size: .8rem;
+  line-height: 1.4;
+}
+
+#bestParkBanner .pp-best-reason {
+  margin: 0 0 .5rem;
+  color: var(--text);
+}
+
+#bestParkBanner .pp-best-facts {
+  display: block;
+  margin: 0 0 .45rem;
+}
+
+#bestParkBanner .pp-best-facts > div {
+  min-width: 0;
+}
+
+#bestParkBanner .pp-best-facts > div[hidden] {
+  display: none;
+}
+
+#bestParkBanner .pp-best-facts dt {
+  color: var(--text-muted);
+  font-size: .72rem;
+}
+
+#bestParkBanner .pp-best-facts dd {
+  margin: .12rem 0 0;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+#bestParkBanner .pp-best-hours {
+  margin: .25rem 0;
+  color: var(--text-muted);
+  font-size: .74rem;
+}
+
+/* Park artwork behind the expanded Best Park card. The winning park key is set by snapshot.js. */
+#bestParkBanner.pp-best-evidence-card {
+  position: relative;
+  isolation: isolate;
+}
+
+#bestParkBanner.pp-best-evidence-card .pp-best-toggle,
+#bestParkBanner.pp-best-evidence-card .pp-best-more {
+  position: relative;
+  z-index: 1;
+}
+
+#bestParkBanner.pp-best-evidence-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  opacity: 0;
+  transition: opacity .28s ease;
+}
+
+#bestParkBanner.pp-best-evidence-card[data-best-park="magic_kingdom"]::before {
+  background-image: url("../../images/MKBest.png");
+}
+
+#bestParkBanner.pp-best-evidence-card[data-best-park="epcot"]::before {
+  background-image: url("../../images/EPCOTBest.png");
+}
+
+#bestParkBanner.pp-best-evidence-card[data-best-park="hollywood_studios"]::before {
+  background-image: url("../../images/HSBest.png");
+}
+
+#bestParkBanner.pp-best-evidence-card[data-best-park="animal_kingdom"]::before {
+  background-image: url("../../images/AKBest.png");
+}
+
+#bestParkBanner.pp-best-evidence-card:has(.pp-best-toggle[aria-expanded="true"])::before {
+  opacity: .34;
+}
+
+[data-theme="dark"] #bestParkBanner.pp-best-evidence-card:has(.pp-best-toggle[aria-expanded="true"])::before {
+  opacity: .28;
+}
+
+html[data-pp-animations="off"] #bestParkBanner.pp-best-evidence-card::before {
+  transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #bestParkBanner.pp-best-evidence-card::before {
+    transition: none;
+  }
+}
+
+/* Light mode: soften the artwork, add a white wash behind the text and use full-strength text color. */
+[data-theme="light"] #bestParkBanner.pp-best-evidence-card:has(.pp-best-toggle[aria-expanded="true"])::before {
+  opacity: .26;
+}
+
+[data-theme="light"] #bestParkBanner.pp-best-evidence-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(90deg, rgba(255, 255, 255, .58), rgba(255, 255, 255, .3));
+  opacity: 0;
+  transition: opacity .28s ease;
+}
+
+[data-theme="light"] #bestParkBanner.pp-best-evidence-card:has(.pp-best-toggle[aria-expanded="true"])::after {
+  opacity: 1;
+}
+
+[data-theme="light"] #bestParkBanner.pp-best-evidence-card .pp-best-evidence,
+[data-theme="light"] #bestParkBanner.pp-best-evidence-card .pp-best-label {
+  text-shadow: 0 0 6px rgba(255, 255, 255, .75);
+}
+
+[data-theme="light"] #bestParkBanner.pp-best-evidence-card .pp-best-facts dt,
+[data-theme="light"] #bestParkBanner.pp-best-evidence-card .pp-best-hours {
+  color: var(--text);
+  font-weight: 500;
+}
+
+[data-theme="light"] #bestParkBanner.pp-best-evidence-card .pp-best-link {
+  background: rgba(255, 255, 255, .72);
+  text-shadow: none;
+}
+
+html[data-pp-animations="off"] [data-theme="light"] #bestParkBanner.pp-best-evidence-card::after {
+  transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-theme="light"] #bestParkBanner.pp-best-evidence-card::after {
+    transition: none;
+  }
+}

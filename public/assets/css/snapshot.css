@@ -434,3 +434,76 @@ html[data-pp-animations="off"] [data-theme="light"] #bestParkBanner.pp-best-evid
     flex-basis: 60px;
   }
 }
+
+/* Park artwork behind the expanded card only; the compact 2x2 cards stay plain.
+   Art sits on the panel (so it stays put while the content scrolls); the card, toolbar and footer layer above it. */
+#ppParkExpand .pp-expand-panel::before,
+#ppParkExpand .pp-expand-panel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+#ppParkExpand .pp-expand-panel::before {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  opacity: .3;
+}
+
+#ppParkExpand[data-park="magic_kingdom"] .pp-expand-panel::before {
+  background-image: url("../../images/MKCard.png");
+}
+
+#ppParkExpand[data-park="epcot"] .pp-expand-panel::before {
+  background-image: url("../../images/EPCOTCard.png");
+}
+
+#ppParkExpand[data-park="hollywood_studios"] .pp-expand-panel::before {
+  background-image: url("../../images/HSCard.png");
+}
+
+#ppParkExpand[data-park="animal_kingdom"] .pp-expand-panel::before {
+  background-image: url("../../images/AKCard.png");
+}
+
+#ppParkExpand .pp-expand-toolbar,
+#ppParkExpand .pp-expand-scroll,
+#ppParkExpand .pp-expand-actions {
+  position: relative;
+  z-index: 1;
+}
+
+/* The card's own backdrop blur would smear the art behind it. */
+#ppParkExpand #parkGrid .park-card {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+#ppParkExpand .pp-expand-actions {
+  background: rgba(10, 20, 40, .18);
+}
+
+/* Light mode: softer art, white wash behind the text and a faint glow so type stays crisp. */
+[data-theme="light"] #ppParkExpand .pp-expand-panel::before {
+  opacity: .24;
+}
+
+[data-theme="light"] #ppParkExpand .pp-expand-panel::after {
+  background: linear-gradient(180deg, rgba(255, 255, 255, .5), rgba(255, 255, 255, .3));
+}
+
+[data-theme="light"] #ppParkExpand .pp-expand-toolbar,
+[data-theme="light"] #ppParkExpand #parkGrid .park-card {
+  text-shadow: 0 0 6px rgba(255, 255, 255, .75);
+}
+
+[data-theme="light"] #ppParkExpand .pp-expand-actions {
+  background: rgba(255, 255, 255, .55);
+}
+
+[data-theme="light"] #ppParkExpand .pp-expand-eyebrow {
+  color: var(--text);
+}

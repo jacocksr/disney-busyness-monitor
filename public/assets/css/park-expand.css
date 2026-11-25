@@ -238,19 +238,19 @@
 }
 
 #ppParkExpand[data-park=magic_kingdom] #parkGrid .park-card::before {
-  background-image: url(../../images/MKCard.png);
+  background-image: url(../../images/MKCard.webp);
 }
 
 #ppParkExpand[data-park=epcot] #parkGrid .park-card::before {
-  background-image: url(../../images/EPCOTCard.png);
+  background-image: url(../../images/EPCOTCard.webp);
 }
 
 #ppParkExpand[data-park=hollywood_studios] #parkGrid .park-card::before {
-  background-image: url(../../images/HSCard.png);
+  background-image: url(../../images/HSCard.webp);
 }
 
 #ppParkExpand[data-park=animal_kingdom] #parkGrid .park-card::before {
-  background-image: url(../../images/AKCard.png);
+  background-image: url(../../images/AKCard.webp);
 }
 
 [data-theme=light] #ppParkExpand #parkGrid .park-card::before {

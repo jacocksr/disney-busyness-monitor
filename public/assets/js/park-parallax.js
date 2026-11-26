@@ -1,6 +1,8 @@
-/* Park Pulse: opt-in tilt parallax for park artwork (Overview).
-   Targets: the expanded park card (#ppParkExpand) and the expanded Best Park Right Now card (#bestParkBanner).
-   While a target is showing and the Settings toggle is on, its artwork shifts as the phone tilts.
+/* Park Pulse: opt-in tilt effects for the Overview (Pulse) screen.
+   1) Parallax: the artwork on the expanded park card (#ppParkExpand) and the expanded Best Park Right Now card
+      (#bestParkBanner) shifts as the phone tilts.
+   2) Snow globe: while the setting is on, snow-globe.js (loaded on demand) shows a small globe under the unexpanded
+      Best Park card.
    Touch devices only. Loaded lazily by park-expand.js. Its styles are injected here and only apply while a target
    has data-parallax=on, so nothing changes when the feature is off.
    Tilt, not shake: the Easter egg input lives separately in easter-tilt.js. */
@@ -15,8 +17,9 @@
   const EASE = 0.12; // per-frame smoothing
   const RECENTER = 0.002; // per reading: slowly treats the current pose as neutral
   const DEG = Math.PI / 180;
-  const DEFAULT_HELP = 'The artwork on park cards and the Best Park card shifts slightly as you tilt your phone. Uses your motion sensors.';
-  const ON_HELP = 'On. Open a park card or the Best Park card and tilt your phone.';
+  const GLOBE_SRC = '/assets/js/snow-globe.js?v=1.0.0';
+  const DEFAULT_HELP = 'Park artwork shifts as you tilt your phone, and a small snow globe appears under the Best Park card. Uses your motion sensors.';
+  const ON_HELP = 'On. Open a park card or the Best Park card and tilt your phone. The snow globe sits under the Best Park card.';
   const DENIED_HELP = 'Motion access was denied. To try again, quit and reopen Safari, then turn this on and allow it.';
   const OFF_HELP = 'Turn on animations in Settings to use tilt effects.';
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -28,6 +31,8 @@
   let raf = 0;
   let input = null;
   let help = null;
+  let globeState = 'idle'; // idle | loading | ready
+  let globeWant = false;
   const cur = { x: 0, y: 0 };
   const tgt = { x: 0, y: 0 };
 
@@ -100,6 +105,33 @@
     }
   }
 
+  /* Loads snow-globe.js the first time the setting is on, then tells it to show or hide. */
+  function syncGlobe(on) {
+    globeWant = on;
+    if (globeState === 'ready') {
+      window.ParkPulseSnowGlobe.setActive(on);
+      return;
+    }
+    if (!on || globeState === 'loading') return;
+    if (window.ParkPulseSnowGlobe) {
+      globeState = 'ready';
+      window.ParkPulseSnowGlobe.setActive(true);
+      return;
+    }
+    globeState = 'loading';
+    const script = document.createElement('script');
+    script.src = GLOBE_SRC;
+    script.async = true;
+    script.onload = () => {
+      globeState = window.ParkPulseSnowGlobe ? 'ready' : 'idle';
+      if (globeState === 'ready') window.ParkPulseSnowGlobe.setActive(globeWant);
+    };
+    script.onerror = () => {
+      globeState = 'idle';
+    };
+    document.head.appendChild(script);
+  }
+
   function onOrientation(event) {
     if (event.beta == null || event.gamma == null) return;
     const b = event.beta * DEG;
@@ -159,6 +191,7 @@
 
   function sync() {
     const allowed = enabled && granted && motionOk();
+    syncGlobe(enabled && motionOk());
     let any = false;
     targets.forEach((t) => {
       if (!t.el || !t.el.isConnected) t.el = t.find();
@@ -234,7 +267,7 @@
     section.setAttribute('aria-labelledby', 'ppParallaxTitle');
     section.innerHTML =
       '<h3 id="ppParallaxTitle">Tilt effects</h3>' +
-      '<label class="pp-parallax-row"><input type="checkbox" id="ppParallaxSwitch"><span>Park artwork follows your tilt</span></label>' +
+      '<label class="pp-parallax-row"><input type="checkbox" id="ppParallaxSwitch"><span>Park artwork and snow globe follow your tilt</span></label>' +
       '<p id="ppParallaxHelp" role="status"></p>';
     const motion = dialog.querySelector('#ppSettingsMotionHost');
     const anchor = motion && motion.closest('.pp-settings-section');
@@ -325,9 +358,10 @@
     window.addEventListener('pageshow', sync);
     document.addEventListener('visibilitychange', sync);
     window.addEventListener('pagehide', stopAll);
+    sync();
   }
 
-  window.ParkPulseParallax = Object.freeze({ version: '1.1.0', isRunning: () => active });
+  window.ParkPulseParallax = Object.freeze({ version: '1.2.0', isRunning: () => active });
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', start, { once: true });

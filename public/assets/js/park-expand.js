@@ -392,7 +392,7 @@
   function loadParallax() {
     if (window.ParkPulseParallax || !window.DeviceOrientationEvent || !window.matchMedia('(pointer: coarse)').matches) return;
     const script = document.createElement('script');
-    script.src = '/assets/js/park-parallax.js?v=1.2.0';
+    script.src = '/assets/js/park-parallax.js?v=1.2.1';
     script.async = true;
     document.head.appendChild(script);
   }

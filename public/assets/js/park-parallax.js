@@ -17,7 +17,7 @@
   const EASE = 0.12; // per-frame smoothing
   const RECENTER = 0.002; // per reading: slowly treats the current pose as neutral
   const DEG = Math.PI / 180;
-  const GLOBE_SRC = '/assets/js/snow-globe.js?v=1.0.0';
+  const GLOBE_SRC = '/assets/js/snow-globe.js?v=1.1.0';
   const DEFAULT_HELP = 'Park artwork shifts as you tilt your phone, and a small snow globe appears under the Best Park card. Uses your motion sensors.';
   const ON_HELP = 'On. Open a park card or the Best Park card and tilt your phone. The snow globe sits under the Best Park card.';
   const DENIED_HELP = 'Motion access was denied. To try again, quit and reopen Safari, then turn this on and allow it.';
@@ -361,7 +361,7 @@
     sync();
   }
 
-  window.ParkPulseParallax = Object.freeze({ version: '1.2.0', isRunning: () => active });
+  window.ParkPulseParallax = Object.freeze({ version: '1.2.1', isRunning: () => active });
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', start, { once: true });

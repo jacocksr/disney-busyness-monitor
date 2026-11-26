@@ -1,6 +1,6 @@
 /* Park Pulse: tilt-reactive snow globe under the unexpanded Best Park Right Now card (Pulse screen).
    Loaded by park-parallax.js only while Settings > Tilt effects is on, and only on touch devices.
-   Four park icons bounce inside a round globe using the same tilt gravity as the Pulse Easter egg
+   Four park icons bounce inside a small round globe using the same tilt gravity as the Pulse Easter egg
    (same orientation math, bounce thresholds and ball collisions, scaled to the globe), and light snow falls
    in the direction of gravity. It hides while the Best Park card is expanded and pauses when it is off screen,
    when the tab is hidden, or when Animations / Reduced Motion are off. Decorative only (aria-hidden). */
@@ -20,10 +20,14 @@
   const PUSH = 0.8;
   const MAX_V = 1600;
   const DRAG = 0.25;
-  const ROLL = 1.4;
+  const ROLL = 2.6; // sliding friction against the glass
+  const WALL_SPIN = 0.35; // share of rolling speed that turns into icon spin at the glass
+  const COLL_SPIN = 0.05; // spin picked up from icon-to-icon contact
+  const SPIN_MAX = 6; // rad/s
+  const SPIN_DAMP = 2.5; // per second; spin dies out quickly
   const TILT_DEAD = 0.08;
   const SMOOTH = 0.18;
-  const FLAKES = 44;
+  const FLAKES = 30;
   const DEG = Math.PI / 180;
 
   let root = null;
@@ -58,13 +62,13 @@
     const style = document.createElement('style');
     style.id = 'ppSnowGlobeStyles';
     style.textContent = [
-      '#ppSnowGlobe{box-sizing:border-box;width:min(256px,66vw);margin:16px auto 0;padding:0 6px 10px;max-height:340px;overflow:hidden;opacity:1;transform:none;pointer-events:none;user-select:none;-webkit-user-select:none;transition:opacity .3s ease,max-height .35s ease,margin-top .35s ease,transform .35s ease}',
+      '#ppSnowGlobe{box-sizing:border-box;width:min(120px,32vw);margin:12px auto 0;padding:0 3px 6px;max-height:180px;overflow:hidden;opacity:1;transform:none;pointer-events:none;user-select:none;-webkit-user-select:none;transition:opacity .3s ease,max-height .35s ease,margin-top .35s ease,transform .35s ease}',
       '#ppSnowGlobe[hidden]{display:none!important}',
       '#ppSnowGlobe[data-state=hidden]{max-height:0;margin-top:0;padding-bottom:0;opacity:0;transform:translateY(-10px) scale(.96);visibility:hidden;transition:opacity .25s ease,max-height .35s ease,margin-top .35s ease,transform .3s ease,visibility 0s linear .35s}',
-      '#ppSnowGlobe .pp-sg-glass{position:relative;width:100%;aspect-ratio:1/1;border-radius:50%;overflow:hidden;isolation:isolate;border:2px solid color-mix(in srgb,var(--teal,#4cd6c0) 55%,transparent);background:radial-gradient(circle at 50% 30%,#245785 0%,#143460 55%,#0a1c38 100%);box-shadow:inset 0 -18px 30px rgba(0,0,0,.35),inset 0 10px 24px rgba(255,255,255,.08),0 10px 24px rgba(0,0,0,.35)}',
+      '#ppSnowGlobe .pp-sg-glass{position:relative;width:100%;aspect-ratio:1/1;border-radius:50%;overflow:hidden;isolation:isolate;border:1.5px solid color-mix(in srgb,var(--teal,#4cd6c0) 55%,transparent);background:radial-gradient(circle at 50% 30%,#245785 0%,#143460 55%,#0a1c38 100%);box-shadow:inset 0 -10px 16px rgba(0,0,0,.35),inset 0 5px 12px rgba(255,255,255,.08),0 5px 12px rgba(0,0,0,.35)}',
       '#ppSnowGlobe .pp-sg-glass::after{content:"";position:absolute;inset:0;border-radius:50%;pointer-events:none;background:radial-gradient(ellipse 38% 24% at 30% 20%,rgba(255,255,255,.32),transparent 70%)}',
       '#ppSnowGlobe .pp-sg-canvas{position:absolute;inset:0;width:100%;height:100%;display:block}',
-      '#ppSnowGlobe .pp-sg-base{position:relative;z-index:1;width:64%;height:22px;margin:-10px auto 0;border-radius:8px 8px 16px 16px;background:linear-gradient(180deg,color-mix(in srgb,var(--gold,#ffd166) 80%,#000) 0%,color-mix(in srgb,var(--gold-deep,#f4a300) 60%,#000) 100%);box-shadow:0 6px 14px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.35)}',
+      '#ppSnowGlobe .pp-sg-base{position:relative;z-index:1;width:60%;height:12px;margin:-6px auto 0;border-radius:5px 5px 9px 9px;background:linear-gradient(180deg,color-mix(in srgb,var(--gold,#ffd166) 80%,#000) 0%,color-mix(in srgb,var(--gold-deep,#f4a300) 60%,#000) 100%);box-shadow:0 3px 8px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.35)}',
       '@media (prefers-reduced-motion:reduce){#ppSnowGlobe,#ppSnowGlobe[data-state=hidden]{transition:none}}',
     ].join('\n');
     document.head.appendChild(style);
@@ -123,7 +127,7 @@
   }
 
   function resetFlake(f, anywhere, dx, dy) {
-    f.r = rnd(0.9, 2.6) * sc;
+    f.r = Math.max(0.7, rnd(0.9, 2.6) * sc);
     f.s = rnd(14, 30) * sc * (0.6 + f.r / (2.6 * sc));
     f.ph = rnd(0, Math.PI * 2);
     f.sw = rnd(0.5, 1.2);
@@ -210,9 +214,9 @@
       q.vx += j * nx;
       q.vy += j * ny;
       const vt = (p.vx - q.vx) * -ny + (p.vy - q.vy) * nx;
-      const spin = (vt * 0.2) / p.r;
-      p.w = Math.max(-12, Math.min(12, p.w - spin));
-      q.w = Math.max(-12, Math.min(12, q.w - spin));
+      const spin = (vt * COLL_SPIN) / p.r;
+      p.w = Math.max(-SPIN_MAX, Math.min(SPIN_MAX, p.w - spin));
+      q.w = Math.max(-SPIN_MAX, Math.min(SPIN_MAX, q.w - spin));
     }
   }
 
@@ -238,7 +242,8 @@
     const f = Math.min(1, ROLL * h);
     b.vx -= vt * f * tx;
     b.vy -= vt * f * ty;
-    b.w += (vt / b.r - b.w) * Math.min(1, 10 * h);
+    b.w += ((vt * WALL_SPIN) / b.r - b.w) * Math.min(1, 10 * h);
+    b.w = Math.max(-SPIN_MAX, Math.min(SPIN_MAX, b.w));
   }
 
   function step(h) {
@@ -259,7 +264,7 @@
       b.x += b.vx * h;
       b.y += b.vy * h;
       b.a += b.w * h;
-      b.w *= Math.max(0, 1 - 0.3 * h);
+      b.w *= Math.max(0, 1 - SPIN_DAMP * h);
     });
     const hh = h / ITER;
     for (let it = 0; it < ITER; it++) {
@@ -432,5 +437,5 @@
     evaluate();
   }
 
-  window.ParkPulseSnowGlobe = Object.freeze({ version: '1.0.0', setActive, isRunning: () => running });
+  window.ParkPulseSnowGlobe = Object.freeze({ version: '1.1.0', setActive, isRunning: () => running });
 })();

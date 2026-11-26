@@ -7,7 +7,7 @@
   var REST_V=50, REST_W=40, ROLL_K=4, ROLL_DEC=280, SPIN_K=4;
   var WAKE_V=80, SWIPE_R=24, TOUCH_SWIPE_R=36, MAX_V=2200, MIN_SWIPE=35, SWIPE_GAIN=1.25, SWIPE_RESPONSE=.85;
   var BTN_DELAY=1000, BLAST=3400, LIFT=1200, MAXB=3600, UPBIAS=.3;
-  var TILT_DEAD=.08, TILT_WAKE=.06, TILT_MAX_MS=60000, TILT_MAX_BALLS=90, SHAKE_KICK=2600;
+  var TILT_DEAD=.08, TILT_WAKE=.06, TILT_MAX_MS=60000, TILT_MAX_BALLS=90, SHAKE_KICK=2600, FW_BACK_MS=1500;
   var ROCKET_R=9, ROCKET_GRAV=6000, ROCKET_V=1500, SAFETY_S=2;
   var DRIFT_MIN=50, DRIFT_MAX=130, TRAIL_N=6, STAGGER_MIN=80, STAGGER_MAX=220;
   var IMPACT_SCALE=2, ASCENT_MIN=400, ASCENT_MAX=600;
@@ -113,7 +113,7 @@
       live=balls.filter(function(b){return b.live&&!b.gone&&!b.rocket;});for(var i=0;i<live.length-TILT_MAX_BALLS;i++)live[i].gone=true;
       wakeAll();
       if(tiltBtn){tiltBtn.remove();tiltBtn=null;}
-      if(!btns.length&&box){box.remove();box=null;}
+      if(!btns.length)respawnFw();
       showDone();
       T.start({onTilt:onTiltInput,onShake:shakeOk?onShakeInput:null,onStatus:function(s){note(s==='nodata'?'No motion readings came through on this device.':'Motion sensors are not available here.');endTilt();}});
       note(shakeOk?'Tilt and shake your phone.':'Tilt your phone. Shake is not enabled.');
@@ -138,12 +138,17 @@
         if(dx||dy)item.el.animate([{transform:'translate('+dx+'px,'+dy+'px)'},{transform:'translate(0,0)'}],{duration:240,easing:'cubic-bezier(.22,.61,.36,1)'});
       });
       setTimeout(function(){el.remove();},200);
-      if(!btns.length&&box&&!tiltBtn){var wrap=box;box=null;setTimeout(function(){wrap.remove();},220);}volley(n);
+      if(!btns.length&&box&&!tiltBtn&&!tilt){var wrap=box;box=null;setTimeout(function(){wrap.remove();},220);}volley(n);
+      if(tilt)respawnFw();
     }
-    function showBtns(){var n=Math.max(1,Math.min(show?show.sets:1,MAX_SETS)),add=n-btns.length;btnArmed=false;if(add<=0)return;if(!box){box=document.createElement('div');box.style.cssText='position:fixed;right:12px;bottom:25%;z-index:102;display:flex;flex-direction:column-reverse;flex-wrap:wrap-reverse;align-items:flex-end;gap:8px;max-height:calc(75vh - 12px);pointer-events:none';document.body.appendChild(box);}addTiltBtn();for(var i=0;i<add;i++){
+    /* In tilt mode the firework button returns FW_BACK_MS after each press, as a fresh random 1, 2 or 3 shot. */
+    function respawnFw(){setTimeout(function(){if(!tilt||!running||!floorOn)return;var n=Math.max(1,Math.min(show?show.sets:1,MAX_SETS));if(btns.length>=n)return;if(!box)makeBox();addFw(0);},FW_BACK_MS);}
+    function makeBox(){box=document.createElement('div');box.style.cssText='position:fixed;right:12px;bottom:25%;z-index:102;display:flex;flex-direction:column-reverse;flex-wrap:wrap-reverse;align-items:flex-end;gap:8px;max-height:calc(75vh - 12px);pointer-events:none';document.body.appendChild(box);}
+    function addFw(i){
       var cnt=pickCount(),el=document.createElement('button');el.type='button';el.dataset.fw=String(cnt);el.textContent=FW_EMOJI[cnt-1];el.setAttribute('aria-label','Launch '+cnt+(cnt===1?' firework':' fireworks'));
       el.style.cssText='width:64px;height:64px;flex-shrink:0;padding:0;display:flex;align-items:center;justify-content:center;border-radius:50%;border:2px solid var(--teal,#4cd6c0);background:var(--card-bg-solid,#16294a);color:var(--text,#fff);font-size:2.1rem;line-height:1;box-shadow:0 6px 18px rgba(0,0,0,.35);cursor:pointer;touch-action:manipulation;pointer-events:auto';el.addEventListener('click',pressBtn.bind(null,el));box.appendChild(el);btns.push(el);if(el.animate)el.animate([{transform:'scale(0) rotate(-12deg)',opacity:0},{transform:'scale(1.15) rotate(3deg)',opacity:1,offset:.7},{transform:'scale(1) rotate(0)',opacity:1}],{duration:420,delay:i*60,easing:'cubic-bezier(.3,1.4,.5,1)',fill:'both'});
-    }}
+    }
+    function showBtns(){var n=Math.max(1,Math.min(show?show.sets:1,MAX_SETS)),add=n-btns.length;btnArmed=false;if(add<=0)return;if(!box)makeBox();addTiltBtn();for(var i=0;i<add;i++)addFw(i);}
     function volley(n){var delay=0;for(var i=0;i<n;i++){dropRocket(delay);delay+=rnd(STAGGER_MIN,STAGGER_MAX);}}
     function dropRocket(delayMs){var pal=fwPalette(),i=Math.floor(Math.random()*pal.length),j=(i+1+Math.floor(Math.random()*(pal.length-1)))%pal.length;
       var r=ROCKET_R,d=H+10,tFall=(-ROCKET_V+Math.sqrt(ROCKET_V*ROCKET_V+2*ROCKET_GRAV*d))/ROCKET_GRAV;

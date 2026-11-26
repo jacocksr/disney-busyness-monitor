@@ -1,20 +1,22 @@
-/* Park Pulse: opt-in tilt parallax for the artwork on the expanded park card (Overview).
-   While #ppParkExpand is open and the Settings toggle is on, the artwork shifts a few pixels as the phone tilts.
-   Touch devices only. Loaded lazily by park-expand.js. Its styles are injected here and only apply while
-   #ppParkExpand[data-parallax=on], so nothing changes when the feature is off.
+/* Park Pulse: opt-in tilt parallax for park artwork (Overview).
+   Targets: the expanded park card (#ppParkExpand) and the expanded Best Park Right Now card (#bestParkBanner).
+   While a target is showing and the Settings toggle is on, its artwork shifts as the phone tilts.
+   Touch devices only. Loaded lazily by park-expand.js. Its styles are injected here and only apply while a target
+   has data-parallax=on, so nothing changes when the feature is off.
    Tilt, not shake: the Easter egg input lives separately in easter-tilt.js. */
 (() => {
   'use strict';
   if (window.ParkPulseParallax) return;
 
   const KEY = 'pp_parallax';
-  const AMP = 28; // px of shift per unit of gravity change
-  const MAX = 14; // px; stays under the 16px overhang the artwork gets while active
+  const AMP = 40; // px of shift per unit of gravity change
+  const MAX = 22; // px; must stay under OVERHANG
+  const OVERHANG = 26; // px the artwork extends past its card while active
   const EASE = 0.12; // per-frame smoothing
   const RECENTER = 0.002; // per reading: slowly treats the current pose as neutral
   const DEG = Math.PI / 180;
-  const DEFAULT_HELP = 'The park card artwork shifts slightly as you tilt your phone. Uses your motion sensors.';
-  const ON_HELP = 'On. Open a park card and tilt your phone.';
+  const DEFAULT_HELP = 'The artwork on park cards and the Best Park card shifts slightly as you tilt your phone. Uses your motion sensors.';
+  const ON_HELP = 'On. Open a park card or the Best Park card and tilt your phone.';
   const DENIED_HELP = 'Motion access was denied. To try again, quit and reopen Safari, then turn this on and allow it.';
   const OFF_HELP = 'Turn on animations in Settings to use tilt effects.';
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -24,11 +26,38 @@
   let active = false;
   let ref = null;
   let raf = 0;
-  let overlay = null;
   let input = null;
   let help = null;
   const cur = { x: 0, y: 0 };
   const tgt = { x: 0, y: 0 };
+
+  const overlayOpen = () => {
+    const overlay = document.getElementById('ppParkExpand');
+    return !!overlay && !overlay.hidden;
+  };
+  const targets = [
+    {
+      find: () => document.getElementById('ppParkExpand'),
+      isOn: (el) => !el.hidden,
+      observe: { attributes: true, attributeFilter: ['hidden'] },
+      el: null,
+      on: false,
+      watched: false,
+    },
+    {
+      find: () => document.getElementById('bestParkBanner'),
+      isOn: (el) =>
+        !el.hidden &&
+        el.classList.contains('pp-best-evidence-card') &&
+        !!el.querySelector('.pp-best-toggle[aria-expanded="true"]') &&
+        el.offsetParent !== null &&
+        !overlayOpen(),
+      observe: { attributes: true, attributeFilter: ['aria-expanded', 'class', 'hidden'], subtree: true, childList: true },
+      el: null,
+      on: false,
+      watched: false,
+    },
+  ];
 
   const supported = () =>
     window.isSecureContext !== false &&
@@ -95,17 +124,21 @@
     if (!active) return;
     cur.x += (tgt.x - cur.x) * EASE;
     cur.y += (tgt.y - cur.y) * EASE;
-    overlay.style.setProperty('--pp-px', cur.x.toFixed(2) + 'px');
-    overlay.style.setProperty('--pp-py', cur.y.toFixed(2) + 'px');
+    const px = cur.x.toFixed(2) + 'px';
+    const py = cur.y.toFixed(2) + 'px';
+    targets.forEach((t) => {
+      if (!t.on || !t.el) return;
+      t.el.style.setProperty('--pp-px', px);
+      t.el.style.setProperty('--pp-py', py);
+    });
     raf = requestAnimationFrame(frame);
   }
 
   function run() {
-    if (active || !overlay) return;
+    if (active) return;
     active = true;
     ref = null;
     cur.x = cur.y = tgt.x = tgt.y = 0;
-    overlay.dataset.parallax = 'on';
     window.addEventListener('deviceorientation', onOrientation);
     raf = requestAnimationFrame(frame);
   }
@@ -115,16 +148,42 @@
     active = false;
     cancelAnimationFrame(raf);
     window.removeEventListener('deviceorientation', onOrientation);
-    if (overlay) {
-      delete overlay.dataset.parallax;
-      overlay.style.removeProperty('--pp-px');
-      overlay.style.removeProperty('--pp-py');
-    }
+  }
+
+  function clearTarget(el) {
+    if (!el) return;
+    delete el.dataset.parallax;
+    el.style.removeProperty('--pp-px');
+    el.style.removeProperty('--pp-py');
   }
 
   function sync() {
-    if (overlay && !overlay.hidden && enabled && granted && motionOk()) run();
+    const allowed = enabled && granted && motionOk();
+    let any = false;
+    targets.forEach((t) => {
+      if (!t.el || !t.el.isConnected) t.el = t.find();
+      const on = allowed && !!t.el && t.isOn(t.el);
+      if (on && !t.on) {
+        t.on = true;
+        t.el.dataset.parallax = 'on';
+      } else if (!on && t.on) {
+        t.on = false;
+        clearTarget(t.el);
+      }
+      any = any || t.on;
+    });
+    if (any) run();
     else halt();
+  }
+
+  function stopAll() {
+    targets.forEach((t) => {
+      if (t.on) {
+        t.on = false;
+        clearTarget(t.el);
+      }
+    });
+    halt();
   }
 
   function setHelp(text) {
@@ -175,7 +234,7 @@
     section.setAttribute('aria-labelledby', 'ppParallaxTitle');
     section.innerHTML =
       '<h3 id="ppParallaxTitle">Tilt effects</h3>' +
-      '<label class="pp-parallax-row"><input type="checkbox" id="ppParallaxSwitch"><span>Park card artwork follows your tilt</span></label>' +
+      '<label class="pp-parallax-row"><input type="checkbox" id="ppParallaxSwitch"><span>Park artwork follows your tilt</span></label>' +
       '<p id="ppParallaxHelp" role="status"></p>';
     const motion = dialog.querySelector('#ppSettingsMotionHost');
     const anchor = motion && motion.closest('.pp-settings-section');
@@ -189,22 +248,35 @@
     return true;
   }
 
-  function watchOverlay() {
-    const found = document.getElementById('ppParkExpand');
-    if (!found) return false;
-    overlay = found;
-    new MutationObserver(sync).observe(overlay, { attributes: true, attributeFilter: ['hidden'] });
-    sync();
-    return true;
+  /* Attaches an observer to each target as it appears; returns true once all are watched. */
+  function watchTargets() {
+    let missing = false;
+    let added = false;
+    targets.forEach((t) => {
+      if (t.watched) return;
+      const el = t.find();
+      if (!el) {
+        missing = true;
+        return;
+      }
+      t.watched = true;
+      t.el = el;
+      added = true;
+      new MutationObserver(sync).observe(el, t.observe);
+    });
+    if (added) sync();
+    return !missing;
   }
 
   function addStyles() {
+    const over = '-' + OVERHANG + 'px';
     const style = document.createElement('style');
     style.id = 'ppParallaxStyles';
     style.textContent = [
       'html body #ppParkExpand[data-parallax=on] #parkGrid .park-card{overflow:hidden}',
-      'html body #ppParkExpand[data-parallax=on] #parkGrid .park-card::before{inset:-16px;transform:translate3d(var(--pp-px,0px),var(--pp-py,0px),0);will-change:transform}',
-      'html body #ppParkExpand[data-parallax=on] #parkGrid .pulse-identity>img{translate:calc(var(--pp-px,0px)*-.2) calc(var(--pp-py,0px)*-.2);will-change:translate}',
+      'html body #ppParkExpand[data-parallax=on] #parkGrid .park-card::before{inset:' + over + ';transform:translate3d(var(--pp-px,0px),var(--pp-py,0px),0);will-change:transform}',
+      'html body #ppParkExpand[data-parallax=on] #parkGrid .pulse-identity>img{translate:calc(var(--pp-px,0px)*-.25) calc(var(--pp-py,0px)*-.25);will-change:translate}',
+      'html body #bestParkBanner[data-parallax=on]::before{inset:' + over + ';transform:translate3d(var(--pp-px,0px),var(--pp-py,0px),0);will-change:transform}',
       '#ppGlobalSettingsDialog .pp-parallax-row{display:flex;align-items:center;gap:10px;min-height:44px;color:var(--text);font-size:.9rem;cursor:pointer}',
       '#ppGlobalSettingsDialog .pp-parallax-row input{flex:0 0 20px;width:20px;height:20px;accent-color:var(--teal)}',
       '#ppGlobalSettingsDialog .pp-parallax-row:focus-within{outline:3px solid var(--teal);outline-offset:3px;border-radius:8px}',
@@ -218,12 +290,12 @@
     granted = !needsPermission();
     addStyles();
 
-    // iOS asks again per session: the card tap is the user gesture that can request it.
+    // iOS asks again per session: a card tap is the user gesture that can request it.
     document.addEventListener(
       'click',
       (event) => {
         if (!enabled || granted || !event.target.closest) return;
-        if (!event.target.closest('#ppCompactOverview .pp1b-card[data-park]')) return;
+        if (!event.target.closest('#ppCompactOverview .pp1b-card[data-park], #bestParkBanner .pp-best-toggle')) return;
         ask().then((result) => {
           if (result === 'granted') {
             granted = true;
@@ -240,18 +312,22 @@
       });
       waitDialog.observe(document.body, { childList: true });
     }
-    if (!watchOverlay()) {
-      const waitOverlay = new MutationObserver(() => {
-        if (watchOverlay()) waitOverlay.disconnect();
+    if (!watchTargets()) {
+      const waitTargets = new MutationObserver(() => {
+        if (watchTargets()) waitTargets.disconnect();
       });
-      waitOverlay.observe(document.body, { childList: true });
+      waitTargets.observe(document.body, { childList: true, subtree: true });
     }
     window.addEventListener('parkpulsemotionchange', refreshSettings);
     if (reduced.addEventListener) reduced.addEventListener('change', refreshSettings);
-    window.addEventListener('pagehide', halt);
+    // Tabs change which target is on screen; check after the new view has laid out.
+    window.addEventListener('hashchange', () => requestAnimationFrame(sync));
+    window.addEventListener('pageshow', sync);
+    document.addEventListener('visibilitychange', sync);
+    window.addEventListener('pagehide', stopAll);
   }
 
-  window.ParkPulseParallax = Object.freeze({ version: '1.0.0', isRunning: () => active });
+  window.ParkPulseParallax = Object.freeze({ version: '1.1.0', isRunning: () => active });
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', start, { once: true });

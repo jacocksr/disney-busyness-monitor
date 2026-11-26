@@ -302,3 +302,9 @@ html[data-theme=light] body #ppParkExpand #parkGrid .park-card .pulse-waits .pul
 html[data-theme=light] body #ppParkExpand #parkGrid .park-card .pulse-waits.pulse-waits-clickable:hover .pulse-waits-pill-btn {
   background: rgba(246, 223, 179, .35);
 }
+
+/* Page background: base.css draws six faint fixed star specks on body::before. They read as stray dots on the dark
+   background, so they are switched off here. TODO: delete the body::before rule from base.css, then delete this block. */
+body::before {
+  content: none;
+}

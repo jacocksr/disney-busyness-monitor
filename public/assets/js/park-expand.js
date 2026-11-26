@@ -388,10 +388,11 @@
   }
 
   // Opt-in tilt parallax for the artwork: only fetched on touch devices that report motion events.
+  // The ?v= value is bumped with park-parallax.js so a phone never keeps running an older cached copy.
   function loadParallax() {
     if (window.ParkPulseParallax || !window.DeviceOrientationEvent || !window.matchMedia('(pointer: coarse)').matches) return;
     const script = document.createElement('script');
-    script.src = '/assets/js/park-parallax.js';
+    script.src = '/assets/js/park-parallax.js?v=1.1.0';
     script.async = true;
     document.head.appendChild(script);
   }

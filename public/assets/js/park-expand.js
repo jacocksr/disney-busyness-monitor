@@ -1,6 +1,7 @@
 /* Park Pulse park card expansion (Overview): a Pulse park card grows into its detailed card.
    The real #parkGrid (and its handlers) is moved into the panel while open and returned on close.
    While an animation plays, #ppParkExpand gets data-motion=run so park-expand.css turns blur off.
+   On touch devices it also lazy-loads park-parallax.js (opt-in tilt parallax for the artwork).
    Load after app-shell.js and snapshot.js. Styles live in assets/css/park-expand.css. */
 (() => {
   'use strict';
@@ -386,6 +387,15 @@
     }
   }
 
+  // Opt-in tilt parallax for the artwork: only fetched on touch devices that report motion events.
+  function loadParallax() {
+    if (window.ParkPulseParallax || !window.DeviceOrientationEvent || !window.matchMedia('(pointer: coarse)').matches) return;
+    const script = document.createElement('script');
+    script.src = '/assets/js/park-parallax.js';
+    script.async = true;
+    document.head.appendChild(script);
+  }
+
   window.ParkPulseParkExpand = Object.freeze({
     version: '1.0.0',
     open: (key) => {
@@ -401,4 +411,5 @@
   } else {
     queueMicrotask(start);
   }
+  loadParallax();
 })();
